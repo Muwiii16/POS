@@ -1,5 +1,5 @@
 import tkinter as tk
-from core.gui import POSapp
+from core.gui.main_gui import POSapp
 
 if __name__ == '__main__':
     root = tk.Tk()

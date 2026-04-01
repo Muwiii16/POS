@@ -1,3 +1,7 @@
+import csv
+from datetime import datetime
+import os
+
 from thefuzz import process
 
 
@@ -47,3 +51,23 @@ def generate_receipt_text(cart, total, paid, change):
     receipt += f'PAID: ₱{paid:.2f}\n'
     receipt += f'CHANGE: ₱{change:.2f}'
     return receipt
+
+
+def log_sale(cart, total, amount_paid, change):
+    file_path = 'sales_log.csv'
+    file_exists = os.path.isfile(file_path)
+
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    with open(file_path, mode='a', newline='')as file:
+        writer = csv.writer(file)
+
+        if not file_exists:
+            writer.writerow(['Timestamp', 'Items Sold',
+                            'Total', 'Amount Paid', 'Change'])
+
+        item_summary = ' | '.join(
+            f'{item.name}({item.variant})' for item in cart)
+
+        writer.writerow(
+            [now, item_summary, f'{total:.2f}', f'{amount_paid:.2f}', f'{change:.2f}'])
