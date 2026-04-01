@@ -1,8 +1,12 @@
+import json
 import csv
 from datetime import datetime
 import os
 
 from thefuzz import process
+from . models import Product
+CURRENT_DIR = os.path.dirname(__file__)
+DATA_FILE = os.path.join(CURRENT_DIR, 'inventory.json')
 
 
 def search_products(query, store_products):
@@ -71,3 +75,18 @@ def log_sale(cart, total, amount_paid, change):
 
         writer.writerow(
             [now, item_summary, f'{total:.2f}', f'{amount_paid:.2f}', f'{change:.2f}'])
+
+
+def load_inventory():
+    if not os.path.exists(DATA_FILE):
+        print(f"DEBUG: {DATA_FILE} not found. Starting with empty inventory.")
+        return []
+    with open(DATA_FILE, 'r') as f:
+        data = json.load(f)
+        return [Product(**item) for item in data]
+
+
+def save_inventory(products):
+    data = [vars(p) for p in products]
+    with open(DATA_FILE, 'w') as f:
+        json.dump(data, f, indent=4)

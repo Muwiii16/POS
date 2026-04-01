@@ -1,0 +1,23 @@
+[
+    {
+        "name": "Pants",
+        "variant": "Small",
+        "price": 500,
+        "stock": 10,
+        "barcode": "1001"
+    },
+    {
+        "name": "Pants",
+        "variant": "Medium",
+        "price": 650,
+        "stock": 8,
+        "barcode": "1002"
+    },
+    {
+        "name": "Notebook",
+        "variant": "80L",
+        "price": 30,
+        "stock": 98,
+        "barcode": "2001"
+    }
+]

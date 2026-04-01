@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 
-from core import inventory
+
 from core import engine
 
 
@@ -10,6 +10,10 @@ class POSapp:
         self.root = root
         self.root.title("Dad's Store POS")
         self.cart = []
+        self.store_products = engine.load_inventory()
+
+        print(
+            f'DEBUG: Loaded {len(self.store_products)} products into inventory.')
 
         self.setup_ui()
         self.bind_shortcuts()
@@ -80,7 +84,7 @@ class POSapp:
 
     def find_product(self):
         query = self.search_entry.get()
-        results = engine.search_products(query, inventory.Store_Products)
+        results = engine.search_products(query, self.store_products)
         self.clear_search_results()
 
         for product in results:
@@ -107,6 +111,7 @@ class POSapp:
         if not success:
             messagebox.showwarning("Checkout Error", result)
         else:
+            engine.save_inventory(self.store_products)
             engine.log_sale(self.cart, total, float(raw_payment), result)
             receipt_msg = engine.generate_receipt_text(
                 self.cart, total, float(raw_payment), result)
