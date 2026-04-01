@@ -68,13 +68,13 @@ def log_sale(cart, total, amount_paid, change):
 
         if not file_exists:
             writer.writerow(['Timestamp', 'Items Sold',
-                            'Total', 'Amount Paid', 'Change'])
+                            'Total', 'Amount Paid'])
 
         item_summary = ' | '.join(
             f'{item.name}({item.variant})' for item in cart)
 
         writer.writerow(
-            [now, item_summary, f'{total:.2f}', f'{amount_paid:.2f}', f'{change:.2f}'])
+            [now, item_summary, f'{total:.2f}', f'{amount_paid:.2f}'])
 
 
 def load_inventory():

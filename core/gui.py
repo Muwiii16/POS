@@ -14,6 +14,7 @@ class POSapp:
 
         self.setup_ui()
         self.bind_shortcuts()
+        self.show_catalog()
 
     def setup_ui(self):
         self.create_search_area()
@@ -79,10 +80,38 @@ class POSapp:
                         command=lambda i=product: self.add_to_cart(i))
         btn.pack(fill='x', pady=2)
 
-    def find_product(self):
-        query = self.search_entry.get()
-        results = engine.search_products(query, self.store_products)
+    def show_catalog(self):
         self.clear_search_results()
+        unique_names = []
+        for product in self.store_products:
+            if product.name not in unique_names:
+                unique_names.append(product.name)
+
+                btn = tk.Button(self.variant_frame, text=product.name.capitalize(
+                ), width=25, height=2, bg='lightblue', command=lambda name=product.name: self.show_variants(name))
+                btn.pack(pady=5)
+
+    def show_variants(self, product_name):
+        self.clear_search_results()
+        variants = [p for p in self.store_products if p.name == product_name]
+
+        for variant in variants:
+            btn_text = f'{variant.variant} - ₱{variant.price:.2f} | Stock: {variant.stock}'
+            btn = tk.Button(self.variant_frame, text=btn_text, width=40,
+                            command=lambda prod=variant: self.add_to_cart(prod))
+            btn.pack(pady=2)
+
+        tk.Button(self.variant_frame, text="Back to Catalog",
+                  command=self.show_catalog).pack(pady=10)
+
+    def find_product(self):
+        query = self.search_entry.get().strip().lower()
+        if not query:
+            self.show_catalog()
+            return
+
+        self.clear_search_results()
+        results = engine.search_products(query, self.store_products)
 
         for product in results:
             self.create_product_button(product)
@@ -95,7 +124,11 @@ class POSapp:
 
             current_total = sum(item.price for item in self.cart)
             self.total_label.config(text=f'Total: P{current_total:.2f}')
-            self.find_product()
+            query = self.search_entry.get().strip().lower()
+            if query:
+                self.find_product()
+            else:
+                self.show_variants(product.name)
 
         else:
             messagebox.showwarning('Out of Stock', 'Item is out of stock!')
@@ -123,4 +156,4 @@ class POSapp:
         self.total_label.config(text="Total: P0.00")
         self.payment_entry.delete(0, 'end')
         self.search_entry.delete(0, 'end')
-        self.clear_search_results()
+        self.show_catalog()
