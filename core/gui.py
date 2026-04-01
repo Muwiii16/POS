@@ -76,8 +76,8 @@ class POSapp:
 
     def checkout(self):
         raw_payment = self.payment_entry.get()
-        success, total, result = engine.generate_receipt_text(
-            self.cart, total, float(raw_payment), result)
+        success, total, result = engine.process_checkout(
+            self.cart, raw_payment)
 
         if not success:
             messagebox.showwarning("Checkout Error", result)
