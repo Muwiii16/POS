@@ -3,21 +3,21 @@
         "name": "Pants",
         "variant": "Small",
         "price": 500,
-        "stock": 10,
+        "stock": 9,
         "barcode": "1001"
     },
     {
         "name": "Pants",
         "variant": "Medium",
         "price": 650,
-        "stock": 8,
+        "stock": 7,
         "barcode": "1002"
     },
     {
         "name": "Notebook",
         "variant": "80L",
         "price": 30,
-        "stock": 98,
+        "stock": 95,
         "barcode": "2001"
     }
 ]

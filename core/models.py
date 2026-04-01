@@ -8,7 +8,7 @@ class Product:
         self.barcode = barcode
 
     def __str__(self):
-        return f"Product: {self.name} | Type: {self.variant} | Price: {self.price} | Stock: {self.stock} | Barcode: {self.barcode}"
+        return f"Product: {self.name} | Type: {self.variant} | Price: {self.price}"
 
 
 class CartItems:

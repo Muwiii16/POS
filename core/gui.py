@@ -12,9 +12,6 @@ class POSapp:
         self.cart = []
         self.store_products = engine.load_inventory()
 
-        print(
-            f'DEBUG: Loaded {len(self.store_products)} products into inventory.')
-
         self.setup_ui()
         self.bind_shortcuts()
 
@@ -126,3 +123,4 @@ class POSapp:
         self.total_label.config(text="Total: P0.00")
         self.payment_entry.delete(0, 'end')
         self.search_entry.delete(0, 'end')
+        self.clear_search_results()

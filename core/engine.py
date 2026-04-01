@@ -79,7 +79,6 @@ def log_sale(cart, total, amount_paid, change):
 
 def load_inventory():
     if not os.path.exists(DATA_FILE):
-        print(f"DEBUG: {DATA_FILE} not found. Starting with empty inventory.")
         return []
     with open(DATA_FILE, 'r') as f:
         data = json.load(f)
