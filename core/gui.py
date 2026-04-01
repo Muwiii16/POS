@@ -13,14 +13,18 @@ class POSapp:
         self.cart = []
 
         # Search Entry
-        self.search_label = tk.Label(root, text="Search Product: ")
-        self.search_label.pack()
-        self.search_entry = tk.Entry(root)
-        self.search_entry.pack()
+        search_container = tk.Frame(root)
+        search_container.pack(pady=5)
+
+        self.search_label = tk.Label(search_container, text="Search Product: ")
+        self.search_label.grid(row=0, column=0, padx=5)
+        self.search_entry = tk.Entry(search_container)
+        self.search_entry.grid(row=0, column=1, padx=5)
+        self.search_entry.bind('<Return>', lambda event: self.find_product())
 
         self.search_btn = tk.Button(
-            root, text='Search', command=self.find_product)
-        self.search_btn.pack()
+            search_container, text='Search', command=self.find_product)
+        self.search_btn.grid(row=0, column=2, padx=5)
 
         # Variants
         self.variant_frame = tk.Frame(root)
@@ -31,17 +35,22 @@ class POSapp:
         self.cart_listbox.pack()
 
         # Checkout Display
-        self.total_label = tk.Label(
-            root, text="Total: P0.00", font=("Arial", 14, "bold"))
-        self.total_label.pack(pady=10)
+        payment_container = tk.Frame(root)
+        payment_container.pack(pady=10)
 
-        tk.Label(root, text="Amount Paid: ").pack()
-        self.payment_entry = tk.Entry(root)
-        self.payment_entry.pack()
+        self.total_label = tk.Label(
+            payment_container, text="Total: P0.00", font=("Arial", 14, "bold"))
+        self.total_label.grid(row=0, column=0, padx=5)
+
+        tk.Label(payment_container, text="Amount Paid: ").grid(
+            row=1, column=0, padx=5)
+        self.payment_entry = tk.Entry(payment_container)
+        self.payment_entry.grid(row=1, column=1, padx=5)
+        self.payment_entry.bind('<Return>', lambda event: self.checkout())
 
         self.checkout_btn = tk.Button(
-            root, text='CHECKOUT', bg='green', fg='white', command=self.checkout)
-        self.checkout_btn.pack(pady=10)
+            payment_container, text='CHECKOUT', bg='green', fg='white', command=self.checkout)
+        self.checkout_btn.grid(row=2, column=0, columnspan=2, pady=10)
 
     def clear_search_results(self):
         for widget in self.variant_frame.winfo_children():
