@@ -3,6 +3,7 @@ from tkinter import messagebox
 
 from core import inventory
 from core import models
+from core import engine
 
 
 class POSapp:
@@ -74,35 +75,23 @@ class POSapp:
             messagebox.showwarning('Out of Stock', 'Item is out of stock!')
 
     def checkout(self):
-        if not self.cart:
-            messagebox.showwarning(
-                "Empty Cart", "There are no items to checkout!")
-            return
+        raw_payment = self.payment_entry.get()
+        success, total, result = engine.generate_receipt_text(
+            self.cart, total, float(raw_payment), result)
 
-        total = sum(item.price for item in self.cart)
-
-        try:
-            paid = float(self.payment_entry.get())
-        except ValueError:
-            messagebox.showerror(
-                'Error', 'Please enter a valid number for payment.')
-            return
-
-        if paid < total:
-            messagebox.showwarning('Insufficient Funds',
-                                   f'Customer still owes P{total-paid:.2f}')
+        if not success:
+            messagebox.showwarning("Checkout Error", result)
         else:
-            change = paid-total
+            receipt_msg = engine.generate_receipt_text(
+                self.cart, total, float(raw_payment), result)
+            messagebox.showinfo("Successful Checkout", receipt_msg)
 
-            receipt = '---RECEIPT---\n'
-            for item in self.cart:
-                receipt += f'{item.name}({item.variant})-P{item.price}\n'
-            receipt += f'---------------------\nTOTAL: P{total:.2f}\nPAID:{paid:.2f}\nCHANGE: P{change:.2f}'
+            self.reset_ui()
 
-            messagebox.showinfo('Checkout Complete', receipt)
-
-            self.cart = []
-            self.cart_listbox.delete(0, tk.END)
-            self.total_label.config(text="Total: P0.00")
-            self.payment_entry.delete(0, tk.END)
-            self.search_entry.delete(0, tk.END)
+    def reset_ui(self):
+        # Reset for next customer
+        self.cart = []
+        self.cart_listbox.delete(0, 'end')
+        self.total_label.config(text="Total: P0.00")
+        self.payment_entry.delete(0, 'end')
+        self.search_entry.delete(0, 'end')
