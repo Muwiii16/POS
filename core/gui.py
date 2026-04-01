@@ -43,23 +43,23 @@ class POSapp:
             root, text='CHECKOUT', bg='green', fg='white', command=self.checkout)
         self.checkout_btn.pack(pady=10)
 
-    def find_product(self):
+    def clear_search_results(self):
         for widget in self.variant_frame.winfo_children():
             widget.destroy()
 
-        query = self.search_entry.get().lower()
+    def create_product_button(self, product):
+        button_text = f'{product.name} ({product.variant}) - ₱{product.price:.2f} | Stock: {product.stock}'
+        btn = tk.Button(self.variant_frame, text=button_text,
+                        command=lambda i=product: self.add_to_cart(i))
+        btn.pack(fill='x', pady=2)
 
-        matches = [p for p in inventory.Store_Products if query in p.name.lower()]
-        if not matches:
-            messagebox.showinfo("Not Found", "No product matches.")
-            return
+    def find_product(self):
+        query = self.search_entry.get()
+        results = engine.search_products(query, inventory.Store_Products)
+        self.clear_search_results()
 
-        for item in matches:
-            btn_text = (
-                f'{item.variant} - P{item.price} (Stock: {item.stock})')
-            btn = tk.Button(self.variant_frame, text=btn_text,
-                            command=lambda i=item: self.add_to_cart(i))
-            btn.pack(fill='x', pady=2)
+        for product in results:
+            self.create_product_button(product)
 
     def add_to_cart(self, product):
         if product.stock > 0:

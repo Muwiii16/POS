@@ -1,3 +1,19 @@
+from thefuzz import process
+
+
+def search_products(query, store_products):
+    if not query.strip():
+        return []
+
+    product_names = list(set(item.name for item in store_products))
+
+    matches = process.extract(query, product_names, limit=5)
+    valid_names = [name for name, score in matches if score >= 60]
+
+    results = [item for item in store_products if item.name in valid_names]
+    return results
+
+
 def calculate_totals(cart):
     return sum(item.price for item in cart)
 
