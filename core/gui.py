@@ -158,20 +158,44 @@ class POSapp(ctk.CTk):
         variants = [p for p in self.store_products if p.name == category_name]
 
         ctk.CTkLabel(modal, text=category_name.capitalize(),
-                     font=('Inter', 20, 'bold')).pack(pady=20)
+                     font=('Inter', 22, 'bold')).pack(pady=(20, 5))
+        ctk.CTkLabel(modal, text='Select Variant', font=(
+            'Inter', 12), text_color='grey').pack(pady=(0, 20))
+
+        price_label = ctk.CTkLabel(
+            modal, text=f'₱{variants[0].price:.2f}', font=('Inter', 28, 'bold'))
+        price_label.pack(pady=10)
 
         choice_var = ctk.StringVar(value=variants[0].variant)
+
+        stock_label = ctk.CTkLabel(
+            modal, text=f'Stock: {variants[0].stock}', font=('Inter', 13, 'italic'))
+
+        def update_ui_on_select():
+            selected = next(p for p in variants if p.variant ==
+                            choice_var.get())
+            price_label.configure(text=f'₱{selected.price:.2f}')
+            stock_label.configure(text=f'Stock: {selected.stock}')
+
+            if selected.stock <= 5:
+                stock_label.configure(text_color='red')
+            else:
+                stock_label.configure(text_color='black')
+
         for v in variants:
-            ctk.CTkRadioButton(
-                modal, text=f'{v.variant} (₱{v.price:.2f})', variable=choice_var, value=v.variant).pack(pady=5)
+            ctk.CTkRadioButton(modal, text=v.variant, variable=choice_var, value=v.variant,
+                               command=update_ui_on_select).pack(pady=8, padx=50, anchor='w')
+
+        stock_label.pack(side='bottom', pady=(0, 10))
 
         def add_and_close():
             prod = next(p for p in variants if p.variant == choice_var.get())
             self.add_to_cart(prod)
             modal.destroy()
 
-        ctk.CTkButton(modal, text='Add to Cart', fg_color='green',
-                      command=add_and_close).pack(pady=30)
+        ctk.CTkButton(modal, text='🛒 Add to Cart', height=45, fg_color='#5c6370', hover_color='#4a4f59', font=('Inter', 14, 'bold'),
+                      command=add_and_close).pack(side='bottom', pady=20, padx=40, fill='x')
+        update_ui_on_select()
 
     def setup_cart_view(self):
         self.cart_frame = ctk.CTkFrame(
