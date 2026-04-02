@@ -1,17 +1,149 @@
+import customtkinter as ctk
 import tkinter as tk
 from tkinter import messagebox
 
 
 from core import engine
 
+ctk.set_appearance_mode("light")
+ctk.set_default_color_theme("blue")
 
-class POSapp:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Dad's Store POS")
+
+class POSapp(ctk.CTk):
+    def __init__(self,):
+        super().__init__()
+        self.title("Dad's Store POS")
+        self.geometry("1200x800")
+
         self.cart = []
         self.store_products = engine.load_inventory()
 
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+
+        self.setup_sidebar()
+        self.setup_main_pages()
+        self.setup_cart_view()
+        self.show_page("POS")
+
+    def setup_sidebar(self):
+        self.sidebar = ctk.CTkFrame(self, width=200, corner_radius=0)
+        self.sidebar.grid(row=0, column=0, sticky="nsew")
+
+        ctk.CTkLabel(self.sidebar, text="🏪 POS", font=(
+            'Inter', 20, 'bold')).pack(pady=20)
+
+        self.pos_btn = ctk.CTkButton(
+            self.sidebar, text="POS", command=lambda: self.show_page("POS"))
+        self.pos_btn.pack(pady=10, padx=10)
+
+        self.add_btn = ctk.CTkButton(self.sidebar, text="Add Product", fg_color="transparent",
+                                     text_color='black', command=lambda: self.show_page('add'))
+        self.add_btn.pack(pady=10, padx=10)
+
+    def show_page(self, page):
+        self.pos_page.grid_forget()
+        self.add_page.grid_forget()
+
+        if page == 'POS':
+            self.pos_page.grid(
+                row=0, column=1, sticky="nsew", padx=20, pady=20)
+            self.pos_btn.configure(fg_color='blue')
+            self.add_btn.configure(fg_color='transparent')
+            self.refresh_catalog()
+        else:
+            self.add_page.grid(
+                row=0, column=1, sticky="nsew", padx=20, pady=20)
+            self.add_btn.configure(fg_color='blue')
+            self.pos_btn.configure(fg_color='transparent')
+
+    def setup_main_pages(self):
+        self.pos_page = ctk.CTkFrame(self, fg_color='transparent')
+        self.search_entry = ctk.CTkEntry(
+            self.pos_page, placeholder_text="Search Product...", height=40)
+        self.search_entry.pack(pady=(0, 20), fill='x')
+
+        self.catalog_scroll = ctk.CTkScrollableFrame(
+            self.pos_page, fg_color='transparent')
+        self.catalog_scroll.pack(fill='both', expand=True)
+
+        self.add_page = ctk.CTkFrame(self, fg_color='transparent')
+        ctk.CTkLabel(self.add_page, text="Add New Product").pack(pady=20)
+
+    def refresh_catalog(self):
+        for child in self.catalog_scroll.winfo_children():
+            child.destroy()
+
+        unique_names = sorted(list(set(p.name for p in self.store_products)))
+
+        row, col = 0, 0
+        for name in unique_names:
+            card = ctk.CTkFrame(self.catalog_scroll,
+                                fg_color='white', corner_radius=15)
+            card.grid(row=row, column=col, padx=10, pady=10)
+
+            ctk.CTkLabel(card, text=name.capitalize(), font=(
+                'Inter', 16, 'bold')).pack(pady=20, padx=20)
+            ctk.CTkButton(card, text="Select Options",
+                          command=lambda n=name: self.open_variant_modal(n)).pack(pady=10)
+
+            col += 1
+            if col > 2:
+                col = 0
+                row += 1
+
+    def open_variant_modal(self, category_name):
+        modal = ctk.CTkToplevel(self)
+        modal.geometry("400x500")
+        modal.title(f'Select {category_name}')
+        modal.attributes('-topmost', True)
+
+        variants = [p for p in self.store_products if p.name == category_name]
+
+        ctk.CTkLabel(modal, text=category_name.capitalize(),
+                     font=('Inter', 20, 'bold')).pack(pady=20)
+
+        choice_var = ctk.StringVar(value=variants[0].variant)
+        for v in variants:
+            ctk.CTkRadioButton(
+                modal, text=f'{v.variant} (₱{v.price:.2f})', variable=choice_var, value=v.variant).pack(pady=5)
+
+        def add_and_close():
+            prod = next(p for p in variants if p.variant == choice_var.get())
+            self.add_to_cart(prod)
+            modal.destroy()
+
+        ctk.CTkButton(modal, text='Add to Cart', fg_color='green',
+                      command=add_and_close).pack(pady=30)
+
+    def setup_cart_view(self):
+        self.cart_frame = ctk.CTkFrame(
+            self, width=300, fg_color='white', corner_radius=0)
+        self.cart_frame.grid(row=0, column=2, sticky='nsew')
+
+        ctk.CTkLabel(self.cart_frame, text="🛒 Cart",
+                     font=('Inter', 18, 'bold')).pack(pady=20)
+        self.cart_box = ctk.CTkTextbox(
+            self.cart_frame, fg_color='transparent', font=('Inter', 12))
+        self.cart_box.pack(fill='both', expand=True, padx=10)
+
+        self.total_lbl = ctk.CTkLabel(
+            self.cart_frame, text='Total: ₱0.00', font=('Inter', 20, 'bold'))
+        self.total_lbl.pack(pady=10)
+
+    def add_to_cart(self, product):
+        if product.stock > 0:
+            product.stock -= 1
+            self.cart.append(product)
+            self.cart_box.insert(
+                'end', f'{product.name} ({product.variant}) - ₱{product.price:.2f}\n')
+            total = sum(p.price for p in self.cart)
+            self.total_lbl.configure(text=f'Total: ₱{total:.2f}')
+        else:
+            messagebox.showwarning('Stock', 'Out of Stock!')
+
+
+'''
         self.setup_ui()
         self.bind_shortcuts()
         self.show_catalog()
@@ -157,3 +289,4 @@ class POSapp:
         self.payment_entry.delete(0, 'end')
         self.search_entry.delete(0, 'end')
         self.show_catalog()
+'''
