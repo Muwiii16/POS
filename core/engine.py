@@ -22,6 +22,18 @@ def search_products(query, store_products):
     return results
 
 
+def add_bulk_cart(product, quantity, cart):
+    if product.stock >= quantity:
+        product.stock -= quantity
+        for _ in range(quantity):
+            cart.append(product)
+
+        total = sum(p.price for p in cart)
+        return True, total
+    else:
+        return False, f'Only {product.stock} items available!'
+
+
 def calculate_totals(cart):
     return sum(item.price for item in cart)
 

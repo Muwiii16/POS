@@ -147,10 +147,8 @@ class POSapp(ctk.CTk):
         main_y = self.winfo_y()
         main_width = self.winfo_width()
         main_height = self.winfo_height()
-
         center_x = int(main_x+(main_width/2)-(modal_width/2))
         center_y = int(main_y+(main_height/2)-(modal_height/2))
-
         modal.geometry(f'{modal_width}x{modal_height}+{center_x}+{center_y}')
         modal.attributes('-topmost', True)
         modal.grab_set()
@@ -171,6 +169,25 @@ class POSapp(ctk.CTk):
         stock_label = ctk.CTkLabel(
             modal, text=f'Stock: {variants[0].stock}', font=('Inter', 13, 'italic'))
 
+        qty_frame = ctk.CTkFrame(modal, fg_color='transparent')
+        qty_frame.pack(pady=20)
+
+        ctk.CTkLabel(qty_frame, text='Quantity: ').grid(
+            row=0, column=0, padx=10)
+
+        qty_var = ctk.IntVar(value=1)
+
+        def change_qty(amt):
+            new_val = qty_var.get()+amt
+            if 1 <= new_val <= 99:
+                qty_var.set(new_val)
+        ctk.CTkButton(qty_frame, text='-', width=30,
+                      command=lambda: change_qty(-1)).grid(row=0, column=1)
+        ctk.CTkEntry(qty_frame, textvariable=qty_var, width=50,
+                     justify='center').grid(row=0, column=2, padx=5)
+        ctk.CTkButton(qty_frame, text='+', width=30,
+                      command=lambda: change_qty(+1)).grid(row=0, column=3)
+
         def update_ui_on_select():
             selected = next(p for p in variants if p.variant ==
                             choice_var.get())
@@ -184,14 +201,17 @@ class POSapp(ctk.CTk):
 
         for v in variants:
             ctk.CTkRadioButton(modal, text=v.variant, variable=choice_var, value=v.variant,
-                               command=update_ui_on_select).pack(pady=8, padx=50, anchor='w')
+                               command=update_ui_on_select).pack(pady=5)
 
         stock_label.pack(side='bottom', pady=(0, 10))
 
         def add_and_close():
             prod = next(p for p in variants if p.variant == choice_var.get())
-            self.add_to_cart(prod)
-            modal.destroy()
+            quantity = qty_var.get()
+
+            self.add_to_cart(prod, quantity, parent_win=modal)
+            if prod.stock >= quantity:
+                modal.destroy()
 
         ctk.CTkButton(modal, text='🛒 Add to Cart', height=45, fg_color='#5c6370', hover_color='#4a4f59', font=('Inter', 14, 'bold'),
                       command=add_and_close).pack(side='bottom', pady=20, padx=40, fill='x')
@@ -212,16 +232,18 @@ class POSapp(ctk.CTk):
             self.cart_frame, text='Total: ₱0.00', font=('Inter', 20, 'bold'))
         self.total_lbl.pack(pady=10)
 
-    def add_to_cart(self, product):
-        if product.stock > 0:
-            product.stock -= 1
-            self.cart.append(product)
-            self.cart_box.insert(
-                'end', f'{product.name} ({product.variant}) - ₱{product.price:.2f}\n')
-            total = sum(p.price for p in self.cart)
-            self.total_lbl.configure(text=f'Total: ₱{total:.2f}')
+    def add_to_cart(self, product, quantity=1, parent_win=None):
+        target_parent = parent_win if parent_win else self
+        success, result = engine.add_bulk_cart(product, quantity, self.cart)
+
+        if success:
+            display_text = f'{product.name} ({product.variant}) x{quantity} - ₱{product.price * quantity:.2f}\n'
+            self.cart_box.insert('end', display_text)
+            self.total_lbl.configure(text=f'Total: ₱{result:.2f}')
+
         else:
-            messagebox.showwarning('Stock', 'Out of Stock!')
+            messagebox.showwarning(
+                "Stock Error!", result, parent=target_parent)
 
 
 '''
