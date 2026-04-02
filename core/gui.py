@@ -1,7 +1,5 @@
 import customtkinter as ctk
-import tkinter as tk
 from tkinter import messagebox
-
 
 from core import engine
 
@@ -34,41 +32,97 @@ class POSapp(ctk.CTk):
             'Inter', 20, 'bold')).pack(pady=20)
 
         self.pos_btn = ctk.CTkButton(
-            self.sidebar, text="POS", command=lambda: self.show_page("POS"))
+            self.sidebar, text="POS", fg_color='transparent', text_color='black', command=lambda: self.show_page("POS"))
         self.pos_btn.pack(pady=10, padx=10)
 
+        self.inventory_btn = ctk.CTkButton(self.sidebar, text='Inventory', fg_color='transparent',
+                                           text_color='black', command=lambda: self.show_page("Inventory"))
+        self.inventory_btn.pack(pady=10, padx=10)
+
         self.add_btn = ctk.CTkButton(self.sidebar, text="Add Product", fg_color="transparent",
-                                     text_color='black', command=lambda: self.show_page('add'))
+                                     text_color='black', command=lambda: self.show_page('Add'))
         self.add_btn.pack(pady=10, padx=10)
 
     def show_page(self, page):
         self.pos_page.grid_forget()
         self.add_page.grid_forget()
+        self.inventory_page.grid_forget()
 
-        if page == 'POS':
-            self.pos_page.grid(
-                row=0, column=1, sticky="nsew", padx=20, pady=20)
-            self.pos_btn.configure(fg_color='blue')
-            self.add_btn.configure(fg_color='transparent')
-            self.refresh_catalog()
-        else:
-            self.add_page.grid(
-                row=0, column=1, sticky="nsew", padx=20, pady=20)
-            self.add_btn.configure(fg_color='blue')
-            self.pos_btn.configure(fg_color='transparent')
+        active_color = 'blue'
+        inactive_color = 'grey'
+
+        for btn in [self.pos_btn, self.add_btn, self.inventory_btn]:
+            btn.configure(fg_color=inactive_color, text_color='black')
+
+        match page:
+            case 'POS':
+                self.pos_page.grid(
+                    row=0, column=1, sticky="nsew", padx=20, pady=5)
+                self.pos_btn.configure(
+                    fg_color=active_color, text_color='white')
+                self.refresh_catalog()
+            case 'Inventory':
+                self.inventory_page.grid(
+                    row=0, column=1, sticky="nsew", padx=20, pady=5)
+                self.inventory_btn.configure(
+                    fg_color=active_color, text_color='white')
+                # self.refresh_inventory_table()
+            case 'Add':
+                self.add_page.grid(
+                    row=0, column=1, sticky="nsew", padx=20, pady=5)
+                self.add_btn.configure(
+                    fg_color=active_color, text_color='white')
 
     def setup_main_pages(self):
         self.pos_page = ctk.CTkFrame(self, fg_color='transparent')
         self.search_entry = ctk.CTkEntry(
             self.pos_page, placeholder_text="Search Product...", height=40)
         self.search_entry.pack(pady=(0, 20), fill='x')
+        self.search_entry.bind('<KeyRelease>', self.find_product)
 
         self.catalog_scroll = ctk.CTkScrollableFrame(
             self.pos_page, fg_color='transparent')
         self.catalog_scroll.pack(fill='both', expand=True)
 
+        self.inventory_page = ctk.CTkFrame(self, fg_color='transparent')
+        ctk.CTkLabel(self.inventory_page,
+                     text='Inventory Management').pack(pady=20)
+
         self.add_page = ctk.CTkFrame(self, fg_color='transparent')
         ctk.CTkLabel(self.add_page, text="Add New Product").pack(pady=20)
+
+    def find_product(self, event=None):
+        query = self.search_entry.get().strip().lower()
+
+        for child in self.catalog_scroll.winfo_children():
+            child.destroy()
+
+        if not query:
+            self.refresh_catalog()
+            return
+
+        results = engine.search_products(query, self.store_products)
+
+        unique_names = sorted(list(set(p.name for p in results)))
+
+        row, col = 0, 0
+
+        for name in unique_names:
+            self.create_card(name, row, col)
+            col += 1
+            if col > 2:
+                col = 0
+                row += 1
+
+    def create_card(self, name, row, col):
+        card = ctk.CTkFrame(self.catalog_scroll,
+                            fg_color='white', corner_radius=15)
+        card.grid(row=row, column=col, padx=10, pady=10)
+
+        ctk.CTkLabel(card, text=name.capitalize(), font=(
+            'Inter', 16, 'bold')).pack(pady=20, padx=20)
+        ctk.CTkButton(card, text='Select Options',
+                      command=lambda n=name: self.open_variant_modal(n)).pack(pady=10)
 
     def refresh_catalog(self):
         for child in self.catalog_scroll.winfo_children():
@@ -78,15 +132,7 @@ class POSapp(ctk.CTk):
 
         row, col = 0, 0
         for name in unique_names:
-            card = ctk.CTkFrame(self.catalog_scroll,
-                                fg_color='white', corner_radius=15)
-            card.grid(row=row, column=col, padx=10, pady=10)
-
-            ctk.CTkLabel(card, text=name.capitalize(), font=(
-                'Inter', 16, 'bold')).pack(pady=20, padx=20)
-            ctk.CTkButton(card, text="Select Options",
-                          command=lambda n=name: self.open_variant_modal(n)).pack(pady=10)
-
+            self.create_card(name, row, col)
             col += 1
             if col > 2:
                 col = 0
@@ -94,9 +140,20 @@ class POSapp(ctk.CTk):
 
     def open_variant_modal(self, category_name):
         modal = ctk.CTkToplevel(self)
-        modal.geometry("400x500")
-        modal.title(f'Select {category_name}')
+        modal_width = 400
+        modal_height = 500
+
+        main_x = self.winfo_x()
+        main_y = self.winfo_y()
+        main_width = self.winfo_width()
+        main_height = self.winfo_height()
+
+        center_x = int(main_x+(main_width/2)-(modal_width/2))
+        center_y = int(main_y+(main_height/2)-(modal_height/2))
+
+        modal.geometry(f'{modal_width}x{modal_height}+{center_x}+{center_y}')
         modal.attributes('-topmost', True)
+        modal.grab_set()
 
         variants = [p for p in self.store_products if p.name == category_name]
 
