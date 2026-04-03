@@ -240,7 +240,7 @@ class POSapp(ctk.CTk):
         self.payment_entry = ctk.CTkEntry(
             payment_frame, placeholder_text='0.00', justify='center')
         self.payment_entry.pack(pady=5, fill='x')
-        self.payment_entry.bind('KeyRelease', self.calculate_change)
+        self.payment_entry.bind('<KeyRelease>', self.calculate_change)
 
         self.change_lbl = ctk.CTkLabel(
             payment_frame, text='Change: ₱0.00', font=('Inter', 16), text_color='green')
@@ -258,6 +258,7 @@ class POSapp(ctk.CTk):
             messagebox.showinfo(
                 'Success', f'Transaction Complete!\nChange: ₱{result:.2f}')
             self.reset()
+
         else:
             messagebox.showerror('Checkout Error', result)
 
