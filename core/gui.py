@@ -16,7 +16,9 @@ class POSapp(ctk.CTk):
         self.cart = []
         self.store_products = engine.load_inventory()
 
+        self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=0, minsize=350)
         self.grid_rowconfigure(0, weight=1)
 
         self.setup_sidebar()
@@ -219,14 +221,15 @@ class POSapp(ctk.CTk):
 
     def setup_cart_view(self):
         self.cart_frame = ctk.CTkFrame(
-            self, width=300, fg_color='white', corner_radius=0)
+            self, width=450, fg_color='white', corner_radius=0)
         self.cart_frame.grid(row=0, column=2, sticky='nsew')
+        self.cart_frame.grid_propagate(False)
 
         ctk.CTkLabel(self.cart_frame, text="🛒 Cart",
                      font=('Inter', 18, 'bold')).pack(pady=20)
-        self.cart_box = ctk.CTkTextbox(
-            self.cart_frame, fg_color='transparent', font=('Inter', 12))
-        self.cart_box.pack(fill='both', expand=True, padx=10)
+        self.cart_items_frame = ctk.CTkScrollableFrame(
+            self.cart_frame, fg_color='transparent', height=400)
+        self.cart_items_frame.pack(fill='both', expand=True, padx=2)
 
         payment_frame = ctk.CTkFrame(self.cart_frame, fg_color='transparent')
         payment_frame.pack(pady=5)
@@ -264,7 +267,9 @@ class POSapp(ctk.CTk):
 
     def reset(self):
         self.cart = []
-        self.cart_box.delete('1.0', 'end')
+        for child in self.cart_items_frame.winfo_children():
+            child.destroy()
+
         self.payment_entry.delete(0, 'end')
         self.total_lbl.configure(text='Total: ₱0.00')
         self.change_lbl.configure(text='Change: ₱0.00', text_color='green')
@@ -291,13 +296,66 @@ class POSapp(ctk.CTk):
         success, result = engine.add_bulk_cart(product, quantity, self.cart)
 
         if success:
-            display_text = f'{product.name} ({product.variant}) x{quantity} - ₱{product.price * quantity:.2f}\n'
-            self.cart_box.insert('end', display_text)
+            self.update_cart_display()
             self.total_lbl.configure(text=f'Total: ₱{result:.2f}')
+            self.calculate_change()
 
         else:
             messagebox.showwarning(
                 "Stock Error!", result, parent=target_parent)
 
+    def update_cart_display(self):
+        for child in self.cart_items_frame.winfo_children():
+            child.destroy()
+
+        grouped_items = {}
+        for item in self.cart:
+            key = (item.name, item.variant)
+            if key not in grouped_items:
+                grouped_items[key] = [item, 0]
+            grouped_items[key][1] += 1
+
+        for (name, variant), (prod, qty) in grouped_items.items():
+            row = ctk.CTkFrame(self.cart_items_frame,
+                               fg_color='#f0f0f0', corner_radius=8)
+            row.pack(fill='x', pady=2, padx=5)
+
+            lbl = ctk.CTkLabel(row, text=f'{name}\n({variant})', font=(
+                'Inter', 16), anchor='w', justify='left')
+            lbl.pack(side='left', padx=10, pady=5, fill='x', expand=True)
+
+            btn_frame = ctk.CTkFrame(row, fg_color='transparent')
+            btn_frame.pack(side='right', padx=5)
+
+            ctk.CTkButton(btn_frame, text='-', width=25, height=25,
+                          command=lambda p=prod: self.remove_one_from_cart(p)).pack(side='left', padx=2)
+            ctk.CTkLabel(btn_frame, text=str(qty), font=(
+                'Inter', 15, 'bold')).pack(side='left', padx=5)
+            ctk.CTkButton(btn_frame, text='+', width=25, height=25,
+                          command=lambda p=prod: self.add_to_cart(p, 1)).pack(side='left', padx=2)
+
+            subtotal = prod.price*qty
+            ctk.CTkLabel(btn_frame, text=f'₱{subtotal:.2f}', font=(
+                'Inter', 16, 'bold'), text_color='#2980b9', width=70, anchor='e').pack(side='left', padx=(10, 5))
+
+            current_total = engine.calculate_totals(self.cart)
+            self.total_lbl.configure(text=f'Total: ₱{current_total:.2f}')
+
+    def remove_one_from_cart(self, product):
+        for i, item in enumerate(self.cart):
+            if item.name == product.name and item.variant == product.variant:
+                self.cart.pop(i)
+                product.stock += 1
+                break
+
+        self.update_cart_display()
+        total = engine.calculate_totals(self.cart)
+        self.total_lbl.configure(text=f'Total: ₱{total:.2f}')
+        self.calculate_change()
+
+
 # Under Construction
 # have to fix the checkout button
+# palakihin cart side
+# palakihin product font sa cart
+# paliitin button ng bawat product
