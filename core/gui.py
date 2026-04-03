@@ -228,9 +228,62 @@ class POSapp(ctk.CTk):
             self.cart_frame, fg_color='transparent', font=('Inter', 12))
         self.cart_box.pack(fill='both', expand=True, padx=10)
 
+        payment_frame = ctk.CTkFrame(self.cart_frame, fg_color='transparent')
+        payment_frame.pack(pady=5)
+
         self.total_lbl = ctk.CTkLabel(
             self.cart_frame, text='Total: ₱0.00', font=('Inter', 20, 'bold'))
         self.total_lbl.pack(pady=10)
+
+        ctk.CTkLabel(payment_frame, text='Payment Amount: ',
+                     font=('Inter', 12)).pack()
+        self.payment_entry = ctk.CTkEntry(
+            payment_frame, placeholder_text='0.00', justify='center')
+        self.payment_entry.pack(pady=5, fill='x')
+        self.payment_entry.bind('KeyRelease', self.calculate_change)
+
+        self.change_lbl = ctk.CTkLabel(
+            payment_frame, text='Change: ₱0.00', font=('Inter', 16), text_color='green')
+        self.change_lbl.pack(pady=5)
+
+        self.checkout_btn = ctk.CTkButton(self.cart_frame, text='COMPLETE CHECKOUT', height=40, fg_color='#2ecc71', font=(
+            'Inter', 14, 'bold'), command=self.process_checkout)
+        self.checkout_btn.pack(pady=20, padx=20, fill='x')
+
+    def process_checkout(self):
+        payment_amount = self.payment_entry.get()
+        success, total, result = engine.process_checkout(
+            self.cart, payment_amount)
+        if success:
+            messagebox.showinfo(
+                'Success', f'Transaction Complete!\nChange: ₱{result:.2f}')
+            self.reset()
+        else:
+            messagebox.showerror('Checkout Error', result)
+
+    def reset(self):
+        self.cart = []
+        self.cart_box.delete('1.0', 'end')
+        self.payment_entry.delete(0, 'end')
+        self.total_lbl.configure(text='Total: ₱0.00')
+        self.change_lbl.configure(text='Change: ₱0.00', text_color='green')
+
+    def calculate_change(self, event=None):
+        try:
+            total = engine.calculate_totals(self.cart)
+            payment_text = self.payment_entry.get()
+            payment = float(payment_text) if payment_text else 0
+
+            change = payment-total
+
+            if change >= 0:
+                self.change_lbl.configure(
+                    text=f'Change: ₱{change:.2f}', text_color='green')
+            else:
+                self.change_lbl.configure(
+                    text='Insufficient Amount', text_color='red')
+        except ValueError:
+            self.change_lbl.configure(text='Invalid Amount', text_color='red')
 
     def add_to_cart(self, product, quantity=1, parent_win=None):
         target_parent = parent_win if parent_win else self
@@ -244,3 +297,6 @@ class POSapp(ctk.CTk):
         else:
             messagebox.showwarning(
                 "Stock Error!", result, parent=target_parent)
+
+# Under Construction
+# have to fix the checkout button
