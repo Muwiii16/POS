@@ -1,15 +1,6 @@
 [
     {
         "name": "Pants",
-        "price": 500.0,
-        "stock": 6,
-        "category": "Clothes",
-        "barcode": "1001",
-        "size": "L",
-        "color": "Black"
-    },
-    {
-        "name": "Pants",
         "price": 650.0,
         "stock": 4,
         "category": "Clothes",

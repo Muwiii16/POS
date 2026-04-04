@@ -96,6 +96,12 @@ class POSapp(ctk.CTk):
         self.inventory_page = ctk.CTkFrame(self, fg_color='transparent')
         ctk.CTkLabel(self.inventory_page,
                      text='Inventory Management', font=('Inter', 24, 'bold')).pack(pady=20)
+
+        self.inv_search_entry = ctk.CTkEntry(
+            self.inventory_page, placeholder_text='Search inventory by name...', height=40)
+        self.inv_search_entry.pack(pady=(0, 10), padx=20, fill='x')
+        self.inv_search_entry.bind('<KeyRelease>', self.find_inventory_item)
+
         self.inventory_scroll = ctk.CTkScrollableFrame(
             self.inventory_page, fg_color='white')
         self.inventory_scroll.pack(fill='both', expand=True, padx=20, pady=10)
@@ -383,7 +389,9 @@ class POSapp(ctk.CTk):
             self.update_cart_display()
             self.calculate_change
 
-    def refresh_inventory_table(self):
+    def refresh_inventory_table(self, products_to_show=None):
+        display_list = products_to_show if products_to_show is not None else self.store_products
+
         for child in self.inventory_scroll.winfo_children():
             child.destroy()
 
@@ -396,7 +404,7 @@ class POSapp(ctk.CTk):
             ctk.CTkLabel(header_frame, text=text, width=width, font=(
                 'Inter', 12, 'bold')).pack(side='left', padx=10)
 
-        for product in self.store_products:
+        for product in display_list:
             row = ctk.CTkFrame(self.inventory_scroll, fg_color='transparent')
             row.pack(fill='x', pady=2)
 
@@ -463,6 +471,14 @@ class POSapp(ctk.CTk):
         entry.pack(side='right', fill='x', expand=True)
         return entry
 
+    def find_inventory_item(self, event=None):
+        query = self.inv_search_entry.get().strip().lower()
+        if not query:
+            self.refresh_inventory_table()
+            return
+
+        results = engine.search_products(query, self.store_products)
+        self.refresh_inventory_table(results)
 
 # Under Construction
 # still no inventory
