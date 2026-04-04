@@ -157,25 +157,69 @@ class POSapp(ctk.CTk):
 
         variants = [p for p in self.store_products if p.name == category_name]
 
+        variant_types = list(variants[0].metadata.keys())
+
         ctk.CTkLabel(modal, text=category_name.capitalize(),
                      font=('Inter', 22, 'bold')).pack(pady=(20, 5))
-        ctk.CTkLabel(modal, text='Select Variant', font=(
+
+        initial_label = variants[0].get_variant_label()
+
+        ctk.CTkLabel(modal, text='Select Options', font=(
             'Inter', 12), text_color='grey').pack(pady=(0, 20))
 
         price_label = ctk.CTkLabel(
             modal, text=f'₱{variants[0].price:.2f}', font=('Inter', 28, 'bold'))
         price_label.pack(pady=10)
 
-        choice_var = ctk.StringVar(value=variants[0].variant)
+        selection_vars = {}
 
-        stock_label = ctk.CTkLabel(
-            modal, text=f'Stock: {variants[0].stock}', font=('Inter', 13, 'italic'))
+        def get_selected_product():
+            for p in variants:
+                match = True
+                for v_type, v_var in selection_vars.items():
+                    if str(p.metadata.get(v_type)) != v_var.get():
+                        match = False
+                        break
+                if match:
+                    return p
+            return None
 
-        qty_frame = ctk.CTkFrame(modal, fg_color='transparent')
-        qty_frame.pack(pady=20)
+        def update_ui_on_select():
+            selected = get_selected_product()
+            if selected:
+                price_label.configure(text=f'₱{selected.price:.2f}')
+                stock_label.configure(text=f'Stock: {selected.stock}')
+                stock_label.configure(
+                    text_color='red' if selected.stock <= 5 else 'black')
+                add_btn.configure(state='normal')
+            else:
+                price_label.configure(text='---')
+                stock_label.configure(
+                    text='Out of Stock / Unavailable', text_color='grey')
+                add_btn.configure(state='disabled')
 
-        ctk.CTkLabel(qty_frame, text='Quantity: ').grid(
-            row=0, column=0, padx=10)
+        for v_type in variant_types:
+            row_frame = ctk.CTkFrame(modal, fg_color='transparent')
+            row_frame.pack(fill='x', padx=40, pady=10)
+
+            ctk.CTkLabel(row_frame, text=v_type.capitalize(),
+                         font=('Inter', 14, 'bold')).pack(side='left')
+
+            unique_values = sorted(
+                list(set(str(p.metadata.get(v_type)) for p in variants)))
+
+            v_var = ctk.StringVar(value=unique_values[0])
+            selection_vars[v_type] = v_var
+
+            options_frame = ctk.CTkFrame(row_frame, fg_color='transparent')
+            options_frame.pack(side='right')
+
+            for val in unique_values:
+                ctk.CTkRadioButton(options_frame, text=val, variable=v_var, value=val,
+                                   command=update_ui_on_select).pack(side='left', padx=5)
+
+        qty_section = ctk.CTkFrame(modal, fg_color='#f2f2f2', corner_radius=10)
+        qty_section.pack(pady=20, padx=40, fill='x')
 
         qty_var = ctk.IntVar(value=1)
 
@@ -183,40 +227,32 @@ class POSapp(ctk.CTk):
             new_val = qty_var.get()+amt
             if 1 <= new_val <= 99:
                 qty_var.set(new_val)
-        ctk.CTkButton(qty_frame, text='-', width=30,
-                      command=lambda: change_qty(-1)).grid(row=0, column=1)
-        ctk.CTkEntry(qty_frame, textvariable=qty_var, width=50,
-                     justify='center').grid(row=0, column=2, padx=5)
-        ctk.CTkButton(qty_frame, text='+', width=30,
-                      command=lambda: change_qty(+1)).grid(row=0, column=3)
 
-        def update_ui_on_select():
-            selected = next(p for p in variants if p.variant ==
-                            choice_var.get())
-            price_label.configure(text=f'₱{selected.price:.2f}')
-            stock_label.configure(text=f'Stock: {selected.stock}')
+        qty_control = ctk.CTkFrame(qty_section, fg_color='transparent')
+        qty_control.pack(pady=10)
 
-            if selected.stock <= 5:
-                stock_label.configure(text_color='red')
-            else:
-                stock_label.configure(text_color='black')
+        ctk.CTkButton(qty_control, text='-', width=35,
+                      command=lambda: change_qty(-1)).pack(side='left', padx=5)
+        ctk.CTkEntry(qty_control, textvariable=qty_var, width=50,
+                     justify='center').pack(side='left', padx=5)
+        ctk.CTkButton(qty_control, text='+', width=35,
+                      command=lambda: change_qty(1)).pack(side='left', padx=5)
 
-        for v in variants:
-            ctk.CTkRadioButton(modal, text=v.variant, variable=choice_var, value=v.variant,
-                               command=update_ui_on_select).pack(pady=5)
-
-        stock_label.pack(side='bottom', pady=(0, 10))
+        stock_label = ctk.CTkLabel(
+            modal, text='', font=('Inter', 13, 'italic'))
+        stock_label.pack()
 
         def add_and_close():
-            prod = next(p for p in variants if p.variant == choice_var.get())
-            quantity = qty_var.get()
+            prod = get_selected_product()
 
-            self.add_to_cart(prod, quantity, parent_win=modal)
-            if prod.stock >= quantity:
+            if prod:
+                self.add_to_cart(prod, qty_var.get(), parent_win=modal)
                 modal.destroy()
 
-        ctk.CTkButton(modal, text='🛒 Add to Cart', height=45, fg_color='#5c6370', hover_color='#4a4f59', font=('Inter', 14, 'bold'),
-                      command=add_and_close).pack(side='bottom', pady=20, padx=40, fill='x')
+        add_btn = ctk.CTkButton(modal, text='🛒 Add to Cart', height=50, fg_color='#5c6370',
+                                hover_color='#4a4f59', font=('Inter', 16, 'bold'), command=add_and_close)
+        add_btn.pack(side='bottom', pady=30, padx=40, fill='x')
+
         update_ui_on_select()
 
     def setup_cart_view(self):
@@ -306,12 +342,12 @@ class POSapp(ctk.CTk):
 
         grouped_items = engine.get_grouped_cart(self.cart)
 
-        for (name, variant), (prod, qty) in grouped_items.items():
+        for (name, variant_label), (prod, qty) in grouped_items.items():
             row = ctk.CTkFrame(self.cart_items_frame,
                                fg_color='#f0f0f0', corner_radius=8)
             row.pack(fill='x', pady=2, padx=5)
 
-            lbl = ctk.CTkLabel(row, text=f'{name}\n({variant})', font=(
+            lbl = ctk.CTkLabel(row, text=f'{name}\n({variant_label})', font=(
                 'Inter', 16), anchor='w', justify='left')
             lbl.pack(side='left', padx=10, pady=5, fill='x', expand=True)
 
@@ -339,7 +375,5 @@ class POSapp(ctk.CTk):
 
 
 # Under Construction
-# have to fix the checkout button
-# palakihin cart side
-# palakihin product font sa cart
-# paliitin button ng bawat product
+# still no inventory
+# still no Add product

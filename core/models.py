@@ -1,14 +1,21 @@
 # Blueprint for each classes
 class Product:
-    def __init__(self, name, variant, price, stock, barcode):
+    def __init__(self, name, price, stock, category, barcode, **kwargs):
         self.name = name
-        self.variant = variant
-        self.price = price
-        self.stock = stock
+        self.price = float(price)
+        self.stock = int(stock)
+        self.category = category
         self.barcode = barcode
 
+        self.metadata = kwargs
+
+    def get_variant_label(self):
+        if not self.metadata:
+            return 'Standard'
+        return ' - '.join(str(v) for v in self.metadata.values())
+
     def __str__(self):
-        return f"Product: {self.name} | Type: {self.variant} | Price: {self.price}"
+        return f"Product: {self.name} | Type: {self.get_variant_label()} | Price: {self.price}"
 
 
 class CartItems:

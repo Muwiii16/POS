@@ -37,7 +37,7 @@ def add_bulk_cart(product, quantity, cart):
 def get_grouped_cart(cart):
     grouped = {}
     for item in cart:
-        key = (item.name, item.variant)
+        key = (item.name, item.get_variant_label())
         if key not in grouped:
             grouped[key] = [item, 0]
         grouped[key][1] += 1
@@ -46,7 +46,7 @@ def get_grouped_cart(cart):
 
 def remove_item_from_cart(product, cart):
     for i, item in enumerate(cart):
-        if item.name == product.name and item.variant == product.variant:
+        if item.name == product.name and item.get_variant_label() == product.get_variant_label():
             cart.pop(i)
             product.stock += 1
             return True
@@ -94,10 +94,11 @@ def process_checkout(cart, amount_paid, store_products):
 
 
 def generate_receipt_text(cart, total, paid, change):
-    receipt = '---RECEIPT---\n'
-    for item in cart:
-        receipt += f'{item.name} ({item.variant}) - ₱{item.price:.2f}\n'
-    receipt += f'---------------------\n'
+    receipt = '------------RECEIPT------------\n'
+    grouped = get_grouped_cart(cart)
+    for (name, variant_label), (prod, qty) in grouped.items():
+        receipt += f'{qty}x {name} ({variant_label}) - ₱{prod.price*qty:.2f}\n'
+    receipt += f'-------------------------------\n'
     receipt += f'TOTAL: ₱{total:.2f}\n'
     receipt += f'PAID: ₱{paid:.2f}\n'
     receipt += f'CHANGE: ₱{change:.2f}'
@@ -118,7 +119,7 @@ def log_sale(cart, total, paid, change):
                             'Total', 'Amount Paid'])
 
         item_summary = ' | '.join(
-            f'{item.name}({item.variant})' for item in cart)
+            f'{item.name}({item.get_variant_label()})' for item in cart)
 
         writer.writerow(
             [now, item_summary, f'{total:.2f}', f'{paid:.2f}'])
@@ -133,6 +134,17 @@ def load_inventory():
 
 
 def save_inventory(products):
-    data = [vars(p) for p in products]
+    data = []
+    for p in products:
+        item_dict = {
+            "name": p.name,
+            "price": p.price,
+            "stock": p.stock,
+            "category": p.category,
+            "barcode": p.barcode
+        }
+        item_dict.update(p.metadata)
+        data.append(item_dict)
+
     with open(DATA_FILE, 'w') as f:
         json.dump(data, f, indent=4)

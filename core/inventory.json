@@ -1,23 +1,35 @@
 [
     {
         "name": "Pants",
-        "variant": "Small",
-        "price": 500,
+        "price": 500.0,
         "stock": 7,
-        "barcode": "1001"
+        "category": "Clothes",
+        "barcode": "1001",
+        "size": "L",
+        "color": "Black"
     },
     {
         "name": "Pants",
-        "variant": "Medium",
-        "price": 650,
+        "price": 650.0,
         "stock": 4,
-        "barcode": "1002"
+        "category": "Clothes",
+        "barcode": "1002",
+        "size": "S",
+        "color": "Blue"
     },
     {
         "name": "Notebook",
-        "variant": "80L",
-        "price": 30,
-        "stock": 80,
+        "price": 30.0,
+        "stock": 77,
+        "category": "School Supplies",
         "barcode": "2001"
+    },
+    {
+        "name": "iPhone Case",
+        "price": 150.0,
+        "stock": 5,
+        "category": "Accessories",
+        "barcode": "3001",
+        "model": "iPhone 15"
     }
 ]
