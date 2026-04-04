@@ -35,6 +35,7 @@ w_name = int(total_w * 0.20)    # 20% width
 w_vars = int(total_w * 0.40)    # 40% width
 w_price = int(total_w * 0.15)   # 15% width
 w_stock = int(total_w * 0.10)   # 10% width
+```
 
 ### Installation
 1.  **Clone the repository**:
