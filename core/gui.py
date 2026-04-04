@@ -102,6 +102,16 @@ class POSapp(ctk.CTk):
         self.inv_search_entry.pack(pady=(0, 10), padx=20, fill='x')
         self.inv_search_entry.bind('<KeyRelease>', self.find_inventory_item)
 
+        ctrl_frame = ctk.CTkFrame(self.inventory_page, fg_color='transparent')
+        ctrl_frame.pack(pady=5, padx=20, fill='x')
+
+        self.undo_btn = ctk.CTkButton(
+            ctrl_frame, text='↩️ Undo', width=100, command=self.handle_undo)
+        self.undo_btn.pack(side='left', padx=5)
+        self.redo_btn = ctk.CTkButton(
+            ctrl_frame, text='↪️ Redo', width=100, command=self.handle_redo)
+        self.redo_btn.pack(side='left', padx=5)
+
         self.inventory_scroll = ctk.CTkScrollableFrame(
             self.inventory_page, fg_color='white')
         self.inventory_scroll.pack(fill='both', expand=True, padx=20, pady=10)
@@ -427,6 +437,7 @@ class POSapp(ctk.CTk):
 
     def confirm_delete(self, product):
         if messagebox.askyesno('Delete', f'Are you sure you want to delete {product.name} ({product.get_variant_label()})?'):
+            engine.history.save_state(self.store_products)
             if engine.delete_product(product, self.store_products):
                 self.refresh_inventory_table()
 
@@ -446,7 +457,9 @@ class POSapp(ctk.CTk):
             modal, 'Stock', str(product.stock))
 
         def save_changes():
+
             try:
+                engine.history.save_state(self.store_products)
                 product.name = name_entry.get()
                 product.price = float(price_entry.get())
                 product.stock = int(stock_entry.get())
@@ -480,6 +493,23 @@ class POSapp(ctk.CTk):
         results = engine.search_products(query, self.store_products)
         self.refresh_inventory_table(results)
 
+    def handle_undo(self):
+        prev_state = engine.history.undo(self.store_products)
+        if prev_state is not None:
+            self.store_products = prev_state
+            engine.save_inventory(self.store_products)
+            self.refresh_inventory_table()
+        else:
+            messagebox.showinfo('Unfo', 'No more actios to undo.')
+
+    def handle_redo(self):
+        next_state = engine.history.redo(self.store_products)
+        if next_state is not None:
+            self.store_products = next_state
+            engine.save_inventory(self.store_products)
+            self.refresh_inventory_table()
+        else:
+            messagebox.showinfo('Redo', 'No more action to redo.')
 # Under Construction
 # still no inventory
 # still no Add product

@@ -2,6 +2,7 @@ import json
 import csv
 from datetime import datetime
 import os
+import copy
 
 from thefuzz import process
 from . models import Product
@@ -156,3 +157,28 @@ def delete_product(product_to_remove, store_products):
         save_inventory(store_products)
         return True
     return False
+
+
+class InventoryHistory:
+    def __init__(self):
+        self.undo_stack = []
+        self.redo_stack = []
+
+    def save_state(self, products):
+        self.undo_stack.append(copy.deepcopy(products))
+        self.redo_stack.clear()
+
+    def undo(self, current_products):
+        if not self.undo_stack:
+            return None
+        self.redo_stack.append(copy.deepcopy(current_products))
+        return self.undo_stack.pop()
+
+    def redo(self, current_products):
+        if not self.redo_stack:
+            return None
+        self.undo_stack.append(copy.deepcopy(current_products))
+        return self.redo_stack.pop()
+
+
+history = InventoryHistory()
