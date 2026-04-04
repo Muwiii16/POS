@@ -195,7 +195,7 @@ class POSapp(ctk.CTk):
 
     def open_variant_modal(self, category_name):
         modal = ctk.CTkToplevel(self)
-        modal_width = 700
+        modal_width = 600
         modal_height = 600
 
         main_x = self.winfo_x()
@@ -212,7 +212,7 @@ class POSapp(ctk.CTk):
 
         scroll_container = ctk.CTkScrollableFrame(
             modal, fg_color="transparent", width=modal_width-20)
-        scroll_container.pack(fill="both", expand=True, padx=5, pady=(0, 80))
+        scroll_container.pack(fill="both", expand=True, padx=5, pady=(0, 15))
 
         all_keys = []
         for p in variants:
@@ -261,26 +261,32 @@ class POSapp(ctk.CTk):
 
         for v_type in variant_types:
             row_frame = ctk.CTkFrame(scroll_container, fg_color='transparent')
-            row_frame.pack(fill='x', padx=40, pady=10)
+            row_frame.pack(fill='x', padx=40, pady=15)
 
             ctk.CTkLabel(row_frame, text=v_type.capitalize(),
-                         font=('Inter', 14, 'bold')).pack(side='left')
+                         font=('Inter', 14, 'bold')).pack(side='left', anchor='n', pady=5)
 
             unique_values = sorted(
                 list(set(str(p.metadata.get(v_type)) for p in variants if p.metadata.get(v_type) and str(p.metadata.get(v_type)).lower() != 'none')))
 
             if not unique_values:
-                ConnectionRefusedError
+                continue
 
             v_var = ctk.StringVar(value=unique_values[0])
             selection_vars[v_type] = v_var
 
             options_frame = ctk.CTkFrame(row_frame, fg_color='transparent')
-            options_frame.pack(side='right')
+            options_frame.pack(side='left', fill='both',
+                               expand=True, padx=(20, 0))
 
-            for val in unique_values:
-                ctk.CTkRadioButton(options_frame, text=val, variable=v_var, value=val,
-                                   command=update_ui_on_select).pack(side='left', padx=5)
+            max_columns = 3
+
+            for index, val in enumerate(unique_values):
+                row_num = index // max_columns
+                col_num = index % max_columns
+
+                ctk.CTkRadioButton(options_frame, text=val, variable=v_var, value=val, radiobutton_width=18, radiobutton_height=18,
+                                   command=update_ui_on_select).grid(row=row_num, column=col_num, padx=10, pady=5, sticky='w')
 
         qty_section = ctk.CTkFrame(
             scroll_container, fg_color='#f2f2f2', corner_radius=10)
@@ -444,6 +450,12 @@ class POSapp(ctk.CTk):
         for child in self.inventory_scroll.winfo_children():
             child.destroy()
 
+        grouped = {}
+        for p in display_list:
+            if p.name not in grouped:
+                grouped[p.name] = []
+            grouped[p.name].append(p)
+
         header_frame = ctk.CTkFrame(self.inventory_scroll, fg_color='#e0e0e0')
         header_frame.pack(fill='x', pady=5)
         headers = ['Name', 'Variant', 'Price', 'Stock', 'Actions']
@@ -453,26 +465,30 @@ class POSapp(ctk.CTk):
             ctk.CTkLabel(header_frame, text=text, width=width, font=(
                 'Inter', 12, 'bold')).pack(side='left', padx=10)
 
-        for product in display_list:
+        for name, items in grouped.items():
             row = ctk.CTkFrame(self.inventory_scroll, fg_color='transparent')
             row.pack(fill='x', pady=2)
 
-            ctk.CTkLabel(row, text=product.name, width=200,
-                         anchor='w').pack(side='left', padx=10)
-            ctk.CTkLabel(row, text=product.get_variant_label(),
-                         width=200, anchor='w').pack(side='left', padx=10)
-            ctk.CTkLabel(row, text=f'₱{product.price:.2f}', width=100).pack(
+            ctk.CTkLabel(row, text=name, width=180,
+                         anchor='w', font=('Inter', 13, 'bold')).pack(side='left', padx=10)
+
+            variants_str = ', '.join([p.get_variant_label() for p in items])
+            ctk.CTkLabel(row, text=variants_str,
+                         width=250, anchor='w', font=('Inter', 11), text_color='grey').pack(side='left', padx=10)
+
+            prices = [p.price for p in items]
+            min_p, max_p = min(prices), max(prices)
+            prices_text = f'₱{min_p:.2f}' if min_p == max_p else f'₱{min_p:.2f}-₱{max_p:.2f}'
+            ctk.CTkLabel(row, text=prices_text, width=150).pack(
                 side='left', padx=10)
-            ctk.CTkLabel(row, text=str(product.stock),
-                         width=100).pack(side='left', padx=10)
 
-            btn_frame = ctk.CTkFrame(row, fg_color='transparent')
-            btn_frame.pack(side='left', padx=10)
+            total_stock = sum(p.stock for p in items)
+            stock_color = 'red' if total_stock < 6 else 'black'
+            ctk.CTkLabel(row, text=str(total_stock),
+                         width=100, text_color=stock_color, font=('Inter', 12, 'bold')).pack(side='left', padx=10)
 
-            ctk.CTkButton(btn_frame, text='Edit', width=60, fg_color='#3498db',
-                          command=lambda p=product: self.open_edit_modal(p)).pack(side='left', padx=5)
-            ctk.CTkButton(btn_frame, text='Delete', width=60, fg_color='#e74c3c',
-                          command=lambda p=product: self.confirm_delete(p)).pack(side='left', padx=5)
+            ctk.CTkButton(row, text='Manage', width=70, height=25, fg_color='#34495e',
+                          command=lambda n=name: self.filter_inventory_by_name(n)).pack(side='right', padx=10)
 
     def confirm_delete(self, product):
         if messagebox.askyesno('Delete', f'Are you sure you want to delete {product.name} ({product.get_variant_label()})?'):
@@ -620,6 +636,33 @@ class POSapp(ctk.CTk):
             messagebox.showerror('Error', 'Price and Stock must be numbers!')
             return
 
+    def filter_inventory_by_name(self, name):
+        results = [p for p in self.store_products if p.name == name]
+
+        for child in self.inventory_scroll.winfo_children():
+            child.destroy()
+
+        back_btn = ctk.CTkButton(self.inventory_scroll, text='← Back to All Products',
+                                 fg_color='transparent', text_color='blue', command=self.refresh_inventory_table)
+        back_btn.pack(anchor='w', padx=10, pady=10)
+        for product in results:
+            row = ctk.CTkFrame(self.inventory_scroll, fg_color='transparent')
+            row.pack(fill='x', pady=2)
+
+            ctk.CTkLabel(row, text=product.get_variant_label(),
+                         width=250).pack(side='left', padx=10)
+            ctk.CTkLabel(row, text=f'₱{product.price:.2f}', width=100).pack(
+                side='left', padx=10)
+            ctk.CTkLabel(row, text=str(product.stock),
+                         width=100).pack(side='left', padx=10)
+
+            btn_frame = ctk.CTkFrame(row, fg_color='transparent')
+            btn_frame.pack(side='left', padx=10)
+
+            ctk.CTkButton(btn_frame, text='Edit', width=60, fg_color='#3498db',
+                          command=lambda p=product: self.open_edit_modal(p)).pack(side='left', padx=5)
+            ctk.CTkButton(btn_frame, text='Delete', width=60, fg_color='#e74c3c',
+                          command=lambda p=product: self.confirm_delete(p)).pack(side='left', padx=5)
 
 # Under Construction
 # still no inventory

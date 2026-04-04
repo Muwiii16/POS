@@ -207,9 +207,9 @@ def add_new_product(product_data, store_products):
     for k, v in product_data.items():
         if k not in core_fields:
             key_str = str(k).strip().lower()
-            val_str = str(v).strip().capitalize()
+            val_str = str(v).strip()
             if key_str and val_str and val_str.lower() != 'none':
-                display_metadata[key_str.capitalize()] = val_str.capitalize()
+                display_metadata[key_str] = val_str.capitalize()
 
     product_data['name'] = product_data['name'].strip().title()
     product_data['category'] = product_data['category'].strip().capitalize()

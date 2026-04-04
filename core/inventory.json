@@ -68,5 +68,23 @@
         "barcode": "1004",
         "color": "Green",
         "size": "X-small"
+    },
+    {
+        "name": "Pants",
+        "price": 460.0,
+        "stock": 16,
+        "category": "Clothes",
+        "barcode": "1005",
+        "size": "Large",
+        "color": "Yellow"
+    },
+    {
+        "name": "Pants",
+        "price": 740.0,
+        "stock": 34,
+        "category": "Clothes",
+        "barcode": "1006",
+        "size": "X-large",
+        "color": "Blue"
     }
 ]
