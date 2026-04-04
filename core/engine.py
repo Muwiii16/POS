@@ -38,7 +38,7 @@ def calculate_totals(cart):
     return sum(item.price for item in cart)
 
 
-def process_checkout(cart, amount_paid):
+def process_checkout(cart, amount_paid, store_products):
     if not cart:
         return False, 0, "Your cart is empty!"
     if not amount_paid.strip():
@@ -55,6 +55,10 @@ def process_checkout(cart, amount_paid):
         return False, total, f"Insufficient funds. Need ₱{total-paid:.2f} more."
 
     change = paid-total
+
+    log_sale(cart, total, paid, change)
+    save_inventory(store_products)
+
     return True, total, change
 
 
@@ -69,7 +73,7 @@ def generate_receipt_text(cart, total, paid, change):
     return receipt
 
 
-def log_sale(cart, total, amount_paid, change):
+def log_sale(cart, total, paid, change):
     file_path = 'sales_log.csv'
     file_exists = os.path.isfile(file_path)
 
@@ -86,7 +90,7 @@ def log_sale(cart, total, amount_paid, change):
             f'{item.name}({item.variant})' for item in cart)
 
         writer.writerow(
-            [now, item_summary, f'{total:.2f}', f'{amount_paid:.2f}'])
+            [now, item_summary, f'{total:.2f}', f'{paid:.2f}'])
 
 
 def load_inventory():

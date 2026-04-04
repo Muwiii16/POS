@@ -256,7 +256,7 @@ class POSapp(ctk.CTk):
     def process_checkout(self):
         payment_amount = self.payment_entry.get()
         success, total, result = engine.process_checkout(
-            self.cart, payment_amount)
+            self.cart, payment_amount, self.store_products)
         if success:
             messagebox.showinfo(
                 'Success', f'Transaction Complete!\nChange: ₱{result:.2f}')
