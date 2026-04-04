@@ -5,16 +5,16 @@
         "stock": 6,
         "category": "Clothes",
         "barcode": "1001",
-        "size": "L",
+        "size": "Large",
         "color": "Black"
     },
     {
         "name": "Pants",
         "price": 650.0,
-        "stock": 4,
+        "stock": 0,
         "category": "Clothes",
         "barcode": "1002",
-        "size": "S",
+        "size": "Small",
         "color": "Blue"
     },
     {
@@ -22,7 +22,8 @@
         "price": 30.0,
         "stock": 72,
         "category": "School Supplies",
-        "barcode": "2001"
+        "barcode": "2001",
+        "size": "80-leaves"
     },
     {
         "name": "iPhone Case",
@@ -31,5 +32,41 @@
         "category": "Accessories",
         "barcode": "3001",
         "model": "iPhone 15"
+    },
+    {
+        "name": "Ballpen",
+        "price": 10.0,
+        "stock": 99,
+        "category": "School Supplies",
+        "barcode": "4001",
+        "brand": "Panda",
+        "color": "Black"
+    },
+    {
+        "name": "Ballpen",
+        "price": 10.0,
+        "stock": 99,
+        "category": "School Supplies",
+        "barcode": "4002",
+        "brand": "Panda",
+        "color": "Blue"
+    },
+    {
+        "name": "Pants",
+        "price": 740.0,
+        "stock": 42,
+        "category": "Clothes",
+        "barcode": "1003",
+        "size": "Medium",
+        "color": "Red"
+    },
+    {
+        "name": "Pants",
+        "price": 560.0,
+        "stock": 62,
+        "category": "Clothes",
+        "barcode": "1004",
+        "color": "Green",
+        "size": "X-small"
     }
 ]

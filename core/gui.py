@@ -83,6 +83,7 @@ class POSapp(ctk.CTk):
                     fg_color=active_color, text_color='white')
 
     def setup_main_pages(self):
+        # POS page
         self.pos_page = ctk.CTkFrame(self, fg_color='transparent')
         self.search_entry = ctk.CTkEntry(
             self.pos_page, placeholder_text="Search Product...", height=40)
@@ -92,7 +93,8 @@ class POSapp(ctk.CTk):
         self.catalog_scroll = ctk.CTkScrollableFrame(
             self.pos_page, fg_color='transparent')
         self.catalog_scroll.pack(fill='both', expand=True)
-
+        # POS page
+        # Inventory Management page
         self.inventory_page = ctk.CTkFrame(self, fg_color='transparent')
         ctk.CTkLabel(self.inventory_page,
                      text='Inventory Management', font=('Inter', 24, 'bold')).pack(pady=20)
@@ -115,9 +117,34 @@ class POSapp(ctk.CTk):
         self.inventory_scroll = ctk.CTkScrollableFrame(
             self.inventory_page, fg_color='white')
         self.inventory_scroll.pack(fill='both', expand=True, padx=20, pady=10)
+        # Inventory Management page
+        # Add Products page
+        self.add_page = ctk.CTkScrollableFrame(self, fg_color='transparent')
+        ctk.CTkLabel(self.add_page, text="Add New Product",
+                     font=('Inter', 24, 'bold')).pack(pady=20)
 
-        self.add_page = ctk.CTkFrame(self, fg_color='transparent')
-        ctk.CTkLabel(self.add_page, text="Add New Product").pack(pady=20)
+        form_frame = ctk.CTkFrame(
+            self.add_page, fg_color='white', corner_radius=15)
+        form_frame.pack(pady=10, padx=50, fill='x')
+
+        self.new_name = self.create_input_row(form_frame, 'Product Name')
+        self.new_price = self.create_input_row(form_frame, 'Price (₱)')
+        self.new_stock = self.create_input_row(form_frame, 'Initial Stock')
+        self.new_category = self.create_input_row(form_frame, 'Category')
+        self.new_barcode = self.create_input_row(form_frame, 'Barcode')
+
+        ctk.CTkLabel(form_frame, text='Extra Details (Variants)',
+                     font=('Inter', 14, 'bold')).pack(pady=(20, 10))
+
+        self.metadata_container = ctk.CTkFrame(
+            form_frame, fg_color='transparent')
+        self.metadata_container.pack(fill='x', padx=20)
+        self.metadata_rows = []
+
+        ctk.CTkButton(form_frame, text='+ Add Detail (e.g. Color: Blue)',
+                      fg_color='#34495e', command=self.add_metadata_row).pack(pady=10)
+        ctk.CTkButton(self.add_page, text='📥 Save Product to Inventory', height=50, fg_color='#2ecc71', font=(
+            'Inter', 16, 'bold'), command=self.submit_new_product).pack(pady=30, padx=50, fill='x')
 
     def find_product(self, event=None):
         query = self.search_entry.get().strip().lower()
@@ -168,8 +195,8 @@ class POSapp(ctk.CTk):
 
     def open_variant_modal(self, category_name):
         modal = ctk.CTkToplevel(self)
-        modal_width = 400
-        modal_height = 500
+        modal_width = 700
+        modal_height = 600
 
         main_x = self.winfo_x()
         main_y = self.winfo_y()
@@ -183,18 +210,26 @@ class POSapp(ctk.CTk):
 
         variants = [p for p in self.store_products if p.name == category_name]
 
-        variant_types = list(variants[0].metadata.keys())
+        scroll_container = ctk.CTkScrollableFrame(
+            modal, fg_color="transparent", width=modal_width-20)
+        scroll_container.pack(fill="both", expand=True, padx=5, pady=(0, 80))
 
-        ctk.CTkLabel(modal, text=category_name.capitalize(),
+        all_keys = []
+        for p in variants:
+            for k in p.metadata.keys():
+                if k not in all_keys:
+                    all_keys.append(k)
+
+        variant_types = all_keys
+
+        ctk.CTkLabel(scroll_container, text=category_name.capitalize(),
                      font=('Inter', 22, 'bold')).pack(pady=(20, 5))
 
-        initial_label = variants[0].get_variant_label()
-
-        ctk.CTkLabel(modal, text='Select Options', font=(
+        ctk.CTkLabel(scroll_container, text='Select Options', font=(
             'Inter', 12), text_color='grey').pack(pady=(0, 20))
 
         price_label = ctk.CTkLabel(
-            modal, text=f'₱{variants[0].price:.2f}', font=('Inter', 28, 'bold'))
+            scroll_container, text=f'₱{variants[0].price:.2f}', font=('Inter', 28, 'bold'))
         price_label.pack(pady=10)
 
         selection_vars = {}
@@ -225,14 +260,17 @@ class POSapp(ctk.CTk):
                 add_btn.configure(state='disabled')
 
         for v_type in variant_types:
-            row_frame = ctk.CTkFrame(modal, fg_color='transparent')
+            row_frame = ctk.CTkFrame(scroll_container, fg_color='transparent')
             row_frame.pack(fill='x', padx=40, pady=10)
 
             ctk.CTkLabel(row_frame, text=v_type.capitalize(),
                          font=('Inter', 14, 'bold')).pack(side='left')
 
             unique_values = sorted(
-                list(set(str(p.metadata.get(v_type)) for p in variants)))
+                list(set(str(p.metadata.get(v_type)) for p in variants if p.metadata.get(v_type) and str(p.metadata.get(v_type)).lower() != 'none')))
+
+            if not unique_values:
+                ConnectionRefusedError
 
             v_var = ctk.StringVar(value=unique_values[0])
             selection_vars[v_type] = v_var
@@ -244,7 +282,8 @@ class POSapp(ctk.CTk):
                 ctk.CTkRadioButton(options_frame, text=val, variable=v_var, value=val,
                                    command=update_ui_on_select).pack(side='left', padx=5)
 
-        qty_section = ctk.CTkFrame(modal, fg_color='#f2f2f2', corner_radius=10)
+        qty_section = ctk.CTkFrame(
+            scroll_container, fg_color='#f2f2f2', corner_radius=10)
         qty_section.pack(pady=20, padx=40, fill='x')
 
         qty_var = ctk.IntVar(value=1)
@@ -265,7 +304,7 @@ class POSapp(ctk.CTk):
                       command=lambda: change_qty(1)).pack(side='left', padx=5)
 
         stock_label = ctk.CTkLabel(
-            modal, text='', font=('Inter', 13, 'italic'))
+            scroll_container, text='', font=('Inter', 13, 'italic'))
         stock_label.pack()
 
         def add_and_close():
@@ -510,6 +549,78 @@ class POSapp(ctk.CTk):
             self.refresh_inventory_table()
         else:
             messagebox.showinfo('Redo', 'No more action to redo.')
+
+    def create_input_row(self, parent, label_text):
+        row = ctk.CTkFrame(parent, fg_color='transparent')
+        row.pack(fill='x', padx=20, pady=10)
+        ctk.CTkLabel(row, text=label_text, width=120,
+                     anchor='w').pack(side='left')
+        entry = ctk.CTkEntry(
+            row, placeholder_text=f'Enter {label_text.lower()}...')
+        entry.pack(side='right', fill='x', expand=True)
+        return entry
+
+    def add_metadata_row(self):
+        row = ctk.CTkFrame(self.metadata_container, fg_color='transparent')
+        row.pack(fill='x', pady=5)
+
+        key_entry = ctk.CTkEntry(
+            row, placeholder_text='Field (e.g. Size)', width=120)
+        key_entry.pack(side='left', padx=5)
+
+        val_entry = ctk.CTkEntry(
+            row, placeholder_text='Value (e.g. Large)')
+        val_entry.pack(side='left', padx=5, fill='x', expand=True)
+
+        remove_btn = ctk.CTkButton(row, text='X', width=30, fg_color='#e74c3c',
+                                   command=lambda r=row: self.remove_metadata_row(r))
+        remove_btn.pack(side='right', padx=5)
+
+        self.metadata_rows.append((row, key_entry, val_entry))
+
+    def remove_metadata_row(self, row_frame):
+        self.metadata_rows = [
+            r for r in self.metadata_rows if r[0] != row_frame]
+        row_frame.destroy()
+
+    def submit_new_product(self):
+        try:
+            name = self.new_name.get().strip()
+            if not name:
+                messagebox.showerror('Error', 'Product Name cannot be empty!')
+                return
+            data = {
+                'name': self.new_name.get(),
+                'price': float(self.new_price.get()),
+                'stock': int(self.new_stock.get()),
+                'category': self.new_category.get(),
+                'barcode': self.new_barcode.get()
+            }
+
+            for _, key_ent, val_ent in self.metadata_rows:
+                key = key_ent.get().strip().lower()
+                val = val_ent.get().strip()
+                if key and val:
+                    data[key] = val
+
+            success, msg = engine.add_new_product(data, self.store_products)
+
+            if success:
+                messagebox.showinfo('Success', msg)
+
+                for entry in [self.new_name, self.new_price, self.new_stock, self.new_category, self.new_barcode]:
+                    entry.delete(0, 'end')
+                for row_frame, _, _ in self.metadata_rows:
+                    row_frame.destroy()
+                self.metadata_rows = []
+            else:
+                messagebox.showerror('Error', msg)
+
+        except ValueError:
+            messagebox.showerror('Error', 'Price and Stock must be numbers!')
+            return
+
+
 # Under Construction
 # still no inventory
 # still no Add product

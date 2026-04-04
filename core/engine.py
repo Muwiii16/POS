@@ -182,3 +182,44 @@ class InventoryHistory:
 
 
 history = InventoryHistory()
+
+
+def add_new_product(product_data, store_products):
+    from .models import Product
+
+    core_fields = ['name', 'price', 'stock', 'category', 'barcode']
+    name = product_data.get('name', '').strip().lower()
+    barcode = product_data.get('barcode', '').strip()
+
+    metadata = {k.lower(): str(v).strip().lower()
+                for k, v in product_data.items() if k not in core_fields}
+
+    for existing_prod in store_products:
+        if barcode and existing_prod.barcode == barcode:
+            return False, f'Error: Barcode "{barcode}" is already assigned to {existing_prod.name}.'
+
+        existing_meta_check = {k.lower(): str(v).strip().lower()
+                               for k, v in existing_prod.metadata.items()}
+        if existing_prod.name.lower() == name and existing_meta_check == metadata:
+            return False, f'Error: "{product_data['name']}" with these variants already exists!'
+
+    display_metadata = {}
+    for k, v in product_data.items():
+        if k not in core_fields:
+            key_str = str(k).strip().lower()
+            val_str = str(v).strip().capitalize()
+            if key_str and val_str and val_str.lower() != 'none':
+                display_metadata[key_str.capitalize()] = val_str.capitalize()
+
+    product_data['name'] = product_data['name'].strip().title()
+    product_data['category'] = product_data['category'].strip().capitalize()
+
+    try:
+        constructor_data = {k: product_data[k]
+                            for k in core_fields if k in product_data}
+        new_prod = Product(**constructor_data, **display_metadata)
+        store_products.append(new_prod)
+        save_inventory(store_products)
+        return True, 'Product added successfully!'
+    except Exception as e:
+        return False, f'Failed to add: {str(e)}'
