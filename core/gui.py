@@ -450,44 +450,73 @@ class POSapp(ctk.CTk):
         for child in self.inventory_scroll.winfo_children():
             child.destroy()
 
+        self.inventory_scroll.update_idletasks()
+        current_width = self.inventory_scroll.winfo_width() - 40
+        if current_width < 100:
+            current_width = 800
+
         grouped = {}
         for p in display_list:
             if p.name not in grouped:
                 grouped[p.name] = []
             grouped[p.name].append(p)
 
-        header_frame = ctk.CTkFrame(self.inventory_scroll, fg_color='#e0e0e0')
-        header_frame.pack(fill='x', pady=5)
-        headers = ['Name', 'Variant', 'Price', 'Stock', 'Actions']
-        widths = [200, 200, 100, 100, 200]
+        w_name = int(current_width * 0.20)
+        w_vars = int(current_width * 0.40)
+        w_price = int(current_width * 0.15)
+        w_stock = int(current_width * 0.10)
+        w_button = 100
 
-        for text, width in zip(headers, widths):
-            ctk.CTkLabel(header_frame, text=text, width=width, font=(
-                'Inter', 12, 'bold')).pack(side='left', padx=10)
+        header_frame = ctk.CTkFrame(
+            self.inventory_scroll, fg_color='#e0e0e0', height=40)
+        header_frame.pack(fill='x', padx=10, pady=(0, 5))
+        header_frame.pack_propagate(False)
+
+        ctk.CTkLabel(header_frame, text="Name", width=w_name, anchor='w', font=(
+            'Inter', 12, 'bold')).pack(side='left', padx=10)
+        ctk.CTkLabel(header_frame, text="Variants", width=w_vars, anchor='w', font=(
+            'Inter', 12, 'bold')).pack(side='left', padx=10)
+        ctk.CTkLabel(header_frame, text="Price Range", width=w_price, anchor='center', font=(
+            'Inter', 12, 'bold')).pack(side='left', padx=10)
+        ctk.CTkLabel(header_frame, text="Stock", width=w_stock, anchor='center', font=(
+            'Inter', 12, 'bold')).pack(side='left', padx=10)
+        ctk.CTkLabel(header_frame, text="Action", width=w_button,
+                     font=('Inter', 12, 'bold')).pack(side='right', padx=10)
 
         for name, items in grouped.items():
-            row = ctk.CTkFrame(self.inventory_scroll, fg_color='transparent')
-            row.pack(fill='x', pady=2)
+            row = ctk.CTkFrame(self.inventory_scroll,
+                               fg_color='transparent', height=45)
+            row.pack(fill='x', pady=2, padx=10)
+            row.pack_propagate(False)  # Prevents row from shrinking
 
-            ctk.CTkLabel(row, text=name, width=180,
-                         anchor='w', font=('Inter', 13, 'bold')).pack(side='left', padx=10)
+            # Name
+            ctk.CTkLabel(row, text=name, width=w_name, anchor='w', font=(
+                'Inter', 13, 'bold')).pack(side='left', padx=10)
 
+            # Variants + Truncation
             variants_str = ', '.join([p.get_variant_label() for p in items])
-            ctk.CTkLabel(row, text=variants_str,
-                         width=250, anchor='w', font=('Inter', 11), text_color='grey').pack(side='left', padx=10)
+            # Auto-truncate based on width (approx 10 pixels per char)
+            max_chars = int(w_vars / 8)
+            if len(variants_str) > max_chars:
+                variants_str = variants_str[:max_chars-3] + "..."
 
+            ctk.CTkLabel(row, text=variants_str, width=w_vars, anchor='w', font=(
+                'Inter', 11), text_color='grey').pack(side='left', padx=10)
+
+            # Price
             prices = [p.price for p in items]
             min_p, max_p = min(prices), max(prices)
-            prices_text = f'₱{min_p:.2f}' if min_p == max_p else f'₱{min_p:.2f}-₱{max_p:.2f}'
-            ctk.CTkLabel(row, text=prices_text, width=150).pack(
-                side='left', padx=10)
+            p_text = f'₱{min_p:.2f}' if min_p == max_p else f'₱{min_p:.2f}-₱{max_p:.2f}'
+            ctk.CTkLabel(row, text=p_text, width=w_price,
+                         anchor='center').pack(side='left', padx=10)
 
+            # Stock
             total_stock = sum(p.stock for p in items)
-            stock_color = 'red' if total_stock < 6 else 'black'
-            ctk.CTkLabel(row, text=str(total_stock),
-                         width=100, text_color=stock_color, font=('Inter', 12, 'bold')).pack(side='left', padx=10)
+            ctk.CTkLabel(row, text=str(total_stock), width=w_stock, anchor='center', font=('Inter', 12, 'bold'),
+                         text_color='red' if total_stock < 6 else 'black').pack(side='left', padx=10)
 
-            ctk.CTkButton(row, text='Manage', width=70, height=25, fg_color='#34495e',
+            # Manage Button
+            ctk.CTkButton(row, text='Manage', width=w_button, height=28, fg_color='#34495e',
                           command=lambda n=name: self.filter_inventory_by_name(n)).pack(side='right', padx=10)
 
     def confirm_delete(self, product):
@@ -639,22 +668,28 @@ class POSapp(ctk.CTk):
     def filter_inventory_by_name(self, name):
         results = [p for p in self.store_products if p.name == name]
 
+        results.sort(key=lambda p: p.get_variant_label())
+
         for child in self.inventory_scroll.winfo_children():
             child.destroy()
 
+        w_var = 250
+        w_price = 120
+        w_stock = 80
+
         back_btn = ctk.CTkButton(self.inventory_scroll, text='← Back to All Products',
-                                 fg_color='transparent', text_color='blue', command=self.refresh_inventory_table)
+                                 fg_color='#3498db', text_color='white', command=self.refresh_inventory_table)
         back_btn.pack(anchor='w', padx=10, pady=10)
         for product in results:
             row = ctk.CTkFrame(self.inventory_scroll, fg_color='transparent')
             row.pack(fill='x', pady=2)
 
             ctk.CTkLabel(row, text=product.get_variant_label(),
-                         width=250).pack(side='left', padx=10)
-            ctk.CTkLabel(row, text=f'₱{product.price:.2f}', width=100).pack(
+                         width=w_var).pack(side='left', padx=10)
+            ctk.CTkLabel(row, text=f'₱{product.price:.2f}', width=w_price).pack(
                 side='left', padx=10)
             ctk.CTkLabel(row, text=str(product.stock),
-                         width=100).pack(side='left', padx=10)
+                         width=w_stock).pack(side='left', padx=10)
 
             btn_frame = ctk.CTkFrame(row, fg_color='transparent')
             btn_frame.pack(side='left', padx=10)

@@ -10,9 +10,21 @@ class Product:
         self.metadata = kwargs
 
     def get_variant_label(self):
-        if not self.metadata:
-            return 'Standard'
-        return ' - '.join(str(v) for v in self.metadata.values())
+        priority_keys = ['size', 'color', 'type', 'weight']
+        parts = []
+        for key in priority_keys:
+            val = self.metadata.get(key)
+            if val and str(val).lower() not in ['none', 'null', '']:
+                parts.append(str(val).strip().capitalize())
+
+        other_keys = sorted([k for k in self.metadata.keys()
+                            if k.lower() not in priority_keys])
+        for key in other_keys:
+            val = self.metadata.get(key)
+            if val and str(val).lower() not in ['none', 'null', '']:
+                parts.append(
+                    f'{key.capitalize()}: {str(val).strip().capitalize()}')
+        return ' - '.join(parts) if parts else 'Standard'
 
     def __str__(self):
         return f"Product: {self.name} | Type: {self.get_variant_label()} | Price: {self.price}"
