@@ -2,7 +2,7 @@
     {
         "name": "Pants",
         "price": 500.0,
-        "stock": 7,
+        "stock": 6,
         "category": "Clothes",
         "barcode": "1001",
         "size": "L",
@@ -20,14 +20,14 @@
     {
         "name": "Notebook",
         "price": 30.0,
-        "stock": 77,
+        "stock": 72,
         "category": "School Supplies",
         "barcode": "2001"
     },
     {
         "name": "iPhone Case",
         "price": 150.0,
-        "stock": 5,
+        "stock": 4,
         "category": "Accessories",
         "barcode": "3001",
         "model": "iPhone 15"

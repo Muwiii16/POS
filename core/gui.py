@@ -50,6 +50,13 @@ class POSapp(ctk.CTk):
         self.add_page.grid_forget()
         self.inventory_page.grid_forget()
 
+        if page == 'POS':
+            self.cart_frame.grid(row=0, column=2, sticky='nsew')
+            self.grid_columnconfigure(2, weight=0, minsize=350)
+        else:
+            self.cart_frame.grid_forget()
+            self.grid_columnconfigure(2, weight=0, minsize=0)
+
         active_color = 'blue'
         inactive_color = 'grey'
 
@@ -68,7 +75,7 @@ class POSapp(ctk.CTk):
                     row=0, column=1, sticky="nsew", padx=20, pady=5)
                 self.inventory_btn.configure(
                     fg_color=active_color, text_color='white')
-                # self.refresh_inventory_table()
+                self.refresh_inventory_table()
             case 'Add':
                 self.add_page.grid(
                     row=0, column=1, sticky="nsew", padx=20, pady=5)
@@ -88,7 +95,10 @@ class POSapp(ctk.CTk):
 
         self.inventory_page = ctk.CTkFrame(self, fg_color='transparent')
         ctk.CTkLabel(self.inventory_page,
-                     text='Inventory Management').pack(pady=20)
+                     text='Inventory Management', font=('Inter', 24, 'bold')).pack(pady=20)
+        self.inventory_scroll = ctk.CTkScrollableFrame(
+            self.inventory_page, fg_color='white')
+        self.inventory_scroll.pack(fill='both', expand=True, padx=20, pady=10)
 
         self.add_page = ctk.CTkFrame(self, fg_color='transparent')
         ctk.CTkLabel(self.add_page, text="Add New Product").pack(pady=20)
@@ -372,6 +382,86 @@ class POSapp(ctk.CTk):
         if engine.remove_item_from_cart(product, self.cart):
             self.update_cart_display()
             self.calculate_change
+
+    def refresh_inventory_table(self):
+        for child in self.inventory_scroll.winfo_children():
+            child.destroy()
+
+        header_frame = ctk.CTkFrame(self.inventory_scroll, fg_color='#e0e0e0')
+        header_frame.pack(fill='x', pady=5)
+        headers = ['Name', 'Variant', 'Price', 'Stock', 'Actions']
+        widths = [200, 200, 100, 100, 200]
+
+        for text, width in zip(headers, widths):
+            ctk.CTkLabel(header_frame, text=text, width=width, font=(
+                'Inter', 12, 'bold')).pack(side='left', padx=10)
+
+        for product in self.store_products:
+            row = ctk.CTkFrame(self.inventory_scroll, fg_color='transparent')
+            row.pack(fill='x', pady=2)
+
+            ctk.CTkLabel(row, text=product.name, width=200,
+                         anchor='w').pack(side='left', padx=10)
+            ctk.CTkLabel(row, text=product.get_variant_label(),
+                         width=200, anchor='w').pack(side='left', padx=10)
+            ctk.CTkLabel(row, text=f'₱{product.price:.2f}', width=100).pack(
+                side='left', padx=10)
+            ctk.CTkLabel(row, text=str(product.stock),
+                         width=100).pack(side='left', padx=10)
+
+            btn_frame = ctk.CTkFrame(row, fg_color='transparent')
+            btn_frame.pack(side='left', padx=10)
+
+            ctk.CTkButton(btn_frame, text='Edit', width=60, fg_color='#3498db',
+                          command=lambda p=product: self.open_edit_modal(p)).pack(side='left', padx=5)
+            ctk.CTkButton(btn_frame, text='Delete', width=60, fg_color='#e74c3c',
+                          command=lambda p=product: self.confirm_delete(p)).pack(side='left', padx=5)
+
+    def confirm_delete(self, product):
+        if messagebox.askyesno('Delete', f'Are you sure you want to delete {product.name} ({product.get_variant_label()})?'):
+            if engine.delete_product(product, self.store_products):
+                self.refresh_inventory_table()
+
+    def open_edit_modal(self, product):
+        modal = ctk.CTkToplevel(self)
+        modal.geometry('400x500')
+        modal.title(f'Editing {product.name}')
+        modal.attributes('-topmost', True)
+
+        ctk.CTkLabel(modal, text='Edit Product', font=(
+            'Inter', 20, 'bold')).pack(pady=20)
+
+        name_entry = self.create_edit_field(modal, 'Name', product.name)
+        price_entry = self.create_edit_field(
+            modal, 'Price', str(product.price))
+        stock_entry = self.create_edit_field(
+            modal, 'Stock', str(product.stock))
+
+        def save_changes():
+            try:
+                product.name = name_entry.get()
+                product.price = float(price_entry.get())
+                product.stock = int(stock_entry.get())
+
+                engine.save_inventory(self.store_products)
+                self.refresh_inventory_table()
+                modal.destroy()
+                messagebox.showinfo('Succes', 'Produve updated!')
+            except ValueError:
+                messagebox.showerror('Error', 'Invalid price or stock value.')
+
+        ctk.CTkButton(modal, text='Save Changes', fg_color='#2ecc71',
+                      command=save_changes).pack(pady=30, padx=40, fill='x')
+
+    def create_edit_field(self, parent, label_text, initial_val):
+        frame = ctk.CTkFrame(parent, fg_color='transparent')
+        frame.pack(fill='x', padx=40, pady=5)
+        ctk.CTkLabel(frame, text=label_text, width=80,
+                     anchor='w').pack(side='left')
+        entry = ctk.CTkEntry(frame)
+        entry.insert(0, initial_val)
+        entry.pack(side='right', fill='x', expand=True)
+        return entry
 
 
 # Under Construction

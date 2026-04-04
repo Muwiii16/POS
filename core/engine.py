@@ -148,3 +148,11 @@ def save_inventory(products):
 
     with open(DATA_FILE, 'w') as f:
         json.dump(data, f, indent=4)
+
+
+def delete_product(product_to_remove, store_products):
+    if product_to_remove in store_products:
+        store_products.remove(product_to_remove)
+        save_inventory(store_products)
+        return True
+    return False
