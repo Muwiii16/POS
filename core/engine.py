@@ -34,6 +34,37 @@ def add_bulk_cart(product, quantity, cart):
         return False, f'Only {product.stock} items available!'
 
 
+def get_grouped_cart(cart):
+    grouped = {}
+    for item in cart:
+        key = (item.name, item.variant)
+        if key not in grouped:
+            grouped[key] = [item, 0]
+        grouped[key][1] += 1
+    return grouped
+
+
+def remove_item_from_cart(product, cart):
+    for i, item in enumerate(cart):
+        if item.name == product.name and item.variant == product.variant:
+            cart.pop(i)
+            product.stock += 1
+            return True
+    return False
+
+
+def get_change_info(payment_text, total):
+    try:
+        payment = float(payment_text)if payment_text else 0
+        change = payment-total
+        if change >= 0:
+            return f'Change: ₱{change:.2f}', 'green'
+        else:
+            return 'Insufficient Amout', 'red'
+    except ValueError:
+        return 'Invalid Amount', 'red'
+
+
 def calculate_totals(cart):
     return sum(item.price for item in cart)
 

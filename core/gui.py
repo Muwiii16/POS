@@ -244,6 +244,8 @@ class POSapp(ctk.CTk):
             payment_frame, placeholder_text='0.00', justify='center')
         self.payment_entry.pack(pady=5, fill='x')
         self.payment_entry.bind('<KeyRelease>', self.calculate_change)
+        self.payment_entry.bind(
+            '<Return>', lambda event: self.process_checkout())
 
         self.change_lbl = ctk.CTkLabel(
             payment_frame, text='Change: ₱0.00', font=('Inter', 16), text_color='green')
@@ -253,13 +255,17 @@ class POSapp(ctk.CTk):
             'Inter', 14, 'bold'), command=self.process_checkout)
         self.checkout_btn.pack(pady=20, padx=20, fill='x')
 
-    def process_checkout(self):
+    def process_checkout(self, event=None):
         payment_amount = self.payment_entry.get()
         success, total, result = engine.process_checkout(
             self.cart, payment_amount, self.store_products)
         if success:
+            paid = float(payment_amount)
+            change = result
+            receipt = engine.generate_receipt_text(
+                self.cart, total, paid, change)
             messagebox.showinfo(
-                'Success', f'Transaction Complete!\nChange: ₱{result:.2f}')
+                'Success', f'Transaction Complete!\n\n{receipt}')
             self.reset()
 
         else:
@@ -275,21 +281,11 @@ class POSapp(ctk.CTk):
         self.change_lbl.configure(text='Change: ₱0.00', text_color='green')
 
     def calculate_change(self, event=None):
-        try:
-            total = engine.calculate_totals(self.cart)
-            payment_text = self.payment_entry.get()
-            payment = float(payment_text) if payment_text else 0
+        total = engine.calculate_totals(self.cart)
+        payment_text = self.payment_entry.get()
 
-            change = payment-total
-
-            if change >= 0:
-                self.change_lbl.configure(
-                    text=f'Change: ₱{change:.2f}', text_color='green')
-            else:
-                self.change_lbl.configure(
-                    text='Insufficient Amount', text_color='red')
-        except ValueError:
-            self.change_lbl.configure(text='Invalid Amount', text_color='red')
+        display_text, color = engine.get_change_info(payment_text, total)
+        self.change_lbl.configure(text=display_text, text_color=color)
 
     def add_to_cart(self, product, quantity=1, parent_win=None):
         target_parent = parent_win if parent_win else self
@@ -308,12 +304,7 @@ class POSapp(ctk.CTk):
         for child in self.cart_items_frame.winfo_children():
             child.destroy()
 
-        grouped_items = {}
-        for item in self.cart:
-            key = (item.name, item.variant)
-            if key not in grouped_items:
-                grouped_items[key] = [item, 0]
-            grouped_items[key][1] += 1
+        grouped_items = engine.get_grouped_cart(self.cart)
 
         for (name, variant), (prod, qty) in grouped_items.items():
             row = ctk.CTkFrame(self.cart_items_frame,
@@ -342,16 +333,9 @@ class POSapp(ctk.CTk):
             self.total_lbl.configure(text=f'Total: ₱{current_total:.2f}')
 
     def remove_one_from_cart(self, product):
-        for i, item in enumerate(self.cart):
-            if item.name == product.name and item.variant == product.variant:
-                self.cart.pop(i)
-                product.stock += 1
-                break
-
-        self.update_cart_display()
-        total = engine.calculate_totals(self.cart)
-        self.total_lbl.configure(text=f'Total: ₱{total:.2f}')
-        self.calculate_change()
+        if engine.remove_item_from_cart(product, self.cart):
+            self.update_cart_display()
+            self.calculate_change
 
 
 # Under Construction
