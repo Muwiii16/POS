@@ -106,25 +106,43 @@ def generate_receipt_text(cart, total, paid, change):
     return receipt
 
 
-def log_sale(cart, total, paid):
+def log_sale(cart, total, paid, change):
     file_path = 'sales_log.csv'
     now = datetime.now()
     timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
+    today_date = now.strftime('%Y-%m-%d')
+
+    item_summary = ' | '.join(
+        f'{item.name}({item.get_variant_label()})' for item in cart)
 
     file_exists = os.path.isfile(file_path)
+    is_new_day = False
 
-    with open(file_path, mode='a', newline='')as file:
-        writer = csv.writer(file)
+    if file_exists:
+        try:
+            with open(file_path, 'r', encoding='utf-8')as f:
+                lines = f.readlines()
+                if len(lines) > 1:
+                    last_line = lines[-1]
+                    if today_date not in last_line:
+                        is_new_day = True
+        except:
+            pass
 
+    with open(file_path, mode='a', newline='', encoding='utf-8')as f:
+        writer = csv.writer(f)
         if not file_exists:
             writer.writerow(['Timestamp', 'Items Sold',
                             'Total', 'Amount Paid'])
 
-        item_summary = ' | '.join(
-            f'{item.name}({item.get_variant_label()})' for item in cart)
+        if is_new_day:
+            writer.writerow([])
+            writer.writerow(
+                [f'--- SESSION START: {today_date} ---', '-', '-', '-'])
+            writer.writerow([])
 
         writer.writerow(
-            [now, item_summary, f'{total:.2f}', f'{paid:.2f}'])
+            [timestamp, item_summary, f'{total:.2f}', f'{paid:.2f}'])
 
 
 def load_inventory():
