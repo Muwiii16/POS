@@ -1,5 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from core import engine
 
@@ -25,6 +27,8 @@ class POSapp(ctk.CTk):
         self.setup_main_pages()
         self.setup_cart_view()
         self.show_page("POS")
+
+        self.protocol('WM_DELETE_WINDOW', self.on_closing)
 
     def center_window(self, width=1200, height=800):
         screen_width = self.winfo_screenwidth()
@@ -726,10 +730,9 @@ class POSapp(ctk.CTk):
             text='Type "CONFIRM" to generate the End of Day report:',
             title='Confirm End of Day'
         )
-
         dialog.after(10, lambda: self.center_popup(dialog, 400, 200))
-
         user_input = dialog.get_input()
+
         if user_input is None:
             return
         if user_input.strip().upper() != 'CONFIRM':
@@ -738,21 +741,64 @@ class POSapp(ctk.CTk):
 
         report = engine.get_daily_summary()
 
-        if report['transactions'] == 0:
-            messagebox.showinfo(
-                'End of Day', 'No sales recorded for today yet.')
-            return
+        dash = ctk.CTkToplevel(self)
+        dash.title(f'EOD Report - {report["date"]}')
+        self.center_popup(dash, 800, 600)
+        dash.attributes('-topmost', True)
 
-        msg = (
-            f'📊 DAILY SALES SUMMARY\n'
-            f'Date: {report["date"]}\n'
-            f'{"-"*25}\n'
-            f'💰 Total Revenue: ₱{report["revenue"]:.2f}\n'
-            f'🧾 Transactions:  {report["transactions"]}\n'
-            f'{"-"*25}\n'
-            f'Closing time!'
-        )
-        messagebox.showinfo('End of Day Summary', msg)
+        header = ctk.CTkFrame(dash, fg_color='#2c3e50',
+                              height=80, corner_radius=0)
+        header.pack(fill='x')
+        ctk.CTkLabel(header, text=f'Daily Performance: {report["date"]}', font=(
+            'Inter', 24, 'bold'), text_color='white').pack(pady=20)
+
+        stats_frame = ctk.CTkFrame(dash, fg_color='transparent')
+        stats_frame.pack(fill='x', padx=20, pady=20)
+
+        def create_stat_card(parent, title, value, color):
+            card = ctk.CTkFrame(parent, fg_color=color, width=350, height=100)
+            card.pack(side='left', expand=True, padx=10)
+            ctk.CTkLabel(card, text=title, font=("Inter", 14),
+                         text_color="white").pack(pady=(15, 0))
+            ctk.CTkLabel(card, text=value, font=("Inter", 32, "bold"),
+                         text_color="white").pack(pady=(0, 15))
+
+        create_stat_card(stats_frame, 'Total Revenue',
+                         f'₱{report["revenue"]:.2f}', '#27ae60')
+        create_stat_card(stats_frame, 'Transctions',
+                         str(report["transactions"]), '#2980b9')
+
+        chart_frame = ctk.CTkFrame(dash, fg_color='white', corner_radius=15)
+        chart_frame.pack(fill='both', expand=True, padx=20, pady=(0, 20))
+
+        if report['category_sales']:
+            fig, ax = plt.subplots(figsize=(5, 4), dpi=100)
+            labels = report['category_sales'].keys()
+            sizes = report['category_sales'].values()
+
+            colors = ['#3498db', '#e74c3c', '#f1c40f', '#9b59b6', '#1abc9c']
+            ax.pie(sizes, labels=labels, autopct='%1.1f%%',
+                   startangle=140, colors=colors)
+            ax.set_title('Sales Distribution by Item')
+
+            canvas = FigureCanvasTkAgg(fig, master=chart_frame)
+            canvas.draw()
+            canvas.get_tk_widget().pack(fill='both', expand=True)
+        else:
+            ctk.CTkLabel(chart_frame, text='No chart data available for today.',
+                         text_color='grey').pack(expand=True)
+
+    def on_closing(self):
+        try:
+            import matplotlib.pyplot as plt
+            plt.close('all')
+        except:
+            pass
+
+        self.quit()
+        self.destroy()
+        import os
+        os._exit(0)
 # Under Construction
 # still no inventory
 # still no Add product

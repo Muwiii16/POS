@@ -106,11 +106,12 @@ def generate_receipt_text(cart, total, paid, change):
     return receipt
 
 
-def log_sale(cart, total, paid, change):
+def log_sale(cart, total, paid):
     file_path = 'sales_log.csv'
-    file_exists = os.path.isfile(file_path)
+    now = datetime.now()
+    timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
 
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    file_exists = os.path.isfile(file_path)
 
     with open(file_path, mode='a', newline='')as file:
         writer = csv.writer(file)
@@ -232,7 +233,8 @@ def get_daily_summary():
     summary = {
         "revenue": 0.0,
         "transactions": 0,
-        "date": today_str
+        "date": today_str,
+        "category_sales": {}
     }
 
     if not os.path.exists(file_path):
@@ -244,12 +246,16 @@ def get_daily_summary():
             for row in reader:
                 timestamp = row.get('Timestamp', '')
                 if today_str in timestamp:
-                    try:
-                        raw_total = float(row.get('Total', 0))
-                        summary['revenue'] += raw_total
-                        summary['transactions'] += 1
-                    except (ValueError, TypeError):
-                        continue
+                    raw_total = float(row.get('Total', 0))
+                    summary['revenue'] += raw_total
+                    summary['transactions'] += 1
+
+                    items_sold = row.get('Items Sold', '').split(' | ')
+                    for item in items_sold:
+                        cat = item.split('(')[0].strip()
+                        summary['category_sales'][cat] = summary['category_sales'].get(
+                            cat, 0)+1
+
         return summary
     except Exception as e:
         print(f'Error reading sales log: {e}')
