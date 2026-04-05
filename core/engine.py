@@ -95,15 +95,28 @@ def process_checkout(cart, amount_paid, store_products):
 
 
 def generate_receipt_text(cart, total, paid, change):
-    receipt = '------------RECEIPT------------\n'
-    grouped = get_grouped_cart(cart)
-    for (name, variant_label), (prod, qty) in grouped.items():
-        receipt += f'{qty}x {name} ({variant_label}) - ₱{prod.price*qty:.2f}\n'
-    receipt += f'-------------------------------\n'
-    receipt += f'TOTAL: ₱{total:.2f}\n'
-    receipt += f'PAID: ₱{paid:.2f}\n'
-    receipt += f'CHANGE: ₱{change:.2f}'
-    return receipt
+    receipt = []
+    receipt.append("      DAD'S STORE POS      ")
+    receipt.append("   123 Business St, City   ")
+    receipt.append("---------------------------")
+    receipt.append(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    receipt.append("---------------------------")
+
+    for item in cart:
+        name = item.name[:18]
+        price = f'{item.price:.2f}'
+        receipt.append(f'{name:<20}{price:7}')
+        if hasattr(item, 'get_variant_label'):
+            receipt.append(f"  ({item.get_variant_label()})")
+
+    receipt.append("---------------------------")
+    receipt.append(f"TOTAL:           ₱{total:>9.2f}")
+    receipt.append(f"CASH:            ₱{paid:>9.2f}")
+    receipt.append(f"CHANGE:          ₱{change:>9.2f}")
+    receipt.append("---------------------------")
+    receipt.append("   THANK YOU FOR SHOPPING! ")
+
+    return '\n'.join(receipt)
 
 
 def log_sale(cart, total, paid, change):

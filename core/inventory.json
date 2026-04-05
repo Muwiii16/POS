@@ -2,7 +2,7 @@
     {
         "name": "Pants",
         "price": 500.0,
-        "stock": 6,
+        "stock": 5,
         "category": "Clothes",
         "barcode": "1001",
         "size": "Large",
@@ -20,7 +20,7 @@
     {
         "name": "Notebook",
         "price": 30.0,
-        "stock": 69,
+        "stock": 67,
         "category": "School Supplies",
         "barcode": "2001",
         "size": "80-leaves"
@@ -45,7 +45,7 @@
     {
         "name": "Ballpen",
         "price": 10.0,
-        "stock": 99,
+        "stock": 95,
         "category": "School Supplies",
         "barcode": "4002",
         "brand": "Panda",

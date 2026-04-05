@@ -395,14 +395,36 @@ class POSapp(ctk.CTk):
         if success:
             paid = float(payment_amount)
             change = result
-            receipt = engine.generate_receipt_text(
-                self.cart, total, paid, change)
-            messagebox.showinfo(
-                'Success', f'Transaction Complete!\n\n{receipt}')
-            self.reset()
+
+            final_cart = list(self.cart)
+            self.cart = []
+            self.update_cart_display()
+            self.refresh_catalog()
+
+            self.show_receipt_modal(final_cart, total, paid, change)
 
         else:
             messagebox.showerror('Checkout Error', result)
+
+    def show_receipt_modal(self, cart, total, paid, change):
+        receipt_win = ctk.CTkToplevel(self)
+        receipt_win.title('Transaction Success')
+
+        self.center_popup(receipt_win, 400, 700)
+        receipt_win.attributes('-topmost', True)
+        receipt_win.grab_set()
+
+        paper = ctk.CTkFrame(receipt_win, fg_color='white', corner_radius=5)
+        paper.pack(fill='both', expand=True, padx=30, pady=30)
+
+        receipt_text = engine.generate_receipt_text(cart, total, paid, change)
+
+        label = ctk.CTkLabel(paper, text=receipt_text, font=(
+            'Consolas', 13), justify='left', text_color='black')
+        label.pack(pady=20, padx=10)
+
+        ctk.CTkButton(receipt_win, text='DONE', height=40, command=receipt_win.destroy, fg_color='#2ecc71',
+                      hover_color='#27ae60', font=('Inter', 14, 'bold')).pack(pady=(0, 20), padx=30, fill='x')
 
     def reset(self):
         self.cart = []
