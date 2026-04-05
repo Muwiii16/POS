@@ -12,6 +12,7 @@ class Product:
     def get_variant_label(self):
         priority_keys = ['size', 'color', 'type', 'weight']
         parts = []
+
         for key in priority_keys:
             val = self.metadata.get(key)
             if val and str(val).lower() not in ['none', 'null', '']:
@@ -23,7 +24,7 @@ class Product:
             val = self.metadata.get(key)
             if val and str(val).lower() not in ['none', 'null', '']:
                 parts.append(
-                    f'{key.capitalize()}: {str(val).strip().capitalize()}')
+                    str(val).strip().capitalize())
         return ' - '.join(parts) if parts else 'Standard'
 
     def __str__(self):

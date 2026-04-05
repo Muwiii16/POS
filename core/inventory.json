@@ -36,7 +36,7 @@
     {
         "name": "Ballpen",
         "price": 10.0,
-        "stock": 93,
+        "stock": 90,
         "category": "School Supplies",
         "barcode": "4001",
         "brand": "Panda",
@@ -86,5 +86,23 @@
         "barcode": "1006",
         "size": "X-large",
         "color": "Blue"
+    },
+    {
+        "name": "Eyeglass",
+        "price": 50.0,
+        "stock": 42,
+        "category": "Accessories",
+        "barcode": "5001",
+        "frame color": "Black",
+        "glass color": "Transparent"
+    },
+    {
+        "name": "Shoes",
+        "price": 500.0,
+        "stock": 31,
+        "category": "Footwear",
+        "barcode": "6001",
+        "size": "42",
+        "color": "Black"
     }
 ]

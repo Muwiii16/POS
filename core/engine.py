@@ -3,8 +3,10 @@ import csv
 from datetime import datetime
 import os
 import copy
+import barcode
 
 from thefuzz import process
+from barcode.writer import ImageWriter
 from . models import Product
 CURRENT_DIR = os.path.dirname(__file__)
 DATA_FILE = os.path.join(CURRENT_DIR, 'inventory.json')
@@ -102,12 +104,14 @@ def generate_receipt_text(cart, total, paid, change):
     receipt.append(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
     receipt.append("---------------------------")
 
-    for item in cart:
-        name = item.name[:18]
-        price = f'{item.price:.2f}'
-        receipt.append(f'{name:<20}{price:7}')
-        if hasattr(item, 'get_variant_label'):
-            receipt.append(f"  ({item.get_variant_label()})")
+    grouped_items = get_grouped_cart(cart)
+    for (name, variant_label), (prod, qty) in grouped_items.items():
+        display_name = f'{qty}x {name[:15]}'
+        price_each = f'{prod.price * qty:.2f}'
+
+        receipt.append(f'{display_name:<20}{price_each:7}')
+        if variant_label:
+            receipt.append(f"  ({variant_label})")
 
     receipt.append("---------------------------")
     receipt.append(f"TOTAL:           ₱{total:>9.2f}")
@@ -291,3 +295,23 @@ def get_daily_summary():
     except Exception as e:
         print(f'Error reading sales log: {e}')
         return summary
+
+
+def generate_product_barcode(product_id):
+    os.makedirs('barcodes', exist_ok=True)
+
+    CODE = barcode.get_barcode_class('code128')
+
+    writer_options = {
+        'write_text': True,
+        'module_height': 15.0,
+        'font_size': 10,
+        'text_disctance': 5.0,
+        'quiet_zone': 6.0
+    }
+
+    my_barcode = CODE(str(product_id), writer=ImageWriter())
+    file_path = os.path.join('barcodes', f'barcode_{product_id}')
+
+    full_path = my_barcode.save(file_path, options=writer_options)
+    return full_path

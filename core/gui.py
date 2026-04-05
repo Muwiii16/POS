@@ -177,10 +177,16 @@ class POSapp(ctk.CTk):
             'Inter', 16, 'bold'), command=self.submit_new_product).pack(pady=30, padx=50, fill='x')
 
     def find_product(self, event=None):
+        if not self.search_entry.winfo_exists():
+            return
+
         query = self.search_entry.get().strip().lower()
 
         for child in self.catalog_scroll.winfo_children():
-            child.destroy()
+            try:
+                child.destroy()
+            except:
+                pass
 
         if not query:
             self.refresh_catalog()
@@ -210,8 +216,12 @@ class POSapp(ctk.CTk):
                       command=lambda n=name: self.open_variant_modal(n)).pack(pady=10)
 
     def refresh_catalog(self):
+        if not hasattr(self, 'catalog_scroll') or not self.catalog_scroll.winfo_exists():
+            return
+
         for child in self.catalog_scroll.winfo_children():
-            child.destroy()
+            if child.winfo_exists():
+                child.destroy()
 
         unique_names = sorted(list(set(p.name for p in self.store_products)))
 
@@ -393,13 +403,17 @@ class POSapp(ctk.CTk):
         success, total, result = engine.process_checkout(
             self.cart, payment_amount, self.store_products)
         if success:
+            def safe_refresh():
+                if self.winfo_exists():
+                    self.update_cart_display()
+                    self.refresh_catalog()
+
             paid = float(payment_amount)
             change = result
 
             final_cart = list(self.cart)
             self.cart = []
-            self.update_cart_display()
-            self.refresh_catalog()
+            self.after(100, safe_refresh)
 
             self.show_receipt_modal(final_cart, total, paid, change)
 
@@ -456,6 +470,9 @@ class POSapp(ctk.CTk):
                 "Stock Error!", result, parent=target_parent)
 
     def update_cart_display(self):
+        if not self.cart_items_frame.winfo_exists():
+            return
+
         for child in self.cart_items_frame.winfo_children():
             child.destroy()
 
@@ -493,6 +510,8 @@ class POSapp(ctk.CTk):
             self.calculate_change
 
     def refresh_inventory_table(self, products_to_show=None):
+        if not hasattr(self, 'inventory_scroll') or not self.inventory_scroll.winfo_exists():
+            return
         display_list = products_to_show if products_to_show is not None else self.store_products
 
         for child in self.inventory_scroll.winfo_children():
@@ -599,7 +618,7 @@ class POSapp(ctk.CTk):
                 engine.save_inventory(self.store_products)
                 self.refresh_inventory_table()
                 modal.destroy()
-                messagebox.showinfo('Succes', 'Produve updated!')
+                messagebox.showinfo('Success', 'Product updated!')
             except ValueError:
                 messagebox.showerror('Error', 'Invalid price or stock value.')
 
@@ -632,7 +651,7 @@ class POSapp(ctk.CTk):
             engine.save_inventory(self.store_products)
             self.refresh_inventory_table()
         else:
-            messagebox.showinfo('Unfo', 'No more actios to undo.')
+            messagebox.showinfo('Undo', 'No more actions to undo.')
 
     def handle_redo(self):
         next_state = engine.history.redo(self.store_products)
@@ -672,14 +691,20 @@ class POSapp(ctk.CTk):
         self.metadata_rows.append((row, key_entry, val_entry))
 
     def remove_metadata_row(self, row_frame):
+        self.focus_set()
         self.metadata_rows = [
             r for r in self.metadata_rows if r[0] != row_frame]
-        row_frame.destroy()
+        try:
+            if row_frame.winfo_exists():
+                row_frame.destroy()
+        except:
+            pass
 
     def submit_new_product(self):
         try:
             name = self.new_name.get().strip()
-            if not name:
+            barcode_id = self.new_barcode.get().strip()
+            if not name or not barcode_id:
                 messagebox.showerror('Error', 'Product Name cannot be empty!')
                 return
             data = {
@@ -699,19 +724,75 @@ class POSapp(ctk.CTk):
             success, msg = engine.add_new_product(data, self.store_products)
 
             if success:
-                messagebox.showinfo('Success', msg)
+                def clear_and__show():
+                    if not self.winfo_exists():
+                        return
 
-                for entry in [self.new_name, self.new_price, self.new_stock, self.new_category, self.new_barcode]:
-                    entry.delete(0, 'end')
-                for row_frame, _, _ in self.metadata_rows:
-                    row_frame.destroy()
-                self.metadata_rows = []
+                    self.focus_set()
+
+                    messagebox.showinfo('Success', msg)
+                    barcode_path = engine.generate_product_barcode(barcode_id)
+                    self.show_barcode_popup(barcode_path, barcode_id)
+
+                    for entry in [self.new_name, self.new_price, self.new_stock, self.new_category, self.new_barcode]:
+                        try:
+                            if entry.winfo_exists():
+                                entry.delete(0, 'end')
+                        except Exception:
+                            pass
+
+                    temp_rows = list(self.metadata_rows)
+                    self.metadata_rows = []
+
+                    for row_item in temp_rows:
+                        f_frame = row_item[0]
+                        try:
+                            if f_frame.winfo_exists():
+                                f_frame.destroy()
+                        except:
+                            pass
+
+                    self.refresh_catalog()
+                self.after(100, clear_and__show)
+
             else:
                 messagebox.showerror('Error', msg)
 
         except ValueError:
             messagebox.showerror('Error', 'Price and Stock must be numbers!')
             return
+
+    def show_barcode_popup(self, image_path, p_id):
+        from PIL import Image
+        pop = ctk.CTkToplevel(self)
+        pop.title(f'Barcode Created: {p_id}')
+        self.center_popup(pop, 450, 500)
+        pop.attributes('-topmost', True)
+        pop.grab_set()
+
+        ctk.CTkLabel(pop, text='Barcode Generated Successfully!', font=(
+            'Inter', 18, 'bold'), text_color='#27ae60').pack(pady=20)
+
+        pil_img = Image.open(image_path)
+        img = ctk.CTkImage(light_image=pil_img, size=(350, 150))
+
+        ctk.CTkLabel(pop, image=img, text='').pack(pady=10)
+
+        ctk.CTkLabel(pop, text=f'Manual Input Code: {p_id}', font=(
+            'Consolas', 14), fg_color='#f0f0f0').pack(pady=10, padx=20, fill='x')
+
+        def print_barcode():
+            import os
+            try:
+                os.startfile(os.path.abspath(image_path), 'print')
+            except Exception as e:
+                messagebox.showerror(
+                    'Print Error', f'Could not open print dialog {e}')
+
+        ctk.CTkButton(pop, text='🖨️ PRINT BARCODE', command=print_barcode,
+                      height=45, fg_color='#2980b9').pack(pady=20, padx=50, fill='x')
+        ctk.CTkButton(pop, text='CLOSE', command=pop.destroy,
+                      fg_color='transparent', text_color='grey').pack(pady=5)
 
     def filter_inventory_by_name(self, name):
         results = [p for p in self.store_products if p.name == name]
@@ -740,7 +821,7 @@ class POSapp(ctk.CTk):
                          width=w_stock).pack(side='left', padx=10)
 
             btn_frame = ctk.CTkFrame(row, fg_color='transparent')
-            btn_frame.pack(side='left', padx=10)
+            btn_frame.pack(side='right', padx=10)
 
             ctk.CTkButton(btn_frame, text='Edit', width=60, fg_color='#3498db',
                           command=lambda p=product: self.open_edit_modal(p)).pack(side='left', padx=5)
@@ -812,15 +893,18 @@ class POSapp(ctk.CTk):
 
     def on_closing(self):
         try:
+            engine.save_inventory(self.store_products)
             import matplotlib.pyplot as plt
             plt.close('all')
+            self.quit()
+            self.destroy()
+
         except:
             pass
 
-        self.quit()
-        self.destroy()
-        import os
-        os._exit(0)
+        finally:
+            import os
+            os._exit(0)
+
+
 # Under Construction
-# still no inventory
-# still no Add product
