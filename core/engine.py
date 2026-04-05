@@ -223,3 +223,34 @@ def add_new_product(product_data, store_products):
         return True, 'Product added successfully!'
     except Exception as e:
         return False, f'Failed to add: {str(e)}'
+
+
+def get_daily_summary():
+    file_path = 'sales_log.csv'
+    today_str = datetime.now().strftime('%Y-%m-%d')
+
+    summary = {
+        "revenue": 0.0,
+        "transactions": 0,
+        "date": today_str
+    }
+
+    if not os.path.exists(file_path):
+        return summary
+
+    try:
+        with open(file_path, mode='r', newline='', encoding='utf-8')as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                timestamp = row.get('Timestamp', '')
+                if today_str in timestamp:
+                    try:
+                        raw_total = float(row.get('Total', 0))
+                        summary['revenue'] += raw_total
+                        summary['transactions'] += 1
+                    except (ValueError, TypeError):
+                        continue
+        return summary
+    except Exception as e:
+        print(f'Error reading sales log: {e}')
+        return summary

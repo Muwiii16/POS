@@ -28,7 +28,7 @@
     {
         "name": "iPhone Case",
         "price": 150.0,
-        "stock": 4,
+        "stock": 3,
         "category": "Accessories",
         "barcode": "3001",
         "model": "iPhone 15"
@@ -36,7 +36,7 @@
     {
         "name": "Ballpen",
         "price": 10.0,
-        "stock": 99,
+        "stock": 93,
         "category": "School Supplies",
         "barcode": "4001",
         "brand": "Panda",

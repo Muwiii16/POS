@@ -11,7 +11,7 @@ class POSapp(ctk.CTk):
     def __init__(self,):
         super().__init__()
         self.title("Dad's Store POS")
-        self.geometry("1200x800")
+        self.center_window(1200, 800)
 
         self.cart = []
         self.store_products = engine.load_inventory()
@@ -25,6 +25,28 @@ class POSapp(ctk.CTk):
         self.setup_main_pages()
         self.setup_cart_view()
         self.show_page("POS")
+
+    def center_window(self, width=1200, height=800):
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+
+        x = (screen_width // 2)-(width // 2)
+        y = (screen_height // 2)-(height // 2)
+
+        self.geometry(f'{width}x{height}+{x}+{y}')
+
+    def center_popup(self, popup, width, height):
+        popup.update_idletasks()
+
+        main_x = self.winfo_x()
+        main_y = self.winfo_y()
+        main_w = self.winfo_width()
+        main_h = self.winfo_height()
+
+        x = int(main_x+(main_w // 2) - (width / 2))
+        y = int(main_y+(main_h // 2) - (height / 2))
+
+        popup.geometry(f'{width}x{height}+{x}+{y}')
 
     def setup_sidebar(self):
         self.sidebar = ctk.CTkFrame(self, width=200, corner_radius=0)
@@ -44,6 +66,10 @@ class POSapp(ctk.CTk):
         self.add_btn = ctk.CTkButton(self.sidebar, text="Add Product", fg_color="transparent",
                                      text_color='black', command=lambda: self.show_page('Add'))
         self.add_btn.pack(pady=10, padx=10)
+
+        self.eod_button = ctk.CTkButton(self.sidebar, text='End of Day',
+                                        fg_color='#e67e22', hover_color='#d35400', command=self.handle_eod_report)
+        self.eod_button.pack(pady=10, padx=20, side='bottom')
 
     def show_page(self, page):
         self.pos_page.grid_forget()
@@ -195,16 +221,12 @@ class POSapp(ctk.CTk):
 
     def open_variant_modal(self, category_name):
         modal = ctk.CTkToplevel(self)
-        modal_width = 600
+
+        modal_width = 485
         modal_height = 600
 
-        main_x = self.winfo_x()
-        main_y = self.winfo_y()
-        main_width = self.winfo_width()
-        main_height = self.winfo_height()
-        center_x = int(main_x+(main_width/2)-(modal_width/2))
-        center_y = int(main_y+(main_height/2)-(modal_height/2))
-        modal.geometry(f'{modal_width}x{modal_height}+{center_x}+{center_y}')
+        self.center_popup(modal, modal_width, modal_height)
+
         modal.attributes('-topmost', True)
         modal.grab_set()
 
@@ -699,6 +721,38 @@ class POSapp(ctk.CTk):
             ctk.CTkButton(btn_frame, text='Delete', width=60, fg_color='#e74c3c',
                           command=lambda p=product: self.confirm_delete(p)).pack(side='left', padx=5)
 
+    def handle_eod_report(self):
+        dialog = ctk.CTkInputDialog(
+            text='Type "CONFIRM" to generate the End of Day report:',
+            title='Confirm End of Day'
+        )
+
+        dialog.after(10, lambda: self.center_popup(dialog, 400, 200))
+
+        user_input = dialog.get_input()
+        if user_input is None:
+            return
+        if user_input.strip().upper() != 'CONFIRM':
+            messagebox.showwarning('Cancelled', 'Incorrect confirmation')
+            return
+
+        report = engine.get_daily_summary()
+
+        if report['transactions'] == 0:
+            messagebox.showinfo(
+                'End of Day', 'No sales recorded for today yet.')
+            return
+
+        msg = (
+            f'📊 DAILY SALES SUMMARY\n'
+            f'Date: {report["date"]}\n'
+            f'{"-"*25}\n'
+            f'💰 Total Revenue: ₱{report["revenue"]:.2f}\n'
+            f'🧾 Transactions:  {report["transactions"]}\n'
+            f'{"-"*25}\n'
+            f'Closing time!'
+        )
+        messagebox.showinfo('End of Day Summary', msg)
 # Under Construction
 # still no inventory
 # still no Add product
