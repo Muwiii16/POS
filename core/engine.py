@@ -225,13 +225,30 @@ def add_new_product(product_data, store_products):
 
     core_fields = ['name', 'price', 'stock', 'category', 'barcode']
     name = product_data.get('name', '').strip().lower()
-    barcode = product_data.get('barcode', '').strip()
+
+    existing_numeric_barcodes = []
+
+    for p in store_products:
+        try:
+            existing_numeric_barcodes.append(int(p.barcode))
+        except (ValueError, TypeError):
+            continue
+
+    START_ID = 10000001
+
+    if not existing_numeric_barcodes:
+        new_barcode = START_ID
+    else:
+        new_barcode = max(max(existing_numeric_barcodes)+1, START_ID)
+
+    barcode = str(new_barcode)
+    product_data['barcode'] = barcode
 
     metadata = {k.lower(): str(v).strip().lower()
                 for k, v in product_data.items() if k not in core_fields}
 
     for existing_prod in store_products:
-        if barcode and existing_prod.barcode == barcode:
+        if existing_prod.barcode == barcode:
             return False, f'Error: Barcode "{barcode}" is already assigned to {existing_prod.name}.'
 
         existing_meta_check = {k.lower(): str(v).strip().lower()
@@ -256,7 +273,7 @@ def add_new_product(product_data, store_products):
         new_prod = Product(**constructor_data, **display_metadata)
         store_products.append(new_prod)
         save_inventory(store_products)
-        return True, 'Product added successfully!'
+        return True, barcode
     except Exception as e:
         return False, f'Failed to add: {str(e)}'
 
@@ -281,15 +298,32 @@ def get_daily_summary():
             for row in reader:
                 timestamp = row.get('Timestamp', '')
                 if today_str in timestamp:
-                    raw_total = float(row.get('Total', 0))
-                    summary['revenue'] += raw_total
-                    summary['transactions'] += 1
+                    if '---' in timestamp or 'SESSION' in timestamp:
+                        continue
+                    try:
+                        raw_val = row.get('Total', '0')
+                        if raw_val == '-':
+                            continue
 
-                    items_sold = row.get('Items Sold', '').split(' | ')
-                    for item in items_sold:
-                        cat = item.split('(')[0].strip()
-                        summary['category_sales'][cat] = summary['category_sales'].get(
-                            cat, 0)+1
+                        raw_total = float(raw_val)
+                        summary['revenue'] += raw_total
+                        summary['transactions'] += 1
+
+                        items_sold_str = row.get('Items Sold', '')
+                        if not items_sold_str or items_sold_str == '-':
+                            continue
+
+                        items_sold = items_sold_str.split(' | ')
+                        for item in items_sold:
+                            if not item.strip():
+                                continue
+                            parts = item.split('(')
+                            cat = parts[0].strip()
+                            if cat:
+                                summary['category_sales'][cat] = summary['category_sales'].get(
+                                    cat, 0)+1
+                    except (ValueError, TypeError):
+                        continue
 
         return summary
     except Exception as e:

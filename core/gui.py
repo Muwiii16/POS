@@ -161,7 +161,6 @@ class POSapp(ctk.CTk):
         self.new_price = self.create_input_row(form_frame, 'Price (₱)')
         self.new_stock = self.create_input_row(form_frame, 'Initial Stock')
         self.new_category = self.create_input_row(form_frame, 'Category')
-        self.new_barcode = self.create_input_row(form_frame, 'Barcode')
 
         ctk.CTkLabel(form_frame, text='Extra Details (Variants)',
                      font=('Inter', 14, 'bold')).pack(pady=(20, 10))
@@ -703,8 +702,7 @@ class POSapp(ctk.CTk):
     def submit_new_product(self):
         try:
             name = self.new_name.get().strip()
-            barcode_id = self.new_barcode.get().strip()
-            if not name or not barcode_id:
+            if not name:
                 messagebox.showerror('Error', 'Product Name cannot be empty!')
                 return
             data = {
@@ -712,7 +710,6 @@ class POSapp(ctk.CTk):
                 'price': float(self.new_price.get()),
                 'stock': int(self.new_stock.get()),
                 'category': self.new_category.get(),
-                'barcode': self.new_barcode.get()
             }
 
             for _, key_ent, val_ent in self.metadata_rows:
@@ -721,20 +718,23 @@ class POSapp(ctk.CTk):
                 if key and val:
                     data[key] = val
 
-            success, msg = engine.add_new_product(data, self.store_products)
+            success, result = engine.add_new_product(data, self.store_products)
 
             if success:
+                new_id = result
+
                 def clear_and__show():
                     if not self.winfo_exists():
                         return
 
                     self.focus_set()
 
-                    messagebox.showinfo('Success', msg)
-                    barcode_path = engine.generate_product_barcode(barcode_id)
-                    self.show_barcode_popup(barcode_path, barcode_id)
+                    messagebox.showinfo(
+                        'Success', f'Product Added! New Barcode: {new_id}')
+                    barcode_path = engine.generate_product_barcode(new_id)
+                    self.show_barcode_popup(barcode_path, new_id)
 
-                    for entry in [self.new_name, self.new_price, self.new_stock, self.new_category, self.new_barcode]:
+                    for entry in [self.new_name, self.new_price, self.new_stock, self.new_category]:
                         try:
                             if entry.winfo_exists():
                                 entry.delete(0, 'end')
@@ -756,7 +756,7 @@ class POSapp(ctk.CTk):
                 self.after(100, clear_and__show)
 
             else:
-                messagebox.showerror('Error', msg)
+                messagebox.showerror('Error', result)
 
         except ValueError:
             messagebox.showerror('Error', 'Price and Stock must be numbers!')
@@ -846,7 +846,7 @@ class POSapp(ctk.CTk):
 
         dash = ctk.CTkToplevel(self)
         dash.title(f'EOD Report - {report["date"]}')
-        self.center_popup(dash, 800, 600)
+        self.center_popup(dash, 900, 650)
         dash.attributes('-topmost', True)
 
         header = ctk.CTkFrame(dash, fg_color='#2c3e50',
@@ -871,17 +871,49 @@ class POSapp(ctk.CTk):
         create_stat_card(stats_frame, 'Transctions',
                          str(report["transactions"]), '#2980b9')
 
+        content_contianer = ctk.CTkFrame(dash, fg_color='transparent')
+        content_contianer.pack(side='left', fill='both',
+                               expand=False, padx=(0, 10))
+
+        list_frame = ctk.CTkScrollableFrame(
+            content_contianer, width=300, label_text="Top Selling Items", label_font=("Inter", 14, "bold"))
+        list_frame.pack(side='left', fill='both', expand=False, padx=(0, 10))
+
+        if report['category_sales']:
+            sorted_sales = sorted(
+                report['category_sales'].items(), key=lambda x: x[1], reverse=True)
+
+            for index, (name, count) in enumerate(sorted_sales):
+                item_row = ctk.CTkFrame(list_frame, fg_color='transparent')
+                item_row.pack(fill='x', pady=2)
+
+                rank_label = f'#{index+1}'
+                ctk.CTkLabel(item_row, text=rank_label, font=(
+                    "Inter", 12, "bold"), text_color="#2980b9", width=30).pack(side='left')
+                ctk.CTkLabel(item_row, text=name, font=(
+                    "Inter", 12)).pack(side='left', padx=5)
+                ctk.CTkLabel(item_row, text=f"{count} sold", font=(
+                    "Inter", 12, "italic"), text_color="grey").pack(side='right')
+
+                ctk.CTkFrame(list_frame, height=1, fg_color="#dbdbdb").pack(
+                    fill='x', padx=5, pady=2)
+        else:
+            ctk.CTkLabel(list_frame, text='No items sold today').pack(pady=20)
+
         chart_frame = ctk.CTkFrame(dash, fg_color='white', corner_radius=15)
-        chart_frame.pack(fill='both', expand=True, padx=20, pady=(0, 20))
+        chart_frame.pack(side='left', fill='both',
+                         expand=True, padx=20, pady=(0, 20))
 
         if report['category_sales']:
             fig, ax = plt.subplots(figsize=(5, 4), dpi=100)
             labels = report['category_sales'].keys()
             sizes = report['category_sales'].values()
 
-            colors = ['#3498db', '#e74c3c', '#f1c40f', '#9b59b6', '#1abc9c']
+            cmap = plt.get_cmap('tab20')
+            dynamic_colors = [cmap(i/len(labels)) for i in range(len(labels))]
+
             ax.pie(sizes, labels=labels, autopct='%1.1f%%',
-                   startangle=140, colors=colors)
+                   startangle=140, colors=dynamic_colors)
             ax.set_title('Sales Distribution by Item')
 
             canvas = FigureCanvasTkAgg(fig, master=chart_frame)
@@ -908,3 +940,4 @@ class POSapp(ctk.CTk):
 
 
 # Under Construction
+#

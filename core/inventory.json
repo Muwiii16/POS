@@ -20,7 +20,7 @@
     {
         "name": "Notebook",
         "price": 30.0,
-        "stock": 67,
+        "stock": 54,
         "category": "School Supplies",
         "barcode": "2001",
         "size": "80-leaves"
@@ -28,7 +28,7 @@
     {
         "name": "iPhone Case",
         "price": 150.0,
-        "stock": 3,
+        "stock": 1,
         "category": "Accessories",
         "barcode": "3001",
         "model": "iPhone 15"
@@ -36,7 +36,7 @@
     {
         "name": "Ballpen",
         "price": 10.0,
-        "stock": 90,
+        "stock": 69,
         "category": "School Supplies",
         "barcode": "4001",
         "brand": "Panda",
@@ -72,7 +72,7 @@
     {
         "name": "Pants",
         "price": 460.0,
-        "stock": 16,
+        "stock": 14,
         "category": "Clothes",
         "barcode": "1005",
         "size": "Large",
@@ -81,7 +81,7 @@
     {
         "name": "Pants",
         "price": 740.0,
-        "stock": 34,
+        "stock": 32,
         "category": "Clothes",
         "barcode": "1006",
         "size": "X-large",
@@ -90,7 +90,7 @@
     {
         "name": "Eyeglass",
         "price": 50.0,
-        "stock": 42,
+        "stock": 41,
         "category": "Accessories",
         "barcode": "5001",
         "frame color": "Black",
@@ -99,10 +99,42 @@
     {
         "name": "Shoes",
         "price": 500.0,
-        "stock": 31,
+        "stock": 29,
         "category": "Footwear",
         "barcode": "6001",
         "size": "42",
         "color": "Black"
+    },
+    {
+        "name": "Cap",
+        "price": 120.0,
+        "stock": 17,
+        "category": "Headwear",
+        "barcode": "6002",
+        "color": "Black"
+    },
+    {
+        "name": "Toothpaste",
+        "price": 20.0,
+        "stock": 30,
+        "category": "Consumable",
+        "barcode": "6003",
+        "brand": "Colgate"
+    },
+    {
+        "name": "Lip Stick",
+        "price": 200.0,
+        "stock": 94,
+        "category": "Cosmetics",
+        "barcode": "6004",
+        "brand": "Ligaya"
+    },
+    {
+        "name": "Cobra",
+        "price": 30.0,
+        "stock": 37,
+        "category": "Beverages",
+        "barcode": "10000001",
+        "size": "Sakto"
     }
 ]
