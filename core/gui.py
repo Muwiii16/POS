@@ -113,28 +113,35 @@ class POSapp(ctk.CTk):
                     fg_color=active_color, text_color='white')
 
     def setup_main_pages(self):
+
         # POS page
         self.pos_page = ctk.CTkFrame(self, fg_color='transparent')
         self.search_entry = ctk.CTkEntry(
             self.pos_page, placeholder_text="Search Product...", height=40)
         self.search_entry.pack(pady=(0, 20), fill='x')
         self.search_entry.bind('<KeyRelease>', self.find_product)
-
         self.catalog_scroll = ctk.CTkScrollableFrame(
             self.pos_page, fg_color='transparent')
         self.catalog_scroll.pack(fill='both', expand=True)
         # POS page
+
         # Inventory Management page
         self.inventory_page = ctk.CTkFrame(self, fg_color='transparent')
         ctk.CTkLabel(self.inventory_page,
                      text='Inventory Management', font=('Inter', 24, 'bold')).pack(pady=20)
 
+        self.inventory_alert_frame = ctk.CTkFrame(
+            self.inventory_page, fg_color='transparent', height=0)
+        self.inventory_alert_frame.pack(fill='x', padx=20, pady=(10, 0))
+
         self.inv_search_entry = ctk.CTkEntry(
             self.inventory_page, placeholder_text='Search inventory by name...', height=40)
         self.inv_search_entry.pack(pady=(0, 10), padx=20, fill='x')
-        self.inv_search_entry.bind('<KeyRelease>', self.find_inventory_item)
+        self.inv_search_entry.bind(
+            '<KeyRelease>', self.find_inventory_item)
 
-        ctrl_frame = ctk.CTkFrame(self.inventory_page, fg_color='transparent')
+        ctrl_frame = ctk.CTkFrame(
+            self.inventory_page, fg_color='transparent')
         ctrl_frame.pack(pady=5, padx=20, fill='x')
 
         self.undo_btn = ctk.CTkButton(
@@ -146,10 +153,12 @@ class POSapp(ctk.CTk):
 
         self.inventory_scroll = ctk.CTkScrollableFrame(
             self.inventory_page, fg_color='white')
-        self.inventory_scroll.pack(fill='both', expand=True, padx=20, pady=10)
+        self.inventory_scroll.pack(
+            fill='both', expand=True, padx=20, pady=10)
         # Inventory Management page
         # Add Products page
-        self.add_page = ctk.CTkScrollableFrame(self, fg_color='transparent')
+        self.add_page = ctk.CTkScrollableFrame(
+            self, fg_color='transparent')
         ctk.CTkLabel(self.add_page, text="Add New Product",
                      font=('Inter', 24, 'bold')).pack(pady=20)
 
@@ -174,6 +183,107 @@ class POSapp(ctk.CTk):
                       fg_color='#34495e', command=self.add_metadata_row).pack(pady=10)
         ctk.CTkButton(self.add_page, text='📥 Save Product to Inventory', height=50, fg_color='#2ecc71', font=(
             'Inter', 16, 'bold'), command=self.submit_new_product).pack(pady=30, padx=50, fill='x')
+
+    def refresh_inventory_table(self, products_to_show=None):
+        if not hasattr(self, 'inventory_scroll') or not self.inventory_scroll.winfo_exists():
+            return
+
+        low_stock_list = [p for p in self.store_products if p.stock <= 5]
+        out_of_stock_count = len(
+            [p for p in low_stock_list if p.stock == 0])
+
+        for child in self.inventory_alert_frame.winfo_children():
+            child.destroy()
+
+        if low_stock_list:
+            msg = f'⚠️ ALERT: {len(low_stock_list)} items are low on stock'
+            if out_of_stock_count > 0:
+                msg += f' ({out_of_stock_count} completely empty!)'
+
+            banner_color = '#e74c3c' if out_of_stock_count > 0 else '#e67e22'
+
+            alert_banner = ctk.CTkButton(self.inventory_alert_frame, text=msg, fg_color=banner_color,
+                                         hover_color='#d35400', font=('Inter', 13, 'bold'), command=self.show_only_low_stock)
+            alert_banner.pack(fill='x', pady=5)
+
+        for child in self.inventory_scroll.winfo_children():
+            child.destroy()
+
+        display_list = products_to_show if products_to_show is not None else self.store_products
+
+        grouped = {}
+        for p in display_list:
+            if p.name not in grouped:
+                grouped[p.name] = []
+            grouped[p.name].append(p)
+
+        self.inventory_scroll.update_idletasks()
+        current_width = self.inventory_scroll.winfo_width()-40
+        w_name = int(current_width*0.20)
+        w_vars = int(current_width * 0.40)
+        w_price = int(current_width * 0.15)
+        w_stock = int(current_width * 0.10)
+        w_button = 100
+
+        header_frame = ctk.CTkFrame(
+            self.inventory_scroll, fg_color='#e0e0e0', height=40)
+        header_frame.pack(fill='x', padx=10, pady=(0, 5))
+        header_frame.pack_propagate(False)
+
+        ctk.CTkLabel(header_frame, text="Name", width=w_name, anchor='w', font=(
+            'Inter', 12, 'bold')).pack(side='left', padx=10)
+        ctk.CTkLabel(header_frame, text="Variants", width=w_vars, anchor='w', font=(
+            'Inter', 12, 'bold')).pack(side='left', padx=10)
+        ctk.CTkLabel(header_frame, text="Price", width=w_price, anchor='center', font=(
+            'Inter', 12, 'bold')).pack(side='left', padx=10)
+        ctk.CTkLabel(header_frame, text="Stock", width=w_stock, anchor='center', font=(
+            'Inter', 12, 'bold')).pack(side='left', padx=10)
+
+        for name, items in grouped.items():
+            row = ctk.CTkFrame(self.inventory_scroll,
+                               fg_color='transparent', height=45)
+            row.pack(fill='x', pady=2, padx=10)
+            row.pack_propagate(False)
+
+            ctk.CTkLabel(row, text=name, width=w_name, anchor='w', font=(
+                'Inter', 13, 'bold')).pack(side='left', padx=10)
+
+            v_str = ', '.join([p.get_variant_label() for p in items])
+            if len(v_str) > 40:
+                v_str = v_str[:37] + "..."
+            ctk.CTkLabel(row, text=v_str, width=w_vars, anchor='w', font=(
+                'Inter', 11), text_color='grey').pack(side='left', padx=10)
+
+            prices = [p.price for p in items]
+            p_text = f'₱{min(prices):.2f}' if len(
+                set(prices)) == 1 else f'₱{min(prices):.2f}-₱{max(prices):.2f}'
+            ctk.CTkLabel(row, text=p_text, width=w_price,
+                         anchor='center').pack(side='left', padx=10)
+
+            total_stock = sum(p.stock for p in items)
+            if total_stock == 0:
+                stock_color = '#e74c3c'
+                display_stock = 'OUT'
+            elif total_stock <= 5:
+                stock_color = '#e67e22'
+                display_stock = str(total_stock)
+            else:
+                stock_color = '#2c3e50'
+                display_stock = str(total_stock)
+
+            ctk.CTkLabel(row, text=display_stock, width=w_stock, anchor='center', font=(
+                'Inter', 12, 'bold'), text_color=stock_color).pack(side='left', padx=10)
+
+            ctk.CTkButton(row, text='Manage', width=w_button, height=28, fg_color='#34495e',
+                          command=lambda n=name: self.filter_inventory_by_name(n)).pack(side='right', padx=10)
+
+    def show_only_low_stock(self):
+        low_stock = [p for p in self.store_products if p.stock <= 5]
+        self.refresh_inventory_table(low_stock)
+
+    def filter_inventory_by_name(self, name):
+        results = [p for p in self.store_products if p.name == name]
+        self.refresh_inventory_table(results)
 
     def find_product(self, event=None):
         if not self.search_entry.winfo_exists():
@@ -507,83 +617,6 @@ class POSapp(ctk.CTk):
         if engine.remove_item_from_cart(product, self.cart):
             self.update_cart_display()
             self.calculate_change
-
-    def refresh_inventory_table(self, products_to_show=None):
-        if not hasattr(self, 'inventory_scroll') or not self.inventory_scroll.winfo_exists():
-            return
-        display_list = products_to_show if products_to_show is not None else self.store_products
-
-        for child in self.inventory_scroll.winfo_children():
-            child.destroy()
-
-        self.inventory_scroll.update_idletasks()
-        current_width = self.inventory_scroll.winfo_width() - 40
-        if current_width < 100:
-            current_width = 800
-
-        grouped = {}
-        for p in display_list:
-            if p.name not in grouped:
-                grouped[p.name] = []
-            grouped[p.name].append(p)
-
-        w_name = int(current_width * 0.20)
-        w_vars = int(current_width * 0.40)
-        w_price = int(current_width * 0.15)
-        w_stock = int(current_width * 0.10)
-        w_button = 100
-
-        header_frame = ctk.CTkFrame(
-            self.inventory_scroll, fg_color='#e0e0e0', height=40)
-        header_frame.pack(fill='x', padx=10, pady=(0, 5))
-        header_frame.pack_propagate(False)
-
-        ctk.CTkLabel(header_frame, text="Name", width=w_name, anchor='w', font=(
-            'Inter', 12, 'bold')).pack(side='left', padx=10)
-        ctk.CTkLabel(header_frame, text="Variants", width=w_vars, anchor='w', font=(
-            'Inter', 12, 'bold')).pack(side='left', padx=10)
-        ctk.CTkLabel(header_frame, text="Price Range", width=w_price, anchor='center', font=(
-            'Inter', 12, 'bold')).pack(side='left', padx=10)
-        ctk.CTkLabel(header_frame, text="Stock", width=w_stock, anchor='center', font=(
-            'Inter', 12, 'bold')).pack(side='left', padx=10)
-        ctk.CTkLabel(header_frame, text="Action", width=w_button,
-                     font=('Inter', 12, 'bold')).pack(side='right', padx=10)
-
-        for name, items in grouped.items():
-            row = ctk.CTkFrame(self.inventory_scroll,
-                               fg_color='transparent', height=45)
-            row.pack(fill='x', pady=2, padx=10)
-            row.pack_propagate(False)  # Prevents row from shrinking
-
-            # Name
-            ctk.CTkLabel(row, text=name, width=w_name, anchor='w', font=(
-                'Inter', 13, 'bold')).pack(side='left', padx=10)
-
-            # Variants + Truncation
-            variants_str = ', '.join([p.get_variant_label() for p in items])
-            # Auto-truncate based on width (approx 10 pixels per char)
-            max_chars = int(w_vars / 8)
-            if len(variants_str) > max_chars:
-                variants_str = variants_str[:max_chars-3] + "..."
-
-            ctk.CTkLabel(row, text=variants_str, width=w_vars, anchor='w', font=(
-                'Inter', 11), text_color='grey').pack(side='left', padx=10)
-
-            # Price
-            prices = [p.price for p in items]
-            min_p, max_p = min(prices), max(prices)
-            p_text = f'₱{min_p:.2f}' if min_p == max_p else f'₱{min_p:.2f}-₱{max_p:.2f}'
-            ctk.CTkLabel(row, text=p_text, width=w_price,
-                         anchor='center').pack(side='left', padx=10)
-
-            # Stock
-            total_stock = sum(p.stock for p in items)
-            ctk.CTkLabel(row, text=str(total_stock), width=w_stock, anchor='center', font=('Inter', 12, 'bold'),
-                         text_color='red' if total_stock < 6 else 'black').pack(side='left', padx=10)
-
-            # Manage Button
-            ctk.CTkButton(row, text='Manage', width=w_button, height=28, fg_color='#34495e',
-                          command=lambda n=name: self.filter_inventory_by_name(n)).pack(side='right', padx=10)
 
     def confirm_delete(self, product):
         if messagebox.askyesno('Delete', f'Are you sure you want to delete {product.name} ({product.get_variant_label()})?'):

@@ -349,3 +349,7 @@ def generate_product_barcode(product_id):
 
     full_path = my_barcode.save(file_path, options=writer_options)
     return full_path
+
+
+def get_low_stock_items(store_products, threshold=5):
+    return [p for p in store_products if p.stock <= threshold]
