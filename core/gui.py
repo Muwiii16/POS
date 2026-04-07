@@ -33,13 +33,16 @@ class POSapp(ctk.CTk):
         self.current_page = 'POS'
         self.show_page("POS")
 
+        self._resize_timer = None
+
         def safe_refresh(event):
             if event.widget == self:
-                try:
-                    if hasattr(self, 'current_page') and self.current_page == 'POS':
-                        self.refresh_catalog(event)
-                except:
-                    pass
+                if self._resize_timer is not None:
+                    self.after_cancel(self._resize_timer)
+
+                self._resize_timer = self.after(
+                    100, self.execute_optimized_refresh)
+
         self.bind('<Configure>', safe_refresh)
 
         self.protocol('WM_DELETE_WINDOW', self.on_closing)
@@ -142,13 +145,18 @@ class POSapp(ctk.CTk):
 
         # POS page
         self.pos_page = ctk.CTkFrame(self, fg_color='transparent')
+        self.pos_page.grid_columnconfigure(0, weight=1)
+        self.pos_page.grid_rowconfigure(1, weight=1)
+
         self.search_entry = ctk.CTkEntry(
             self.pos_page, placeholder_text="Search Product...", height=40)
-        self.search_entry.pack(pady=(0, 20), fill='x')
+        self.search_entry.grid(row=0, column=0, pady=(0, 20), sticky='ew')
         self.search_entry.bind('<KeyRelease>', self.find_product)
+
         self.catalog_scroll = ctk.CTkScrollableFrame(
             self.pos_page, fg_color='transparent')
-        self.catalog_scroll.pack(fill='both', expand=True)
+        self.catalog_scroll.grid(row=1, column=0, sticky='nsew')
+        self.catalog_scroll._parent_canvas.grid_columnconfigure(0, weight=1)
         # POS page
 
         # Inventory Management page
@@ -349,14 +357,16 @@ class POSapp(ctk.CTk):
                 row += 1
 
     def create_card(self, name, row, col):
-        card = ctk.CTkFrame(self.catalog_scroll,
+        card = ctk.CTkFrame(self.catalog_scroll, width=200, height=180,
                             fg_color='white', corner_radius=15)
-        card.grid(row=row, column=col, padx=10, pady=10)
+        card.grid(row=row, column=col, padx=10, pady=10, sticky='nsew')
 
-        ctk.CTkLabel(card, text=name.capitalize(), font=(
-            'Inter', 16, 'bold')).pack(pady=20, padx=20)
-        ctk.CTkButton(card, text='Select Options',
-                      command=lambda n=name: self.open_variant_modal(n)).pack(pady=10)
+        card.grid_propagate(False)
+
+        ctk.CTkLabel(card, text=name.capitalize(), text_color='black', font=(
+            'Inter', 16, 'bold'), wraplength=180).pack(pady=(20, 10), padx=10)
+        ctk.CTkButton(card, text='Select Options', width=160,
+                      command=lambda n=name: self.open_variant_modal(n)).pack(pady=15)
 
     def refresh_catalog(self, event=None):
         if not hasattr(self, 'catalog_scroll') or not self.catalog_scroll.winfo_exists():
@@ -371,7 +381,7 @@ class POSapp(ctk.CTk):
         if not isinstance(available_width, int) or available_width < 200:
             max_cols = 3
         else:
-            max_cols = max(1, (available_width - 29)//240)
+            max_cols = max(1, (available_width - 10)//220)
 
         for child in self.catalog_scroll.winfo_children():
             child.destroy()
@@ -385,6 +395,9 @@ class POSapp(ctk.CTk):
             if col >= max_cols:
                 col = 0
                 row += 1
+
+        for i in range(max_cols):
+            self.catalog_scroll.grid_columnconfigure(i, weight=1)
 
     def open_variant_modal(self, category_name):
         modal = ctk.CTkToplevel(self)
@@ -889,6 +902,7 @@ class POSapp(ctk.CTk):
                       fg_color='transparent', text_color='grey').pack(pady=5)
 
     def filter_inventory_by_name(self, name):
+
         results = [p for p in self.store_products if p.name == name]
 
         results.sort(key=lambda p: p.get_variant_label())
@@ -1059,6 +1073,11 @@ class POSapp(ctk.CTk):
         ctk.CTkButton(modal, text='Confirm Restock',
                       command=confirm, fg_color='#27ae60').pack(pady=10)
 
+    def execute_optimized_refresh(self):
+        if hasattr(self, 'current_page') and self.current_page == 'POS':
+            self.refresh_catalog()
+
+        self._resize_timer = None
 
 # Under Construction
 #
