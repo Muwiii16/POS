@@ -1,0 +1,6 @@
+customtkinter
+pillow
+matplotlib
+python-barcode
+thefuzz
+python-Levenshtein

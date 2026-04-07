@@ -353,3 +353,6 @@ def generate_product_barcode(product_id):
 
 def get_low_stock_items(store_products, threshold=5):
     return [p for p in store_products if p.stock <= threshold]
+
+
+

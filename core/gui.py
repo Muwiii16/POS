@@ -30,6 +30,17 @@ class POSapp(ctk.CTk):
 
         self.protocol('WM_DELETE_WINDOW', self.on_closing)
 
+        self.inv_search_entry.bind('<KeyRelease>', self.on_search_change)
+
+    def on_search_change(self, event):
+        query = self.inv_search_entry.get().strip().lower()
+        if not query:
+            self.refresh_inventory_table()
+        else:
+            results = [
+                p for p in self.store_products if query in p.name.lower()]
+            self.refresh_inventory_table(results)
+
     def center_window(self, width=1200, height=800):
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
@@ -205,6 +216,14 @@ class POSapp(ctk.CTk):
             alert_banner = ctk.CTkButton(self.inventory_alert_frame, text=msg, fg_color=banner_color,
                                          hover_color='#d35400', font=('Inter', 13, 'bold'), command=self.show_only_low_stock)
             alert_banner.pack(fill='x', pady=5)
+
+        if products_to_show is not None:
+            back_btn = ctk.CTkButton(
+                self.inventory_alert_frame,
+                text='⬅ Back to Full Inventory',
+                fg_color='#7f8c8d',
+                command=self.clear_inventory_filter
+            ).pack(pady=5)
 
         for child in self.inventory_scroll.winfo_children():
             child.destroy()
@@ -971,6 +990,8 @@ class POSapp(ctk.CTk):
             import os
             os._exit(0)
 
-
+    def clear_inventory_filter(self):
+        self.inv_search_entr.delete(0, 'end')
+        self.refresh_inventory_table()
 # Under Construction
 #
