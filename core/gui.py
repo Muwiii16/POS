@@ -1087,4 +1087,7 @@ class POSapp(ctk.CTk):
         self._resize_timer = None
 
 # Under Construction
-#
+# Could add ledgers: Cash Ledger, Credit ledger, Paymment Ledger, Expenses
+# Stock sa variant page make it able to add more than 1 at a time
+# clear cart payment after each transaction
+# Optimize the inventory tab
