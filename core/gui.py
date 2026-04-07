@@ -21,6 +21,8 @@ class POSapp(ctk.CTk):
         self.cart = []
         self.store_products = engine.load_inventory()
 
+        self.product_cards = {}
+
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=0, minsize=350)
@@ -356,17 +358,17 @@ class POSapp(ctk.CTk):
                 col = 0
                 row += 1
 
-    def create_card(self, name, row, col):
+    def create_card(self, name):
         card = ctk.CTkFrame(self.catalog_scroll, width=200, height=180,
                             fg_color='white', corner_radius=15)
-        card.grid(row=row, column=col, padx=10, pady=10, sticky='nsew')
 
         card.grid_propagate(False)
 
         ctk.CTkLabel(card, text=name.capitalize(), text_color='black', font=(
             'Inter', 16, 'bold'), wraplength=180).pack(pady=(20, 10), padx=10)
         ctk.CTkButton(card, text='Select Options', width=160,
-                      command=lambda n=name: self.open_variant_modal(n)).pack(pady=15)
+                      command=lambda n=name: self.open_variant_modal(n)).pack(side='bottom', pady=15)
+        return card
 
     def refresh_catalog(self, event=None):
         if not hasattr(self, 'catalog_scroll') or not self.catalog_scroll.winfo_exists():
@@ -383,14 +385,19 @@ class POSapp(ctk.CTk):
         else:
             max_cols = max(1, (available_width - 10)//220)
 
-        for child in self.catalog_scroll.winfo_children():
-            child.destroy()
-
         unique_names = sorted(list(set(p.name for p in self.store_products)))
+
+        for card in self.product_cards.values():
+            card.grid_forget()
 
         row, col = 0, 0
         for name in unique_names:
-            self.create_card(name, row, col)
+            if name not in self.product_cards:
+                self.product_cards[name] = self.create_card(name)
+
+            self.product_cards[name].grid(
+                row=row, column=col, padx=10, pady=10, sticky='nsew')
+
             col += 1
             if col >= max_cols:
                 col = 0

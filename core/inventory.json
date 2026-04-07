@@ -2,7 +2,7 @@
     {
         "name": "Pants",
         "price": 500.0,
-        "stock": 5,
+        "stock": 6,
         "category": "Clothes",
         "barcode": "1001",
         "size": "Large",
@@ -11,7 +11,7 @@
     {
         "name": "Pants",
         "price": 650.0,
-        "stock": 0,
+        "stock": 10,
         "category": "Clothes",
         "barcode": "1002",
         "size": "Small",
@@ -28,7 +28,7 @@
     {
         "name": "iPhone Case",
         "price": 150.0,
-        "stock": 1,
+        "stock": 16,
         "category": "Accessories",
         "barcode": "3001",
         "model": "iPhone 15"
