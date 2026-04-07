@@ -20,7 +20,7 @@
     {
         "name": "Notebook",
         "price": 30.0,
-        "stock": 54,
+        "stock": 50,
         "category": "School Supplies",
         "barcode": "2001",
         "size": "80-leaves"
@@ -36,7 +36,7 @@
     {
         "name": "Ballpen",
         "price": 10.0,
-        "stock": 69,
+        "stock": 66,
         "category": "School Supplies",
         "barcode": "4001",
         "brand": "Panda",
@@ -107,8 +107,8 @@
     },
     {
         "name": "Cap",
-        "price": 120.0,
-        "stock": 17,
+        "price": 150.0,
+        "stock": 35,
         "category": "Headwear",
         "barcode": "6002",
         "color": "Black"
@@ -116,7 +116,7 @@
     {
         "name": "Toothpaste",
         "price": 20.0,
-        "stock": 30,
+        "stock": 29,
         "category": "Consumable",
         "barcode": "6003",
         "brand": "Colgate"
@@ -132,7 +132,7 @@
     {
         "name": "Cobra",
         "price": 30.0,
-        "stock": 37,
+        "stock": 36,
         "category": "Beverages",
         "barcode": "10000001",
         "size": "Sakto"

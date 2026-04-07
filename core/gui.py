@@ -14,6 +14,9 @@ class POSapp(ctk.CTk):
         super().__init__()
         self.title("Dad's Store POS")
         self.center_window(1200, 800)
+        self.minsize(1100, 700)
+
+        self.after(0, lambda: self.state('zoomed'))
 
         self.cart = []
         self.store_products = engine.load_inventory()
@@ -26,7 +29,18 @@ class POSapp(ctk.CTk):
         self.setup_sidebar()
         self.setup_main_pages()
         self.setup_cart_view()
+
+        self.current_page = 'POS'
         self.show_page("POS")
+
+        def safe_refresh(event):
+            if event.widget == self:
+                try:
+                    if hasattr(self, 'current_page') and self.current_page == 'POS':
+                        self.refresh_catalog(event)
+                except:
+                    pass
+        self.bind('<Configure>', safe_refresh)
 
         self.protocol('WM_DELETE_WINDOW', self.on_closing)
 
@@ -87,6 +101,7 @@ class POSapp(ctk.CTk):
         self.eod_button.pack(pady=10, padx=20, side='bottom')
 
     def show_page(self, page):
+        self.current_page = page
         self.pos_page.grid_forget()
         self.add_page.grid_forget()
         self.inventory_page.grid_forget()
@@ -238,11 +253,11 @@ class POSapp(ctk.CTk):
 
         self.inventory_scroll.update_idletasks()
         current_width = self.inventory_scroll.winfo_width()-40
-        w_name = int(current_width*0.20)
-        w_vars = int(current_width * 0.40)
+        w_name = int(current_width*0.25)
+        w_vars = int(current_width * 0.30)
         w_price = int(current_width * 0.15)
-        w_stock = int(current_width * 0.10)
-        w_button = 100
+        w_stock = int(current_width * 0.15)
+        w_button = 120
 
         header_frame = ctk.CTkFrame(
             self.inventory_scroll, fg_color='#e0e0e0', height=40)
@@ -343,13 +358,23 @@ class POSapp(ctk.CTk):
         ctk.CTkButton(card, text='Select Options',
                       command=lambda n=name: self.open_variant_modal(n)).pack(pady=10)
 
-    def refresh_catalog(self):
+    def refresh_catalog(self, event=None):
         if not hasattr(self, 'catalog_scroll') or not self.catalog_scroll.winfo_exists():
             return
 
+        if event and hasattr(event, 'width'):
+            available_width = event.width
+        else:
+            self.catalog_scroll.update_idletasks()
+            available_width = self.catalog_scroll.winfo_width()
+
+        if not isinstance(available_width, int) or available_width < 200:
+            max_cols = 3
+        else:
+            max_cols = max(1, (available_width - 29)//240)
+
         for child in self.catalog_scroll.winfo_children():
-            if child.winfo_exists():
-                child.destroy()
+            child.destroy()
 
         unique_names = sorted(list(set(p.name for p in self.store_products)))
 
@@ -357,7 +382,7 @@ class POSapp(ctk.CTk):
         for name in unique_names:
             self.create_card(name, row, col)
             col += 1
-            if col > 2:
+            if col >= max_cols:
                 col = 0
                 row += 1
 
@@ -645,18 +670,29 @@ class POSapp(ctk.CTk):
 
     def open_edit_modal(self, product):
         modal = ctk.CTkToplevel(self)
-        modal.geometry('400x500')
-        modal.title(f'Editing {product.name}')
+        modal.title(f'Managing {product.name}')
+
+        width = 400
+        height = 520
+
+        self.center_popup(modal, width, height)
+
         modal.attributes('-topmost', True)
+        modal.grab_set()
 
         ctk.CTkLabel(modal, text='Edit Product', font=(
             'Inter', 20, 'bold')).pack(pady=20)
 
+        info_text = f'Current Stock: {product.stock} | Current Price: ₱{product.price:.2f}'
+        ctk.CTkLabel(modal, text=info_text, font=('Inter', 11),
+                     text_color="grey").pack(pady=(0, 10))
+
         name_entry = self.create_edit_field(modal, 'Name', product.name)
         price_entry = self.create_edit_field(
             modal, 'Price', str(product.price))
-        stock_entry = self.create_edit_field(
-            modal, 'Stock', str(product.stock))
+        stock_add_entry = self.create_edit_field(
+            modal, 'Add to Stock', '')
+        stock_add_entry.configure(placeholder_text='0')
 
         def save_changes():
 
@@ -664,7 +700,13 @@ class POSapp(ctk.CTk):
                 engine.history.save_state(self.store_products)
                 product.name = name_entry.get()
                 product.price = float(price_entry.get())
-                product.stock = int(stock_entry.get())
+
+                raw_val = stock_add_entry.get().strip()
+
+                added_qty = int(raw_val) if raw_val else 0
+
+                if added_qty != 0:
+                    product.stock += added_qty
 
                 engine.save_inventory(self.store_products)
                 self.refresh_inventory_table()
@@ -991,7 +1033,32 @@ class POSapp(ctk.CTk):
             os._exit(0)
 
     def clear_inventory_filter(self):
-        self.inv_search_entr.delete(0, 'end')
+        self.inv_search_entry.delete(0, 'end')
         self.refresh_inventory_table()
+
+    def open_restock_modal(self, product):
+        modal = ctk.CTkToplevel(self)
+        modal.title(f'Restock: {product.name}')
+        modal.geometry('400x300')
+        modal.attributes('-topmost', True)
+
+        ctk.CTkLabel(modal, text=f'Restocking {product.get_variant_label()}', font=(
+            'Inter', 14, 'bold')).pack(pady=10)
+
+        qty_entry = ctk.CTkEntry(
+            modal, placeholder_text='Enter quantity to add...')
+        qty_entry.pack(pady=20)
+
+        def confirm():
+            added_qty = int(qty_entry.get())
+            product.stock += added_qty
+            engine.save_inventory(self.store_products)
+            self.refresh_inventory_table()
+            modal.destroy()
+
+        ctk.CTkButton(modal, text='Confirm Restock',
+                      command=confirm, fg_color='#27ae60').pack(pady=10)
+
+
 # Under Construction
 #
