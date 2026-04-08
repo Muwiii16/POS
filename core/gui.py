@@ -570,11 +570,11 @@ class POSapp(ctk.CTk):
 # CONTINUE HERE!!!
 
         self.total_lbl = ctk.CTkLabel(
-            self.cart_frame, text=(self.cart_container, fg_color='transparent'))
-        self.total_lbl.pack(pady=10)
+            payment_frame, text='Total: ₱0.00', text_color=TEXT_COLOR, font=('Inter', 24, 'bold'))
+        self.total_lbl.pack(pady=(0, 15))
 
-        ctk.CTkLabel(payment_frame, text='Payment Amount: ',
-                     font=('Inter', 12)).pack()
+        ctk.CTkLabel(payment_frame, text='Payment Amount: ', text_color='#A4907C'
+                     font=('Inter', 12, 'bold')).pack(anchor'w', padx=5)
         self.payment_entry = ctk.CTkEntry(
             payment_frame, placeholder_text='0.00', justify='center')
         self.payment_entry.pack(pady=5, fill='x')
