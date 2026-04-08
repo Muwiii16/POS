@@ -5,6 +5,12 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from core import engine
 
+BG_COLOR = '#F7F3F0'
+CARD_COLOR = '#FFFFFF'
+ACCENT_COLOR = '#8D7B68'
+TEXT_COLOR = '#403933'
+BUTTON_HOVER = '#A4907C'
+
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
 
@@ -51,6 +57,8 @@ class POSapp(ctk.CTk):
 
         self.inv_search_entry.bind('<KeyRelease>', self.on_search_change)
 
+        self.configure(fg_color=BG_COLOR)
+
     def on_search_change(self, event):
         query = self.inv_search_entry.get().strip().lower()
         if not query:
@@ -83,27 +91,29 @@ class POSapp(ctk.CTk):
         popup.geometry(f'{width}x{height}+{x}+{y}')
 
     def setup_sidebar(self):
-        self.sidebar = ctk.CTkFrame(self, width=200, corner_radius=0)
+        self.sidebar = ctk.CTkFrame(
+            self, width=200, corner_radius=0, fg_color='#E8E2DE')
         self.sidebar.grid(row=0, column=0, sticky="nsew")
+        self.sidebar.grid_rowconfigure(4, weight=1)
 
         ctk.CTkLabel(self.sidebar, text="🏪 POS", font=(
-            'Inter', 20, 'bold')).pack(pady=20)
+            'Inter', 20, 'bold'), text_color=TEXT_COLOR).pack(pady=30, padx=20)
 
         self.pos_btn = ctk.CTkButton(
-            self.sidebar, text="POS", fg_color='transparent', text_color='black', command=lambda: self.show_page("POS"))
-        self.pos_btn.pack(pady=10, padx=10)
+            self.sidebar, text="Point of Sale", height=45, corner_radius=10,  fg_color=ACCENT_COLOR, hover_color=BUTTON_HOVER, font=('Inter', 13, 'bold'), command=lambda: self.show_page("POS"))
+        self.pos_btn.pack(pady=10, padx=20)
 
-        self.inventory_btn = ctk.CTkButton(self.sidebar, text='Inventory', fg_color='transparent',
-                                           text_color='black', command=lambda: self.show_page("Inventory"))
-        self.inventory_btn.pack(pady=10, padx=10)
+        self.inventory_btn = ctk.CTkButton(self.sidebar, text='Inventory', height=45, corner_radius=10, fg_color='transparent',
+                                           text_color=TEXT_COLOR, hover_color='#D1C7BD', font=('Inter', 13), command=lambda: self.show_page("Inventory"))
+        self.inventory_btn.pack(pady=10, padx=20)
 
-        self.add_btn = ctk.CTkButton(self.sidebar, text="Add Product", fg_color="transparent",
-                                     text_color='black', command=lambda: self.show_page('Add'))
-        self.add_btn.pack(pady=10, padx=10)
+        self.add_btn = ctk.CTkButton(self.sidebar, text="Add New Product", height=45, corner_radius=10, fg_color="transparent",
+                                     text_color=TEXT_COLOR, hover_color='#D1C7BD', font=('Inter', 13), command=lambda: self.show_page('Add'))
+        self.add_btn.pack(pady=10, padx=20)
 
-        self.eod_button = ctk.CTkButton(self.sidebar, text='End of Day',
-                                        fg_color='#e67e22', hover_color='#d35400', command=self.handle_eod_report)
-        self.eod_button.pack(pady=10, padx=20, side='bottom')
+        self.eod_button = ctk.CTkButton(self.sidebar, text='📊 End of Day Report', height=45, corner_radius=10,
+                                        fg_color='#D98E73', hover_color='#BF755A', font=('Inter', 13, 'bold'), command=self.handle_eod_report)
+        self.eod_button.pack(pady=20, padx=20, side='bottom')
 
     def show_page(self, page):
         self.current_page = page
@@ -118,30 +128,31 @@ class POSapp(ctk.CTk):
             self.cart_frame.grid_forget()
             self.grid_columnconfigure(2, weight=0, minsize=0)
 
-        active_color = 'blue'
-        inactive_color = 'grey'
+        active_color = ACCENT_COLOR
+        inactive_color = 'transparent'
 
         for btn in [self.pos_btn, self.add_btn, self.inventory_btn]:
-            btn.configure(fg_color=inactive_color, text_color='black')
+            btn.configure(fg_color=inactive_color,
+                          text_color=TEXT_COLOR, font=('Inter', 13))
 
         match page:
             case 'POS':
                 self.pos_page.grid(
-                    row=0, column=1, sticky="nsew", padx=20, pady=5)
+                    row=0, column=1, sticky="nsew", padx=20, pady=20)
                 self.pos_btn.configure(
-                    fg_color=active_color, text_color='white')
+                    fg_color=active_color, text_color='white', font=('Inter', 13, 'bold'))
                 self.refresh_catalog()
             case 'Inventory':
                 self.inventory_page.grid(
-                    row=0, column=1, sticky="nsew", padx=20, pady=5)
+                    row=0, column=1, sticky="nsew", padx=20, pady=20)
                 self.inventory_btn.configure(
-                    fg_color=active_color, text_color='white')
+                    fg_color=active_color, text_color='white', font=('Inter', 13, 'bold'))
                 self.refresh_inventory_table()
             case 'Add':
                 self.add_page.grid(
-                    row=0, column=1, sticky="nsew", padx=20, pady=5)
+                    row=0, column=1, sticky="nsew", padx=20, pady=20)
                 self.add_btn.configure(
-                    fg_color=active_color, text_color='white')
+                    fg_color=active_color, text_color='white', font=('Inter', 13, 'bold'))
 
     def setup_main_pages(self):
 
@@ -151,7 +162,7 @@ class POSapp(ctk.CTk):
         self.pos_page.grid_rowconfigure(1, weight=1)
 
         self.search_entry = ctk.CTkEntry(
-            self.pos_page, placeholder_text="Search Product...", height=40)
+            self.pos_page, placeholder_text="🔍 Search Product...", height=45, corner_radius=15, border_width=2, fg_color=CARD_COLOR, border_color='#E8E2DE')
         self.search_entry.grid(row=0, column=0, pady=(0, 20), sticky='ew')
         self.search_entry.bind('<KeyRelease>', self.find_product)
 
@@ -360,13 +371,16 @@ class POSapp(ctk.CTk):
 
     def create_card(self, name):
         card = ctk.CTkFrame(self.catalog_scroll, width=200, height=180,
-                            fg_color='white', corner_radius=15)
+                            fg_color='white', corner_radius=20, border_width=1, border_color='#E8E2DE')
 
         card.grid_propagate(False)
 
         ctk.CTkLabel(card, text=name.capitalize(), text_color='black', font=(
             'Inter', 16, 'bold'), wraplength=180).pack(pady=(20, 10), padx=10)
-        ctk.CTkButton(card, text='Select Options', width=160,
+
+        ctk.CTkLabel(card, text='Premium Selection', text_color='#A4907C')
+
+        ctk.CTkButton(card, text='Select Options', width=170, height=35, corner_radius=10, fg_color=ACCENT_COLOR, hover_color=BUTTON_HOVER, font=('Inter', 13, 'bold'),
                       command=lambda n=name: self.open_variant_modal(n)).pack(side='bottom', pady=15)
         return card
 
@@ -396,7 +410,7 @@ class POSapp(ctk.CTk):
                 self.product_cards[name] = self.create_card(name)
 
             self.product_cards[name].grid(
-                row=row, column=col, padx=10, pady=10, sticky='nsew')
+                row=row, column=col, padx=15, pady=15, sticky='nsew')
 
             col += 1
             if col >= max_cols:
@@ -536,22 +550,27 @@ class POSapp(ctk.CTk):
         update_ui_on_select()
 
     def setup_cart_view(self):
+
         self.cart_frame = ctk.CTkFrame(
-            self, width=450, fg_color='white', corner_radius=0)
+            self, width=400, fg_color=BG_COLOR, corner_radius=0)
         self.cart_frame.grid(row=0, column=2, sticky='nsew')
         self.cart_frame.grid_propagate(False)
 
-        ctk.CTkLabel(self.cart_frame, text="🛒 Cart",
-                     font=('Inter', 18, 'bold')).pack(pady=20)
+        ctk.CTkLabel(self.cart_frame, text="🛒 Current Order", text_color=TEXT_COLOR,
+                     font=('Inter', 20, 'bold')).pack(pady=(30, 20))
         self.cart_items_frame = ctk.CTkScrollableFrame(
-            self.cart_frame, fg_color='transparent', height=400)
-        self.cart_items_frame.pack(fill='both', expand=True, padx=2)
+            self.cart_frame, fg_color=CARD_COLOR, corner_radius=15, border_width=1, border_color='#E8E2DE')
 
-        payment_frame = ctk.CTkFrame(self.cart_frame, fg_color='transparent')
-        payment_frame.pack(pady=5)
+        self.cart_items_frame.pack(fill='both', expand=True, padx=20, pady=5)
+
+        payment_frame = ctk.CTkFrame(
+            self.cart_container, fg_color='transparent')
+        payment_frame.pack(pady=20, padx=20, fill='x')
+
+# CONTINUE HERE!!!
 
         self.total_lbl = ctk.CTkLabel(
-            self.cart_frame, text='Total: ₱0.00', font=('Inter', 20, 'bold'))
+            self.cart_frame, text=(self.cart_container, fg_color='transparent'))
         self.total_lbl.pack(pady=10)
 
         ctk.CTkLabel(payment_frame, text='Payment Amount: ',
