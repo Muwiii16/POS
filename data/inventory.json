@@ -116,7 +116,7 @@
     {
         "name": "Toothpaste",
         "price": 20.0,
-        "stock": 28,
+        "stock": 27,
         "category": "Consumable",
         "barcode": "6003",
         "brand": "Colgate"
