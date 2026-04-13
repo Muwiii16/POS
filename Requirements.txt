@@ -1,6 +1,7 @@
-customtkinter
-pillow
+flet
 matplotlib
 python-barcode
 thefuzz
 python-Levenshtein
+opencv-python
+Pillow
