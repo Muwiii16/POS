@@ -58,12 +58,14 @@ def remove_item_from_cart(product, cart):
 
 def get_change_info(payment_text, total):
     try:
-        payment = float(payment_text)if payment_text else 0
+        if not payment_text or not payment_text.strip():
+            return 'Enter Payment Amount', 'grey'
+        payment = float(payment_text)
         change = payment-total
         if change >= 0:
             return f'Change: ₱{change:.2f}', 'green'
         else:
-            return 'Insufficient Amout', 'red'
+            return f'Missing: ₱{abs(change):,.2f}', 'red'
     except ValueError:
         return 'Invalid Amount', 'red'
 
@@ -353,6 +355,3 @@ def generate_product_barcode(product_id):
 
 def get_low_stock_items(store_products, threshold=5):
     return [p for p in store_products if p.stock <= threshold]
-
-
-

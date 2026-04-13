@@ -564,47 +564,56 @@ class POSapp(ctk.CTk):
         self.cart_items_frame.pack(fill='both', expand=True, padx=20, pady=5)
 
         payment_frame = ctk.CTkFrame(
-            self.cart_container, fg_color='transparent')
+            self.cart_frame, fg_color='transparent')
         payment_frame.pack(pady=20, padx=20, fill='x')
 
 # CONTINUE HERE!!!
 
         self.total_lbl = ctk.CTkLabel(
-            self.cart_frame, text=(self.cart_container, fg_color='transparent'))
-        self.total_lbl.pack(pady=10)
+            payment_frame, text='Total: ₱0.00', text_color=TEXT_COLOR, font=('Inter', 24, 'bold'))
+        self.total_lbl.pack(pady=(0, 15))
 
-        ctk.CTkLabel(payment_frame, text='Payment Amount: ',
-                     font=('Inter', 12)).pack()
+        ctk.CTkLabel(payment_frame, text='Payment Amount: ', text_color='#A4907C',
+                     font=('Inter', 12, 'bold'))
+        self.total_lbl.pack(anchor='w', padx=5)
+
         self.payment_entry = ctk.CTkEntry(
-            payment_frame, placeholder_text='0.00', justify='center')
+            payment_frame, placeholder_text='0.00', height=45, corner_radius=10, border_width=2, fg_color=CARD_COLOR, border_color='#E8E2DE', font=('Inter', 16), justify='center')
         self.payment_entry.pack(pady=5, fill='x')
         self.payment_entry.bind('<KeyRelease>', self.calculate_change)
         self.payment_entry.bind(
             '<Return>', lambda event: self.process_checkout())
 
         self.change_lbl = ctk.CTkLabel(
-            payment_frame, text='Change: ₱0.00', font=('Inter', 16), text_color='green')
-        self.change_lbl.pack(pady=5)
+            payment_frame, text='Change: ₱0.00', font=('Inter', 16, 'bold'), text_color='#27ae60')
+        self.change_lbl.pack(pady=10)
 
-        self.checkout_btn = ctk.CTkButton(self.cart_frame, text='COMPLETE CHECKOUT', height=40, fg_color='#2ecc71', font=(
-            'Inter', 14, 'bold'), command=self.process_checkout)
-        self.checkout_btn.pack(pady=20, padx=20, fill='x')
+        self.checkout_btn = ctk.CTkButton(self.cart_frame, text='COMPLETE CHECKOUT', height=50, corner_radius=15, fg_color=ACCENT_COLOR, hover_color=BUTTON_HOVER, font=(
+            'Inter', 15, 'bold'), command=self.process_checkout)
+        self.checkout_btn.pack(pady=20, padx=20, fill='x', side='bottom')
 
     def process_checkout(self, event=None):
         payment_amount = self.payment_entry.get()
         success, total, result = engine.process_checkout(
             self.cart, payment_amount, self.store_products)
         if success:
-            def safe_refresh():
-                if self.winfo_exists():
-                    self.update_cart_display()
-                    self.refresh_catalog()
 
             paid = float(payment_amount)
             change = result
-
             final_cart = list(self.cart)
+
             self.cart = []
+            self.payment_entry.delete(0, 'end')
+
+            self.total_lbl.configure(text='Total: ₱0.00')
+
+            self.update_cart_display()
+            self.calculate_change()
+
+            def safe_refresh():
+                if self.winfo_exists():
+                    self.refresh_catalog()
+
             self.after(100, safe_refresh)
 
             self.show_receipt_modal(final_cart, total, paid, change)
@@ -645,8 +654,11 @@ class POSapp(ctk.CTk):
         total = engine.calculate_totals(self.cart)
         payment_text = self.payment_entry.get()
 
-        display_text, color = engine.get_change_info(payment_text, total)
-        self.change_lbl.configure(text=display_text, text_color=color)
+        message, status_color = engine.get_change_info(payment_text, total)
+        cozy_color = '#27ae60' if status_color == 'green' else '#e74c3c'
+        if status_color == 'grey':
+            cozy_color = '#A4907C'
+        self.change_lbl.configure(text=message, text_color=cozy_color)
 
     def add_to_cart(self, product, quantity=1, parent_win=None):
         target_parent = parent_win if parent_win else self
@@ -672,29 +684,30 @@ class POSapp(ctk.CTk):
 
         for (name, variant_label), (prod, qty) in grouped_items.items():
             row = ctk.CTkFrame(self.cart_items_frame,
-                               fg_color='#f0f0f0', corner_radius=8)
-            row.pack(fill='x', pady=2, padx=5)
+                               fg_color=BG_COLOR, corner_radius=10)
+            row.pack(fill='x', pady=4, padx=10)
 
             lbl = ctk.CTkLabel(row, text=f'{name}\n({variant_label})', font=(
-                'Inter', 16), anchor='w', justify='left')
-            lbl.pack(side='left', padx=10, pady=5, fill='x', expand=True)
+                'Inter', 14, 'bold'), text_color=TEXT_COLOR, anchor='w', justify='left')
+            lbl.pack(side='left', padx=15, pady=10, fill='x', expand=True)
 
             btn_frame = ctk.CTkFrame(row, fg_color='transparent')
-            btn_frame.pack(side='right', padx=5)
+            btn_frame.pack(side='right', padx=10)
 
-            ctk.CTkButton(btn_frame, text='-', width=25, height=25,
+            ctk.CTkButton(btn_frame, text='-', width=28, height=28, fg_color=ACCENT_COLOR, hover_color=BUTTON_HOVER,
                           command=lambda p=prod: self.remove_one_from_cart(p)).pack(side='left', padx=2)
-            ctk.CTkLabel(btn_frame, text=str(qty), font=(
-                'Inter', 15, 'bold')).pack(side='left', padx=5)
-            ctk.CTkButton(btn_frame, text='+', width=25, height=25,
+            ctk.CTkLabel(btn_frame, text=str(qty), text_color=TEXT_COLOR, font=(
+                'Inter', 14, 'bold')).pack(side='left', padx=8)
+            ctk.CTkButton(btn_frame, text='+', width=28, height=28, fg_color=ACCENT_COLOR, hover_color=BUTTON_HOVER,
                           command=lambda p=prod: self.add_to_cart(p, 1)).pack(side='left', padx=2)
 
             subtotal = prod.price*qty
             ctk.CTkLabel(btn_frame, text=f'₱{subtotal:.2f}', font=(
-                'Inter', 16, 'bold'), text_color='#2980b9', width=70, anchor='e').pack(side='left', padx=(10, 5))
+                'Inter', 15, 'bold'), text_color=ACCENT_COLOR, width=80, anchor='e').pack(side='left', padx=(10, 5))
 
             current_total = engine.calculate_totals(self.cart)
             self.total_lbl.configure(text=f'Total: ₱{current_total:.2f}')
+            self.calculate_change()
 
     def remove_one_from_cart(self, product):
         if engine.remove_item_from_cart(product, self.cart):
