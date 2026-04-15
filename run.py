@@ -23,8 +23,8 @@ def main(page: ft.Page):
 
         page.update()
 
-    rail = ft.NavigationRail(selected_index=0, label_type=ft.NavigationRailLabelType.ALL, min_width=100, min_extended_width=200, bgcolor='#E8E2DE', destinations=[ft.NavigationRailDestination(icon=ft.icons.SHOPPING_CART_OUTLINED, selected_icon=ft.icons.SHOPPING_CART, label='Cashier (POS)'), ft.NavigationRailDestination(
-        icon=ft.icons.INVENTORY_2_OUTLINED, selected_icon=ft.icons.INVENTORY_2, label='Inventory'), ft.NavigationRailDestination(icon=ft.icons.BAR_CHART_OUTLINED, selected_icon=ft.icons.BAR_CHART, label='Reports')], on_change=on_nav_change)
+    rail = ft.NavigationRail(selected_index=0, label_type=ft.NavigationRailLabelType.ALL, min_width=100, min_extended_width=200, bgcolor='#E8E2DE', destinations=[ft.NavigationRailDestination(icon=ft.Icons.SHOPPING_CART_OUTLINED, selected_icon=ft.Icons.SHOPPING_CART, label='Cashier (POS)'), ft.NavigationRailDestination(
+        icon=ft.Icons.INVENTORY_2_OUTLINED, selected_icon=ft.Icons.INVENTORY_2, label='Inventory'), ft.NavigationRailDestination(icon=ft.Icons.BAR_CHART_OUTLINED, selected_icon=ft.Icons.BAR_CHART, label='Reports')], on_change=on_nav_change)
 
     main_content.content = pos_view_content(page)
 
@@ -33,4 +33,4 @@ def main(page: ft.Page):
 
 
 if __name__ == '__main__':
-    ft.app(target=main)
+    ft.run(main)

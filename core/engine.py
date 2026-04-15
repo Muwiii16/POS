@@ -8,8 +8,9 @@ import barcode
 from thefuzz import process
 from barcode.writer import ImageWriter
 from . models import Product
-CURRENT_DIR = os.path.dirname(__file__)
-DATA_FILE = os.path.join(CURRENT_DIR, 'inventory.json')
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(os.path.dirname(
+    CURRENT_DIR), 'data', 'inventory.json')
 
 
 def search_products(query, store_products):
