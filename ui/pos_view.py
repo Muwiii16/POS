@@ -7,6 +7,7 @@ from core.models import Product
 
 def pos_view_content(page: ft.Page):
     all_products = engine.load_inventory()
+    current_cart_total = [0.0]
 
     grouped_products = {}
 
@@ -26,8 +27,6 @@ def pos_view_content(page: ft.Page):
 
     cart_list = ft.ListView(expand=True, spacing=10)
     total_lbl = ft.Text('Total: ₱0.00', size=30, weight='bold')
-
-    current_cart_total = [0.0]
 
     def add_item(p: Product, qty: int):
         row_total = float(p.price) * int(qty)
@@ -129,10 +128,17 @@ def pos_view_content(page: ft.Page):
 
             state['selections'][v_type] = unique_values[0]
 
+            max_columns = 3
+            radio_rows = []
+
+            for i in range(0, len(unique_values), max_columns):
+                chunk = unique_values[i:i + max_columns]
+                radio_rows.append(
+                    ft.Row([ft.Radio(value=val, label=val)for val in chunk])
+                )
+
             radio_group = ft.RadioGroup(
-                content=ft.Row([
-                    ft.Radio(value=val, label=val) for val in unique_values
-                ], wrap=True),
+                content=ft.Column(radio_rows),
                 value=unique_values[0],
                 on_change=create_radio_handler(v_type)
             )
@@ -140,7 +146,7 @@ def pos_view_content(page: ft.Page):
             row_frame = ft.Row([
                 ft.Text(v_type.capitalize(), weight='bold', size=14, width=80),
                 radio_group
-            ], alignment=ft.MainAxisAlignment.START)
+            ], alignment=ft.MainAxisAlignment.START, vertical_alignment=ft.CrossAxisAlignment.START)
 
             dynamic_rows.append(row_frame)
             dynamic_rows.append(ft.Container(height=10))
@@ -173,7 +179,7 @@ def pos_view_content(page: ft.Page):
 
         add_btn.on_click = add_and_close
 
-        dialog_content = ft.Column([
+        dialog_content = ft.Column(controls=[
             ft.Text(product_name.capitalize(), size=22,
                     weight='bold', color='black'),
             ft.Text('Select Options', color='grey', size=12),
@@ -191,12 +197,14 @@ def pos_view_content(page: ft.Page):
             stock_label,
             ft.Container(height=20),
 
+
             add_btn
-        ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, tight=True, width=400)
+        ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, tight=True, width=400, scroll=ft.ScrollMode.AUTO,
+            spacing=15,)
 
         dialog = ft.AlertDialog(
             content=ft.Container(content=dialog_content,
-                                 padding=20, bgcolor='white')
+                                 padding=20, bgcolor='white',)
         )
         update_ui_on_select(is_init=True)
 
