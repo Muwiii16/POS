@@ -41,30 +41,156 @@ def pos_view_content(page: ft.Page):
     def open_variant_selector(product_name):
         variants = grouped_products[product_name]
 
-        variant_options = ft.Column(spacing=10, tight=True)
+        variant_types = []
+        for p in variants:
+            if hasattr(p, 'metadata') and p.metadata:
+                for k in p.metadata.keys():
+                    if k not in variant_types:
+                        variant_types.append(k)
 
-        for v in variants:
-            variant_options.controls.append(
-                ft.ElevatedButton(
-                    content=ft.Row([
-                        ft.Text(v.get_variant_label(), weight='bold'),
-                        ft.Text(f'₱{v.price:.2f}', color='grey')
-                    ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                    on_click=lambda _, item=v: add_to_cart_and_close(item),
-                    style=ft.ButtonStyle(
-                        shape=ft.RoundedRectangleBorder(radius=10))
-                )
+        state = {
+            'selections': {},
+            'qty': 1
+        }
+        price_label = ft.Text(
+            f'₱{variants[0].price:.2f}', size=28, weight='bold')
+        stock_label = ft.Text('', italic=True, size=13)
+        qty_var = ft.TextField(
+            value='1', text_align='center', width=50, height=40, content_padding=0)
+
+        add_btn = ft.ElevatedButton(
+            '🛒 Add to Cart',
+            height=50,
+            style=ft.ButtonStyle(
+                shape=ft.RoundedRectangleBorder(radius=10),
+                bgcolor='#5c6370',
+                color='white',
+            )
+        )
+
+        def get_selected_product():
+            for p in variants:
+                match = True
+                for v_type, selected_val in state['selections'].items():
+                    if not hasattr(p, 'metadata') or str(p.metadata.get(v_type)) != selected_val:
+                        match = False
+                        break
+
+                if match:
+                    return p
+
+            return None
+
+        def update_ui_on_select(e=None, is_init=False):
+            selected = get_selected_product()
+
+            if selected:
+                price_label.value = f'₱{selected.price:.2f}'
+                stock_label.value = f'Stock: {selected.stock}'
+                stock_label.color = 'red' if selected.stock <= 5 else 'green'
+                add_btn.disabled = False
+            else:
+                price_label.value = '---'
+                stock_label.value = 'Out of Stock / Unavailable'
+                stock_label.color = 'grey'
+                add_btn.disabled = True
+
+            qty_var.value = str(state['qty'])
+
+            if not is_init:
+                price_label.update()
+                stock_label.update()
+                qty_var.update()
+                add_btn.update()
+
+        dynamic_rows = []
+
+        def create_radio_handler(v_type_key):
+            def on_change(e):
+                state['selections'][v_type_key] = e.control.value
+                update_ui_on_select()
+            return on_change
+
+        for v_type in variant_types:
+            unique_values = sorted(list(set(str(p.metadata.get(v_type)) for p in variants if hasattr(
+                p, 'metadata') and p.metadata and p.metadata.get(v_type) and str(p.metadata.get(v_type)).lower() != 'none')))
+
+            if not unique_values:
+                continue
+
+            state['selections'][v_type] = unique_values[0]
+
+            radio_group = ft.RadioGroup(
+                content=ft.Row([
+                    ft.Radio(value=val, label=val) for val in unique_values
+                ], wrap=True),
+                value=unique_values[0],
+                on_change=create_radio_handler(v_type)
             )
 
-        def add_to_cart_and_close(item):
-            add_item(item)
-            dialog.open = False
-            page.update()
+            row_frame = ft.Row([
+                ft.Text(v_type.capitalize(), weight='bold', size=14, width=80),
+                radio_group
+            ], alignment=ft.MainAxisAlignment.START)
+
+            dynamic_rows.append(row_frame)
+            dynamic_rows.append(ft.Container(height=10))
+
+        def change_qty(amount):
+            new_val = state['qty']+amount
+            if 1 <= new_val <= 99:
+                state['qty'] = new_val
+                update_ui_on_select()
+
+        qty_section = ft.Container(
+            bgcolor='#f2f2f2',
+            border_radius=10,
+            padding=10,
+            content=ft.Row([
+                ft.ElevatedButton(
+                    '-', width=40, on_click=lambda _: change_qty(-1)),
+                qty_var,
+                ft.ElevatedButton(
+                    '+', width=40, on_click=lambda _: change_qty(1)),
+            ], alignment=ft.MainAxisAlignment.CENTER)
+        )
+
+        def add_and_close(e):
+            prod = get_selected_product()
+            if prod:
+                print(f'Added to cart: {prod.name} (Qty: {state['qty']})')
+                dialog.open = False
+                page.update()
+
+        add_btn.on_click = add_and_close
+
+        dialog_content = ft.Column([
+            ft.Text(product_name.capitalize(), size=22,
+                    weight='bold', color='black'),
+            ft.Text('Select Options', color='grey', size=12),
+            ft.Container(height=10),
+
+            price_label,
+            ft.Container(height=20),
+
+            *dynamic_rows,
+
+            ft.Container(height=10),
+            qty_section,
+            ft.Container(height=10),
+
+            stock_label,
+            ft.Container(height=20),
+
+            add_btn
+        ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, tight=True, width=400)
 
         dialog = ft.AlertDialog(
-            title=ft.Text(f'Select Variant: {product_name}'),
-            content=variant_options,
+            content=ft.Container(content=dialog_content,
+                                 padding=20, bgcolor='white')
         )
+        update_ui_on_select(is_init=True)
+
         page.overlay.append(dialog)
         dialog.open = True
         page.update()
