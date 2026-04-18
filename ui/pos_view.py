@@ -27,15 +27,24 @@ def pos_view_content(page: ft.Page):
     cart_list = ft.ListView(expand=True, spacing=10)
     total_lbl = ft.Text('Total: ₱0.00', size=30, weight='bold')
 
-    def add_item(p: Product):
+    current_cart_total = [0.0]
+
+    def add_item(p: Product, qty: int):
+        row_total = float(p.price) * int(qty)
+        current_cart_total[0] += row_total
+
         cart_list.controls.append(
             ft.ListTile(
-                leading=ft.Icon('coffee', color='#4A4440'),
-                title=ft.Text(p.name, weight='bold'),
-                subtitle=ft.Text(p.get_variant_label()),
-                trailing=ft.Text(f'₱{p.price:.2f}', weight='bold')
+                leading=ft.Text(f'{qty}x', size=18,
+                                weight=ft.FontWeight.BOLD, color='#4A4440'),
+                title=ft.Text(str(p.name), weight=ft.FontWeight.BOLD),
+                subtitle=ft.Text(str(p.get_variant_label()),
+                                 color=ft.Colors.GREY),
+                trailing=ft.Text(f'₱{row_total:.2f}',
+                                 weight=ft.FontWeight.BOLD)
             )
         )
+        total_lbl.value = f'Total: ₱{current_cart_total[0]:.2f}'
         page.update()
 
     def open_variant_selector(product_name):
@@ -158,7 +167,7 @@ def pos_view_content(page: ft.Page):
         def add_and_close(e):
             prod = get_selected_product()
             if prod:
-                print(f'Added to cart: {prod.name} (Qty: {state['qty']})')
+                add_item(prod, state['qty'])
                 dialog.open = False
                 page.update()
 
@@ -190,6 +199,8 @@ def pos_view_content(page: ft.Page):
                                  padding=20, bgcolor='white')
         )
         update_ui_on_select(is_init=True)
+
+        page.overlay.clear()
 
         page.overlay.append(dialog)
         dialog.open = True
