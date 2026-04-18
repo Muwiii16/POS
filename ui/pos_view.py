@@ -21,15 +21,19 @@ def pos_view_content(page: ft.Page):
         child_aspect_ratio=1.0,
         spacing=20,
         run_spacing=20,
+        padding=10,
     )
+
+    cart_list = ft.ListView(expand=True, spacing=10)
+    total_lbl = ft.Text('Total: ₱0.00', size=30, weight='bold')
 
     def add_item(p: Product):
         cart_list.controls.append(
             ft.ListTile(
-                leading=ft.Icon('coffee'),
-                title=ft.Text(p.name),
+                leading=ft.Icon('coffee', color='#4A4440'),
+                title=ft.Text(p.name, weight='bold'),
                 subtitle=ft.Text(p.get_variant_label()),
-                trailing=ft.Text(f'₱{p.price:.2f}')
+                trailing=ft.Text(f'₱{p.price:.2f}', weight='bold')
             )
         )
         page.update()
@@ -66,34 +70,36 @@ def pos_view_content(page: ft.Page):
         page.update()
 
     def create_category_card(name, variants):
-        preview_price = variants[0].price
+        # Bare minimum logic
+        preview_price = [v.price for v in variants]
+        min_p = min(preview_price)
+        max_p = max(preview_price)
+
+        if min_p == max_p:
+            price_text = f'₱{min_p:.2f}'
+        else:
+            price_text = f'₱{min_p:.2f} - ₱{max_p:.2f}'
 
         return ft.Container(
-            content=ft.Column([
-                ft.Icon('inventory_2', size=50, color='#A4907C'),
-                ft.Text(name, weight='bold', size=20,
-                        text_align='center', color='black'),
-                ft.Text(f'{len(variants)} Variants', color='grey',
-                        size=14),
-                ft.Text(f'₱{preview_price:.2f}', size=18,
-                        color='#4A4440', weight='bold')
-            ],
+            bgcolor='white',  # Making it red so we KNOW the new code ran
+            border_radius=20,
+            padding=20,
+            shadow=ft.BoxShadow(blur_radius=15, color='black12'),
+            on_click=lambda _: open_variant_selector(name),
+            content=ft.Column(
+                controls=[
+                    ft.Text(name, weight='bold', size=18,
+                            color='black'),
+                    ft.Text(f'{len(variants)} Variants',
+                            color='grey', size=12),
+                    ft.Text(price_text, size=14,
+                            color='#A4907C', weight='bold')
+                ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=5,
-            ),
-
-            bgcolor=ft.Colors.WHITE,
-            border_radius=20,
-            alignment=ft.Alignment(0, 0),
-            on_click=lambda _: open_variant_selector(name),
-            shadow=ft.BoxShadow(blur_radius=15, color='black12'),
+                spacing=5
+            )
         )
-
-    cart_list = ft.ListView(expand=True, spacing=10)
-    total_lbl = ft.Text('Total: ₱0.00', size=30, weight='bold')
-
-    print(f'Creating {len(grouped_products)} category cards...')
     for name, variants in grouped_products.items():
         product_grid.controls.append(create_category_card(name, variants))
 
@@ -111,7 +117,7 @@ def pos_view_content(page: ft.Page):
             content=ft.Column([
                 ft.Text('Current Order', size=25, weight='bold'),
                 ft.Divider(),
-                cart_items_container := ft.Container(content=cart_list, expand=True),
+                ft.Container(content=cart_list, expand=True),
                 ft.Divider(),
                 total_lbl,
                 ft.ElevatedButton(
