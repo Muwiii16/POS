@@ -73,10 +73,10 @@ def pos_view_content(page: ft.Page):
                         ft.Text(p.get_variant_label(), size=11, color='grey'),
                         ft.Text(f'₱{p.price:.2f}', size=12),
                     ], expand=True),
-                    ft.IconButton(icon=ft.icons.REMOVE, icon_color='red',
+                    ft.IconButton('-', icon_color='red',
                                   on_click=create_qty_handler(key, -1, p.stock)),
                     ft.Text(str(qty), weight='bold', size=16),
-                    ft.IconButton(icon=ft.icons.ADD, icon_color='green',
+                    ft.IconButton('+', icon_color='green',
                                   on_click=create_qty_handler(key, 1, p.stock)),
                 ])
             )
@@ -103,7 +103,7 @@ def pos_view_content(page: ft.Page):
     total_lbl = ft.Text('Total: ₱0.00', size=30, weight='bold')
 
     def add_item(p: Product, qty: int):
-        key = f'{p.name} - {p.get_variant_label}'
+        key = f'{p.name} - {p.get_variant_label()}'
         if key in cart_state:
             if cart_state[key]['qty']+qty <= p.stock:
                 cart_state[key]['qty'] += qty
@@ -160,7 +160,7 @@ def pos_view_content(page: ft.Page):
             page.close(receipt_dialog)
             cart_state.clear()
             cash_input.value = ''
-            refresh_cart_ui
+            refresh_cart_ui()
 
         receipt_dialog = ft.AlertDialog(
             title=ft.Text('Checkout Successful!',
