@@ -53,12 +53,12 @@ def pos_view_content(page: ft.Page):
             p = item['product']
             qty = item['qty']
 
-            def create_qty_handler(k, delta, prod_stock):
+            def create_qty_handler(k, delta, prod):
                 def handler(e):
                     new_qty = cart_state[k]['qty']+delta
                     if new_qty <= 0:
                         del cart_state[k]
-                    elif new_qty <= prod_stock:
+                    elif new_qty <= prod.stock:
                         cart_state[k]['qty'] = new_qty
                     refresh_cart_ui()
                 return handler
@@ -69,15 +69,16 @@ def pos_view_content(page: ft.Page):
                 border_radius=8,
                 content=ft.Row([
                     ft.Column([
-                        ft.Text(p.name, weight='bold', size=14),
+                        ft.Text(p.name, weight='bold', size=14, no_wrap=False,
+                                max_lines=2, overflow=ft.TextOverflow.ELLIPSIS),
                         ft.Text(p.get_variant_label(), size=11, color='grey'),
                         ft.Text(f'₱{p.price:.2f}', size=12),
                     ], expand=True),
-                    ft.IconButton('-', icon_color='red',
-                                  on_click=create_qty_handler(key, -1, p.stock)),
+                    ft.IconButton(icon=ft.Icons.REMOVE, icon_color='red',
+                                  on_click=create_qty_handler(key, -1, p)),
                     ft.Text(str(qty), weight='bold', size=16),
-                    ft.IconButton('+', icon_color='green',
-                                  on_click=create_qty_handler(key, 1, p.stock)),
+                    ft.IconButton(icon=ft.Icons.ADD, icon_color='green',
+                                  on_click=create_qty_handler(key, 1, p)),
                 ])
             )
             cart_list.controls.append(row)
@@ -157,7 +158,7 @@ def pos_view_content(page: ft.Page):
         engine.save_inventory(all_products)
 
         def close_receipt(e):
-            page.close(receipt_dialog)
+            page.pop_dialog()
             cart_state.clear()
             cash_input.value = ''
             refresh_cart_ui()
@@ -171,7 +172,7 @@ def pos_view_content(page: ft.Page):
             modal=True
         )
 
-        page.open(receipt_dialog)
+        page.show_dialog(receipt_dialog)
 
     def open_variant_selector(product_name):
         variants = grouped_products[product_name]
@@ -301,8 +302,7 @@ def pos_view_content(page: ft.Page):
             prod = get_selected_product()
             if prod:
                 add_item(prod, state['qty'])
-                dialog.open = False
-                page.update()
+                page.pop_dialog()
 
         add_btn.on_click = add_and_close
 
@@ -335,11 +335,7 @@ def pos_view_content(page: ft.Page):
         )
         update_ui_on_select(is_init=True)
 
-        page.overlay.clear()
-
-        page.overlay.append(dialog)
-        dialog.open = True
-        page.update()
+        page.show_dialog(dialog)
 
     def create_category_card(name, variants):
         # Bare minimum logic

@@ -5,3 +5,4 @@ thefuzz
 python-Levenshtein
 opencv-python
 Pillow
+pzybar

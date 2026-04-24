@@ -2,9 +2,9 @@
     {
         "name": "Pants",
         "price": 500.0,
-        "stock": 5,
+        "stock": 4,
         "category": "Clothes",
-        "barcode": "1001",
+        "barcode": "20000001",
         "size": "Large",
         "color": "Black"
     },
@@ -13,7 +13,7 @@
         "price": 650.0,
         "stock": 10,
         "category": "Clothes",
-        "barcode": "1002",
+        "barcode": "20000002",
         "size": "Small",
         "color": "Blue"
     },
@@ -22,15 +22,15 @@
         "price": 30.0,
         "stock": 49,
         "category": "School Supplies",
-        "barcode": "2001",
+        "barcode": "30000001",
         "size": "80-leaves"
     },
     {
         "name": "iPhone Case",
         "price": 150.0,
-        "stock": 16,
+        "stock": 13,
         "category": "Accessories",
-        "barcode": "3001",
+        "barcode": "40000001",
         "model": "iPhone 15"
     },
     {
@@ -38,7 +38,7 @@
         "price": 10.0,
         "stock": 63,
         "category": "School Supplies",
-        "barcode": "4001",
+        "barcode": "30000002",
         "brand": "Panda",
         "color": "Black"
     },
@@ -47,7 +47,7 @@
         "price": 10.0,
         "stock": 95,
         "category": "School Supplies",
-        "barcode": "4002",
+        "barcode": "30000003",
         "brand": "Panda",
         "color": "Blue"
     },
@@ -56,7 +56,7 @@
         "price": 740.0,
         "stock": 42,
         "category": "Clothes",
-        "barcode": "1003",
+        "barcode": "20000003",
         "size": "Medium",
         "color": "Red"
     },
@@ -65,7 +65,7 @@
         "price": 560.0,
         "stock": 62,
         "category": "Clothes",
-        "barcode": "1004",
+        "barcode": "20000004",
         "color": "Green",
         "size": "X-small"
     },
@@ -74,7 +74,7 @@
         "price": 460.0,
         "stock": 14,
         "category": "Clothes",
-        "barcode": "1005",
+        "barcode": "20000005",
         "size": "Large",
         "color": "Yellow"
     },
@@ -83,7 +83,7 @@
         "price": 740.0,
         "stock": 32,
         "category": "Clothes",
-        "barcode": "1006",
+        "barcode": "20000006",
         "size": "X-large",
         "color": "Blue"
     },
@@ -92,7 +92,7 @@
         "price": 50.0,
         "stock": 37,
         "category": "Accessories",
-        "barcode": "5001",
+        "barcode": "50000001",
         "frame color": "Black",
         "glass color": "Transparent"
     },
@@ -101,7 +101,7 @@
         "price": 500.0,
         "stock": 29,
         "category": "Footwear",
-        "barcode": "6001",
+        "barcode": "60000001",
         "size": "42",
         "color": "Black"
     },
@@ -110,7 +110,7 @@
         "price": 150.0,
         "stock": 31,
         "category": "Headwear",
-        "barcode": "6002",
+        "barcode": "60000002",
         "color": "Black"
     },
     {
@@ -118,7 +118,7 @@
         "price": 20.0,
         "stock": 27,
         "category": "Consumable",
-        "barcode": "6003",
+        "barcode": "60000003",
         "brand": "Colgate"
     },
     {
@@ -126,7 +126,7 @@
         "price": 200.0,
         "stock": 94,
         "category": "Cosmetics",
-        "barcode": "6004",
+        "barcode": "60000004",
         "brand": "Ligaya"
     },
     {
