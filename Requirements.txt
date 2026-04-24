@@ -5,4 +5,5 @@ thefuzz
 python-Levenshtein
 opencv-python
 Pillow
-pzybar
+pyzbar
+cv2-enumerate-cameras

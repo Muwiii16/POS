@@ -1,20 +1,43 @@
-
 import datetime
 import flet as ft
 from core import engine
 from core.models import Product
+from core.scanner import BarcodeScanner
 
 
 def pos_view_content(page: ft.Page):
     cart_state = {}
-    cart_list = ft.ListView(expand=True, spacing=10)
-    total_lbl = ft.Text('Total: ₱0.00', size=30, weight='bold')
     change_lbl = ft.Text('Change: ₱0.00', size=16, color='grey')
 
     all_products = engine.load_inventory()
-    current_cart_total = [0.0]
 
     grouped_products = {}
+
+    scanner_lbl = ft.Text('📷 Scanner: starting...', size=12, color='grey')
+
+    def on_barcode_scanned(barcode_val):
+        match = next((p for p in all_products if str(
+            p.barcode) == str(barcode_val)), None)
+
+        if match:
+            if match.stock > 0:
+                add_item(match, 1)
+                scanner_lbl.value = f'✅ Added: {match.name} ({match.get_variant_label()})'
+                scanner_lbl.color = 'green'
+            else:
+                scanner_lbl.value = f'⚠️ Out of stock: {match.name}'
+                scanner_lbl.color = 'orange'
+        else:
+            scanner_lbl.value = f'❌ Not found: {barcode_val}'
+            scanner_lbl.color = 'red'
+
+        page.update()
+
+    camera_index = (page.data or {}).get('camera_index', 0)
+    scanner = BarcodeScanner(
+        on_scan_callback=on_barcode_scanned, camera_index=camera_index)
+    scanner.start()
+    page.on_close = lambda e: scanner.stop()
 
     def update_cart_math(e=None):
         total = sum(item['product'].price * item['qty']
@@ -338,7 +361,7 @@ def pos_view_content(page: ft.Page):
         page.show_dialog(dialog)
 
     def create_category_card(name, variants):
-        # Bare minimum logic
+
         preview_price = [v.price for v in variants]
         min_p = min(preview_price)
         max_p = max(preview_price)
@@ -349,7 +372,7 @@ def pos_view_content(page: ft.Page):
             price_text = f'₱{min_p:.2f} - ₱{max_p:.2f}'
 
         return ft.Container(
-            bgcolor='white',  # Making it red so we KNOW the new code ran
+            bgcolor='white',
             border_radius=20,
             padding=20,
             shadow=ft.BoxShadow(blur_radius=15, color='black12'),
@@ -386,6 +409,7 @@ def pos_view_content(page: ft.Page):
             content=ft.Column([
                 ft.Text('Current Order', size=25, weight='bold'),
                 ft.Divider(),
+                scanner_lbl,
                 ft.Container(content=cart_list, expand=True),
                 ft.Divider(),
                 total_lbl,
