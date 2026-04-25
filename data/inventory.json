@@ -136,5 +136,14 @@
         "category": "Beverages",
         "barcode": "10000001",
         "size": "Sakto"
+    },
+    {
+        "name": "Socks",
+        "price": 120.0,
+        "stock": 58,
+        "category": "Footwear",
+        "barcode": "60000005",
+        "size": "High-cut",
+        "color": "Black"
     }
 ]

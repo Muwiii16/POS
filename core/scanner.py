@@ -32,6 +32,8 @@ class BarcodeScanner:
         self._empty_frames = 0
         self._reset_after = 20
         self._lock = threading.Lock()
+        self._last_scan_time = 0
+        self._min_scan_gap = 1.5
 
     def start(self):
         if self._running:
@@ -88,10 +90,17 @@ class BarcodeScanner:
 
                 if not self._barcode_present or barcode_val != self._last_scanned:
                     with self._lock:
-                        self._last_scanned = barcode_val
-                        self._barcode_present = True
-                        winsound.Beep(1000, 80)
-                        self.on_scan(barcode_val)
+                        now = time.time()
+                        same_barcode_too_soon = (
+                            barcode_val == self._last_scanned and (
+                                now - self._last_scan_time) < self._min_scan_gap
+                        )
+
+                        if not same_barcode_too_soon and (not self._barcode_present or barcode_val != self._last_scanned):
+                            self._last_scanned = barcode_val
+                            self._barcode_present = True
+                            winsound.Beep(1000, 80)
+                            self.on_scan(barcode_val)
             else:
                 self._barcode_present = False
 
