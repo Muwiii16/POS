@@ -1,7 +1,8 @@
 import threading
 import time
 import cv2
-from pyzbar.pyzbar import decode
+import winsound
+from pyzbar.pyzbar import decode, ZBarSymbol
 from cv2_enumerate_cameras import enumerate_cameras
 
 
@@ -9,7 +10,7 @@ def get_available_cameras():
     cameras = []
 
     try:
-        for cam in enumerate_cameras(cv2.CAP_MSMF):
+        for cam in enumerate_cameras(cv2.CAP_DSHOW):
             cameras.append((cam.index, cam.name))
     except Exception:
         for i in range(5):
@@ -27,7 +28,10 @@ class BarcodeScanner:
         self._thread = None
         self._running = False
         self._last_scanned = None
-        self._cooldown = 2.0
+        self._barcode_present = False
+        self._empty_frames = 0
+        self._reset_after = 20
+        self._lock = threading.Lock()
 
     def start(self):
         if self._running:
@@ -52,8 +56,9 @@ class BarcodeScanner:
             print('Scanner: could not open webcam.')
             return
 
-        last_scan_time = 0
         fail_count = 0
+        startup_frames = 0
+        startup_skip = 10
 
         while self._running:
             ret, frame = cap.read()
@@ -62,7 +67,7 @@ class BarcodeScanner:
                 if fail_count >= 30:
                     cap.release()
                     time.sleep(2.0)
-                    cap = cv2.VideoCapture(self.camera_index, cv2.CAP_MSMF)
+                    cap = cv2.VideoCapture(self.camera_index, cv2.CAP_DSHOW)
                     fail_count = 0
                 else:
                     time.sleep(0.1)
@@ -70,19 +75,26 @@ class BarcodeScanner:
 
             fail_count = 0
 
+            if startup_frames < startup_skip:
+                startup_frames += 1
+                continue
+
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            barcodes = decode(gray)
+            barcodes = decode(gray, symbols=[ZBarSymbol.CODE128])
 
-            for b in barcodes:
-                barcode_val = b.data.decode('utf-8')
-                now = time.time()
+            if barcodes:
+                barcode_val = barcodes[0].data.decode('utf-8')
+                self._empty_frames = 0
 
-                if barcode_val == self._last_scanned and (now - last_scan_time) < self._cooldown:
-                    continue
+                if not self._barcode_present or barcode_val != self._last_scanned:
+                    with self._lock:
+                        self._last_scanned = barcode_val
+                        self._barcode_present = True
+                        winsound.Beep(1000, 80)
+                        self.on_scan(barcode_val)
+            else:
+                self._barcode_present = False
 
-                self._last_scanned = barcode_val
-                last_scan_time = now
-                self.on_scan(barcode_val)
+            time.sleep(0.02)
 
-            time.sleep(0.05)
         cap.release()

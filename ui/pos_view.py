@@ -1,5 +1,7 @@
 import datetime
+import time
 import flet as ft
+import threading
 from core import engine
 from core.models import Product
 from core.scanner import BarcodeScanner
@@ -13,30 +15,44 @@ def pos_view_content(page: ft.Page):
 
     grouped_products = {}
 
-    scanner_lbl = ft.Text('📷 Scanner: starting...', size=12, color='grey')
+    scanner_lbl = ft.Text('📷 Scanner: starting...', size=12, color='orange')
 
     def on_barcode_scanned(barcode_val):
-        match = next((p for p in all_products if str(
-            p.barcode) == str(barcode_val)), None)
+        def update():
+            match = next((p for p in all_products if str(
+                p.barcode) == str(barcode_val)), None)
 
-        if match:
-            if match.stock > 0:
-                add_item(match, 1)
-                scanner_lbl.value = f'✅ Added: {match.name} ({match.get_variant_label()})'
-                scanner_lbl.color = 'green'
+            if match:
+                if match.stock > 0:
+                    add_item(match, 1)
+                    scanner_lbl.value = f'✅ Added: {match.name} ({match.get_variant_label()})'
+                    scanner_lbl.color = 'green'
+                else:
+                    scanner_lbl.value = f'⚠️ Out of stock: {match.name}'
+                    scanner_lbl.color = 'orange'
             else:
-                scanner_lbl.value = f'⚠️ Out of stock: {match.name}'
-                scanner_lbl.color = 'orange'
-        else:
-            scanner_lbl.value = f'❌ Not found: {barcode_val}'
-            scanner_lbl.color = 'red'
+                scanner_lbl.value = f'❌ Not found: {barcode_val}'
+                scanner_lbl.color = 'red'
 
-        page.update()
+            page.update()
+        page.run_thread(update)
 
     camera_index = (page.data or {}).get('camera_index', 0)
     scanner = BarcodeScanner(
         on_scan_callback=on_barcode_scanned, camera_index=camera_index)
-    scanner.start()
+
+    def delayed_start():
+        time.sleep(1.5)
+        scanner.start()
+
+        def update_label():
+            scanner_lbl.value = '📷 Scanner ready'
+            scanner_lbl.color = 'grey'
+            page.update()
+        page.run_thread
+
+    threading.Thread(target=delayed_start, daemon=True).start()
+
     page.on_close = lambda e: scanner.stop()
 
     def update_cart_math(e=None):
