@@ -7,7 +7,6 @@ from core import engine
 def inventory_view_content(page: ft.Page):
     all_products = engine.load_inventory()
 
-    search_query = {'value': ''}
     current_view = {'mode': 'all', 'filter_name': None}
 
     alert_banner = ft.Container(visible=False)
@@ -47,11 +46,6 @@ def inventory_view_content(page: ft.Page):
 
         source = products_override if products_override is not None else all_products
 
-        q = search_query['value'].lower()
-
-        if q:
-            source = [p for p in source if q in p.name.lower()]
-
         grouped = {}
         for p in source:
             grouped.setdefault(p.name, []).append(p)
@@ -79,7 +73,7 @@ def inventory_view_content(page: ft.Page):
                     padding=30,
                     content=ft.Text('No products found.',
                                     color='grey', text_align='center'),
-                    alignment=ft.alignment.center
+                    alignment=ft.Alignment.CENTER
                 )
             )
 
@@ -463,13 +457,20 @@ def inventory_view_content(page: ft.Page):
             ], modal=True
         ))
 
+    def on_search_change(e):
+        query = e.control.value.strip()
+        if not query:
+            refresh_table()
+        else:
+            results = engine.search_products(query, all_products)
+            refresh_table(results)
+
     search_field = ft.TextField(
         hint_text='Search inventory by name...',
         prefix_icon=ft.Icons.SEARCH,
         border_radius=15,
         bgcolor='white',
-        on_change=lambda e: (search_query.update(
-            {'value': e.control.value}), refresh_table())
+        on_change=on_search_change
     )
 
     refresh_table()

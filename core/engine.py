@@ -11,6 +11,14 @@ from . models import Product
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE = os.path.join(os.path.dirname(
     CURRENT_DIR), 'data', 'inventory.json')
+CASH_LEDGER_FILE = os.path.join(os.path.dirname(
+    CURRENT_DIR), 'data', 'cash_ledger.json')
+PAYMENT_LEDGER_FILE = os.path.join(os.path.dirname(
+    CURRENT_DIR), 'data', 'payment_ledger.json')
+CREDIT_LEDGER_FILE = os.path.join(os.path.dirname(
+    CURRENT_DIR), 'data', 'credit_ledger.json')
+EXPENSES_LEDGER_FILE = os.path.join(os.path.dirname(
+    CURRENT_DIR), 'data', 'expenses_ledger.json')
 
 
 def search_products(query, store_products):
@@ -126,8 +134,8 @@ def generate_receipt_text(cart, total, paid, change):
     return '\n'.join(receipt)
 
 
-def log_sale(cart, total, paid, change):
-    file_path = 'sales_log.csv'
+def log_sale(cart, total, paid, change, payment_method='Cash'):
+    file_path = os.path.join(os.path.dirname(DATA_FILE), 'sales_log.csv')
     now = datetime.now()
     timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
     today_date = now.strftime('%Y-%m-%d')
@@ -153,7 +161,7 @@ def log_sale(cart, total, paid, change):
         writer = csv.writer(f)
         if not file_exists:
             writer.writerow(['Timestamp', 'Items Sold',
-                            'Total', 'Amount Paid'])
+                            'Total', 'Amount Paid', 'Payment Method'])
 
         if is_new_day:
             writer.writerow([])
@@ -162,7 +170,9 @@ def log_sale(cart, total, paid, change):
             writer.writerow([])
 
         writer.writerow(
-            [timestamp, item_summary, f'{total:.2f}', f'{paid:.2f}'])
+            [timestamp, item_summary, f'{total:.2f}', f'{paid:.2f}', payment_method])
+
+    save_payment_entry(payment_method, paid)
 
 
 def load_inventory():
@@ -282,7 +292,7 @@ def add_new_product(product_data, store_products):
 
 
 def get_daily_summary():
-    file_path = 'sales_log.csv'
+    file_path = os.path.join(os.path.dirname(DATA_FILE), 'sales_log.csv')
     today_str = datetime.now().strftime('%Y-%m-%d')
 
     summary = {
@@ -356,3 +366,88 @@ def generate_product_barcode(product_id):
 
 def get_low_stock_items(store_products, threshold=5):
     return [p for p in store_products if p.stock <= threshold]
+
+
+def _load_json(path):
+    if not os.path.exists(path):
+        return []
+    with open(path, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+def _save_json(path, data):
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+
+
+def load_cash_ledger():
+    return _load_json(CASH_LEDGER_FILE)
+
+
+def save_cash_entry(amount, note=''):
+    entries = load_cash_ledger()
+    entries.append({
+        'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'amount': amount,
+        'note': note
+    })
+    _save_json(CASH_LEDGER_FILE, entries)
+
+
+def load_payment_ledger():
+    return _load_json(PAYMENT_LEDGER_FILE)
+
+
+def save_payment_entry(method, amount, note=''):
+    entries = load_payment_ledger()
+    entries.append({
+        'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'method': method,
+        'amount': amount,
+        'note': note
+    })
+    _save_json(PAYMENT_LEDGER_FILE, entries)
+
+
+def load_credit_ledger():
+    return _load_json(CREDIT_LEDGER_FILE)
+
+
+def save_credit_entry(customer_name, amount_owed, due_date, note='', partial_cash=0.0):
+    entries = load_credit_ledger()
+    entries.append({
+        'id': datetime.now().strftime('%Y%m%d%H%M%S'),
+        'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'customer': customer_name,
+        'amount_owed': amount_owed,
+        'partial_cash': partial_cash,
+        'due_date': due_date,
+        'paid': False,
+        'note': note
+    })
+    _save_json(CREDIT_LEDGER_FILE, entries)
+
+
+def mark_credit_paid(entry_id):
+    entries = load_credit_ledger()
+    for e in entries:
+        if e['id'] == entry_id:
+            e['paid'] = True
+            e['paid_date'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            break
+    _save_json(CREDIT_LEDGER_FILE, entries)
+
+
+def load_expenses_ledger():
+    return _load_json(EXPENSES_LEDGER_FILE)
+
+
+def save_expense_entry(category, amount, description):
+    entries = load_expenses_ledger()
+    entries.append({
+        'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'category': category,
+        'amount': amount,
+        'description': description
+    })
+    _save_json(EXPENSES_LEDGER_FILE, entries)

@@ -1,6 +1,7 @@
 import flet as ft
 from ui.pos_view import pos_view_content
 from ui.inventory_view import inventory_view_content
+from ui.report_view import reports_view_content
 
 
 def main(page: ft.Page):
@@ -23,6 +24,8 @@ def main(page: ft.Page):
             main_content.content = pos_view_content(page)
         elif index == 1:
             main_content.content = inventory_view_content(page)
+        elif index == 2:
+            main_content.content = reports_view_content(page)
 
         page.update()
 

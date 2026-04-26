@@ -2,7 +2,7 @@
     {
         "name": "Pants",
         "price": 500.0,
-        "stock": 4,
+        "stock": 3,
         "category": "Clothes",
         "barcode": "20000001",
         "size": "Large",
@@ -20,7 +20,7 @@
     {
         "name": "Notebook",
         "price": 30.0,
-        "stock": 49,
+        "stock": 48,
         "category": "School Supplies",
         "barcode": "30000001",
         "size": "80-leaves"
@@ -28,7 +28,7 @@
     {
         "name": "iPhone Case",
         "price": 150.0,
-        "stock": 13,
+        "stock": 9,
         "category": "Accessories",
         "barcode": "40000001",
         "model": "iPhone 15"
@@ -36,7 +36,7 @@
     {
         "name": "Ballpen",
         "price": 10.0,
-        "stock": 63,
+        "stock": 62,
         "category": "School Supplies",
         "barcode": "30000002",
         "brand": "Panda",
@@ -90,7 +90,7 @@
     {
         "name": "Eyeglass",
         "price": 50.0,
-        "stock": 37,
+        "stock": 34,
         "category": "Accessories",
         "barcode": "50000001",
         "frame color": "Black",
@@ -99,7 +99,7 @@
     {
         "name": "Shoes",
         "price": 500.0,
-        "stock": 29,
+        "stock": 28,
         "category": "Footwear",
         "barcode": "60000001",
         "size": "42",
@@ -132,7 +132,7 @@
     {
         "name": "Cobra",
         "price": 30.0,
-        "stock": 36,
+        "stock": 33,
         "category": "Beverages",
         "barcode": "10000001",
         "size": "Sakto"
@@ -140,7 +140,7 @@
     {
         "name": "Socks",
         "price": 120.0,
-        "stock": 58,
+        "stock": 55,
         "category": "Footwear",
         "barcode": "60000005",
         "size": "High-cut",

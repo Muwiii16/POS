@@ -9,7 +9,6 @@ from core.scanner import BarcodeScanner
 
 def pos_view_content(page: ft.Page):
     cart_state = {}
-    change_lbl = ft.Text('Change: ₱0.00', size=16, color='grey')
 
     all_products = engine.load_inventory()
 
@@ -49,41 +48,24 @@ def pos_view_content(page: ft.Page):
             scanner_lbl.value = '📷 Scanner ready'
             scanner_lbl.color = 'grey'
             page.update()
-        page.run_thread
+        page.run_thread(update_label)
 
     threading.Thread(target=delayed_start, daemon=True).start()
 
     page.on_close = lambda e: scanner.stop()
+
+    def on_keyboard(e: ft.KeyboardEvent):
+        if e.key == 'Enter' and not e.shift and not e.ctrl:
+            if cart_state:
+                process_checkout(None)
+    page.on_keyboard_event = on_keyboard
 
     def update_cart_math(e=None):
         total = sum(item['product'].price * item['qty']
                     for item in cart_state.values())
         total_lbl.value = f'Total: ₱{total:.2f}'
 
-        try:
-            cash = float(cash_input.value) if cash_input.value else 0.0
-        except ValueError:
-            cash = 0.0
-
-        if cash == 0:
-            change_lbl.value = 'Change: ₱0.00'
-            change_lbl.color = 'grey'
-        elif cash < total:
-            change_lbl.value = f'Needed: ₱{(total-cash):.2f}'
-            change_lbl.color = 'red'
-        else:
-            change_lbl.value = f'Change: ₱{(cash-total):.2f}'
-            change_lbl.color = 'green'
-
         page.update()
-
-    cash_input = ft.TextField(
-        label='Cash Amount Tendered (₱)',
-        keyboard_type=ft.KeyboardType.NUMBER,
-        on_change=update_cart_math,
-        border_radius=10,
-        height=50
-    )
 
     def refresh_cart_ui():
         cart_list.controls.clear()
@@ -159,59 +141,236 @@ def pos_view_content(page: ft.Page):
         if total == 0:
             return
 
-        try:
-            cash = float(cash_input.value) if cash_input.value else 0.0
-        except ValueError:
-            return
+        payment_method = {'value': 'Cash'}
+        cash_tendered = {'value': 0.0}
+        partial_cash = {'value': 0.0}
 
-        if cash < total:
-            return
+        method_lbl = ft.Text('Cash', weight='bold', size=16, color='#27ae60')
+        change_preview = ft.Text('', size=13, color='grey')
+        credit_fields = ft.Column([], visible=False, spacing=8)
 
-        change = cash-total
+        customer_field = ft.TextField(label='Customer Name', border_radius=8)
+        due_date_field = ft.TextField(
+            label='Due Date (e.g. 2026-05-01)', border_radius=8)
+        partial_field = ft.TextField(
+            label='Partial Cash Payment (₱)',
+            keyboard_type=ft.KeyboardType.NUMBER,
+            border_radius=8,
+            hint_text='0 if fully on credit'
+        )
+
+        def on_cash_enter(e):
+            if e.key == 'Enter':
+                confirm_payment(e)
+
+        def update_preview(e=None):
+            method = payment_method['value']
+
+            if method == 'Credit':
+                try:
+                    p = float(partial_field.value or 0)
+                except ValueError:
+                    p = 0.0
+                partial_cash['value'] = p
+                remaining = total-p
+                change_preview.value = f'Amount on credit: ₱{remaining:.2f}'
+                change_preview.color = '#e67e22'
+            else:
+                try:
+                    cash = float(cash_field.value or 0)
+                except ValueError:
+                    cash = 0.0
+                cash_tendered['value'] = cash
+                if cash == 0:
+                    change_preview.value = ''
+                elif cash < total:
+                    change_preview.value = f'Needed: ₱{total - cash:.2f}'
+                    change_preview.color = 'red'
+                else:
+                    change_preview.value = f'Change: ₱{cash-total:.2f}'
+                    change_preview.color = 'green'
+
+            change_preview.update()
+
+        def confirm_payment(e):
+            method = payment_method['value']
+
+            if method == 'Credit':
+                customer = customer_field.value.strip()
+                due = due_date_field.value.strip()
+                if not customer:
+                    customer_field.error_text = 'Required'
+                    customer_field.update()
+                    return
+                if not due:
+                    due_date_field.error_text = 'Required'
+                    due_date_field.update()
+                    return
+
+                try:
+                    p_cash = float(partial_field.value or 0)
+                except ValueError:
+                    p_cash = 0.0
+
+                amount_on_credit = total - p_cash
+                paid_amount = p_cash
+                change = 0.0
+
+                # Save credit entry
+                engine.save_credit_entry(
+                    customer_name=customer,
+                    amount_owed=amount_on_credit,
+                    due_date=due,
+                    partial_cash=p_cash
+                )
+
+            else:
+                try:
+                    cash = float(cash_field.value or 0)
+                except ValueError:
+                    cash = 0.0
+
+                if cash < total:
+                    cash_field.error_text = f'Need at least ₱{total:.2f}'
+                    cash_field.update()
+                    return
+
+                paid_amount = cash
+                change = cash - total
+                p_cash = cash
+
+            page.pop_dialog()
+            complete_checkout(method, paid_amount, change,
+                              partial_cash=p_cash if method == 'Credit' else paid_amount)
+
+        cash_field = ft.TextField(
+            label='Cash Amount Tendered (₱)',
+            keyboard_type=ft.KeyboardType.NUMBER,
+            border_radius=8,
+            autofocus=True,
+            on_change=update_preview,
+            on_submit=confirm_payment,
+        )
+
+        def select_method(method):
+            payment_method['value'] = method
+            method_lbl.value = method
+            method_lbl.color = {
+                'Cash': '#27ae60',
+                'GCash': '#1565c0',
+                'Maya': '#00897b',
+                'Credit': '#e67e22'
+            }.get(method, 'grey')
+            credit_fields.visible = (method == 'Credit')
+            cash_field.visible = (method != 'Credit')
+            update_preview()
+            method_lbl.update()
+            credit_fields.update()
+            cash_field.update()
+        credit_fields.controls = [
+            customer_field, due_date_field, partial_field]
+
+        method_buttons = ft.Row([
+            ft.ElevatedButton('💵 Cash', on_click=lambda e: select_method('Cash'),
+                              style=ft.ButtonStyle(bgcolor='#27ae60', color='white',
+                                                   shape=ft.RoundedRectangleBorder(radius=8))),
+            ft.ElevatedButton('📱 GCash', on_click=lambda e: select_method('GCash'),
+                              style=ft.ButtonStyle(bgcolor='#1565c0', color='white',
+                                                   shape=ft.RoundedRectangleBorder(radius=8))),
+            ft.ElevatedButton('🟢 Maya', on_click=lambda e: select_method('Maya'),
+                              style=ft.ButtonStyle(bgcolor='#00897b', color='white',
+                                                   shape=ft.RoundedRectangleBorder(radius=8))),
+            ft.ElevatedButton('📋 Credit', on_click=lambda e: select_method('Credit'),
+                              style=ft.ButtonStyle(bgcolor='#e67e22', color='white',
+                                                   shape=ft.RoundedRectangleBorder(radius=8))),
+        ], spacing=8, wrap=True)
+
+        page.show_dialog(ft.AlertDialog(
+            title=ft.Text(f'Payment — Total: ₱{total:.2f}', weight='bold'),
+            content=ft.Container(
+                width=400,
+                content=ft.Column([
+                    ft.Text('Select Payment Method', size=13, color='grey'),
+                    method_buttons,
+                    ft.Divider(),
+                    ft.Row([ft.Text('Method:', size=13), method_lbl], spacing=8),
+                    cash_field,
+                    credit_fields,
+                    change_preview,
+                ], spacing=10, tight=True)
+            ),
+            actions=[
+                ft.TextButton(content=ft.Text('Cancel'),
+                              on_click=lambda e: page.pop_dialog()),
+                ft.ElevatedButton(
+                    content=ft.Text('Confirm Payment'),
+                    on_click=confirm_payment,
+                    style=ft.ButtonStyle(bgcolor='#4A4440', color='white',
+                                         shape=ft.RoundedRectangleBorder(radius=8))
+                )
+            ],
+            modal=True
+        ))
+
+    def complete_checkout(method, paid_amount, change, partial_cash=0.0):
+        total = sum(item['product'].price * item['qty']
+                    for item in cart_state.values())
 
         receipt_text = (
             "======= DAD'S STORE =======\n"
             f"Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
+            f"Payment: {method}\n"
             "---------------------------\n"
         )
 
-        for key, item in cart_state.items():
+        flat_cart = []
+        for item in cart_state.values():
             p = item['product']
             qty = item['qty']
             sub = p.price * qty
-
             p.stock -= qty
-
             name_str = f'{p.name} ({p.get_variant_label()})'
             receipt_text += f'{name_str[:20]:<20} {qty} x ₱{sub:.2f}\n'
+            for _ in range(qty):
+                flat_cart.append(p)
 
-        receipt_text += (
-            "---------------------------\n"
-            f"Total:      ₱{total:.2f}\n"
-            f"Cash:       ₱{cash:.2f}\n"
-            f"Change:     ₱{change:.2f}\n"
-            "===========================\n"
-            "Thank you for shopping!"
-        )
+        if method == 'Credit':
+            remaining = total - partial_cash
+            receipt_text += (
+                "---------------------------\n"
+                f"Total:      ₱{total:.2f}\n"
+                f"Cash Paid:  ₱{partial_cash:.2f}\n"
+                f"On Credit:  ₱{remaining:.2f}\n"
+                "===========================\n"
+                "Thank you for shopping!"
+            )
+        else:
+            receipt_text += (
+                "---------------------------\n"
+                f"Total:      ₱{total:.2f}\n"
+                f"Cash:       ₱{paid_amount:.2f}\n"
+                f"Change:     ₱{change:.2f}\n"
+                "===========================\n"
+                "Thank you for shopping!"
+            )
 
+        engine.log_sale(flat_cart, total, paid_amount,
+                        change, payment_method=method)
         engine.save_inventory(all_products)
 
         def close_receipt(e):
             page.pop_dialog()
             cart_state.clear()
-            cash_input.value = ''
             refresh_cart_ui()
 
-        receipt_dialog = ft.AlertDialog(
+        page.show_dialog(ft.AlertDialog(
             title=ft.Text('Checkout Successful!',
                           weight='bold', color='green'),
             content=ft.Text(receipt_text, font_family='monospace'),
             actions=[ft.TextButton('Close & New Order',
                                    on_click=close_receipt)],
             modal=True
-        )
-
-        page.show_dialog(receipt_dialog)
+        ))
 
     def open_variant_selector(product_name):
         variants = grouped_products[product_name]
@@ -411,13 +570,33 @@ def pos_view_content(page: ft.Page):
     for name, variants in grouped_products.items():
         product_grid.controls.append(create_category_card(name, variants))
 
+    def on_pos_search(e):
+        query = e.control.value.strip()
+        if not query:
+            product_grid.controls.clear()
+            for name, variants in grouped_products.items():
+                product_grid.controls.append(
+                    create_category_card(name, variants))
+
+        else:
+            results = engine.search_products(query, all_products)
+            matched_names = set(p.name for p in results)
+            product_grid.controls.clear()
+            for name, variants in grouped_products.items():
+                if name in matched_names:
+                    product_grid.controls.append(
+                        create_category_card(name, variants))
+
+        page.update()
+
     return ft.Row([
         ft.Column([
             ft.TextField(
                 hint_text='Search products...',
                 prefix_icon='search',
                 border_radius=15,
-                bgcolor='white'
+                bgcolor='white',
+                on_change=on_pos_search
             ),
             product_grid
         ], expand=2),
@@ -429,8 +608,6 @@ def pos_view_content(page: ft.Page):
                 ft.Container(content=cart_list, expand=True),
                 ft.Divider(),
                 total_lbl,
-                cash_input,
-                change_lbl,
                 ft.Container(height=10),
 
                 ft.ElevatedButton(
