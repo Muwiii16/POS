@@ -159,10 +159,6 @@ def pos_view_content(page: ft.Page):
             hint_text='0 if fully on credit'
         )
 
-        def on_cash_enter(e):
-            if e.key == 'Enter':
-                confirm_payment(e)
-
         def update_preview(e=None):
             method = payment_method['value']
 

@@ -20,7 +20,7 @@
     {
         "name": "Notebook",
         "price": 30.0,
-        "stock": 48,
+        "stock": 47,
         "category": "School Supplies",
         "barcode": "30000001",
         "size": "80-leaves"
