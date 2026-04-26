@@ -243,7 +243,7 @@ def pos_view_content(page: ft.Page):
             label='Cash Amount Tendered (₱)',
             keyboard_type=ft.KeyboardType.NUMBER,
             border_radius=8,
-            autofocus=True,
+            autofocus=False,
             on_change=update_preview,
             on_submit=confirm_payment,
         )
@@ -263,20 +263,40 @@ def pos_view_content(page: ft.Page):
             method_lbl.update()
             credit_fields.update()
             cash_field.update()
+
+            if method == 'Credit':
+                customer_field.focus()
+            else:
+                cash_field.focus()
+
         credit_fields.controls = [
             customer_field, due_date_field, partial_field]
 
+        def on_payment_keyboard(e: ft.KeyboardEvent):
+            key = e.key.replace('Numpad ', '')
+            if e.key == '1':
+                select_method('Cash')
+            elif e.key == '2':
+                select_method('GCash')
+            elif e.key == '3':
+                select_method('Maya')
+            elif e.key == '4':
+                select_method('Credit')
+            elif e.key == 'Enter':
+                confirm_payment(e)
+        page.on_keyboard_event = on_payment_keyboard
+
         method_buttons = ft.Row([
-            ft.ElevatedButton('💵 Cash', on_click=lambda e: select_method('Cash'),
+            ft.ElevatedButton('[1]💵 Cash', on_click=lambda e: select_method('Cash'),
                               style=ft.ButtonStyle(bgcolor='#27ae60', color='white',
                                                    shape=ft.RoundedRectangleBorder(radius=8))),
-            ft.ElevatedButton('📱 GCash', on_click=lambda e: select_method('GCash'),
+            ft.ElevatedButton('[2]📱 GCash', on_click=lambda e: select_method('GCash'),
                               style=ft.ButtonStyle(bgcolor='#1565c0', color='white',
                                                    shape=ft.RoundedRectangleBorder(radius=8))),
-            ft.ElevatedButton('🟢 Maya', on_click=lambda e: select_method('Maya'),
+            ft.ElevatedButton('[3]🟢 Maya', on_click=lambda e: select_method('Maya'),
                               style=ft.ButtonStyle(bgcolor='#00897b', color='white',
                                                    shape=ft.RoundedRectangleBorder(radius=8))),
-            ft.ElevatedButton('📋 Credit', on_click=lambda e: select_method('Credit'),
+            ft.ElevatedButton('[4]📋 Credit', on_click=lambda e: select_method('Credit'),
                               style=ft.ButtonStyle(bgcolor='#e67e22', color='white',
                                                    shape=ft.RoundedRectangleBorder(radius=8))),
         ], spacing=8, wrap=True)
@@ -296,8 +316,13 @@ def pos_view_content(page: ft.Page):
                 ], spacing=10, tight=True)
             ),
             actions=[
-                ft.TextButton(content=ft.Text('Cancel'),
-                              on_click=lambda e: page.pop_dialog()),
+                ft.TextButton(
+                    content=ft.Text('Cancel'),
+                    on_click=lambda e: (
+                        setattr(page, 'on_keyboard_event', on_keyboard),
+                        page.pop_dialog()
+                    )
+                ),
                 ft.ElevatedButton(
                     content=ft.Text('Confirm Payment'),
                     on_click=confirm_payment,
