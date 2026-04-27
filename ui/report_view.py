@@ -1,4 +1,5 @@
 import math
+import base64
 import flet as ft
 from core import engine
 
@@ -73,7 +74,8 @@ def reports_view_content(page: ft.Page):
             + ''.join(paths) +
             '</svg>'
         )
-        return ft.Image(src=f'data:image/svg+xml,{svg}',
+        svg_b64 = base64.b64encode(svg.encode('utf-8')).decode('utf-8')
+        return ft.Image(src=f'data:image/svg+xml;base64,{svg_b64}',
                         width=size, height=size, fit='contain')
 
     def make_legend(data: dict):
@@ -95,7 +97,7 @@ def reports_view_content(page: ft.Page):
 
     def show_eod_report():
         report = engine.get_daily_summary()
-        avg = (report['revenue'] / report['transactions']
+        avg = (report['sale'] / report['transactions']
                if report['transactions'] > 0 else 0)
 
         def go_back(e):
@@ -114,9 +116,9 @@ def reports_view_content(page: ft.Page):
             )
 
         stats_row = ft.Row([
-            stat_card('Total Revenue', f'₱{report["revenue"]:.2f}', '#27ae60'),
+            stat_card('Total Sale', f'₱{report["sale"]:,.2f}', '#27ae60'),
             stat_card('Transactions', str(report['transactions']), '#2980b9'),
-            stat_card('Avg per Sale', f'₱{avg:.2f}', '#8e44ad'),
+            stat_card('Avg per Sale', f'₱{avg:,.2f}', '#8e44ad'),
         ], spacing=16)
 
         sorted_sales = sorted(
@@ -206,7 +208,7 @@ def reports_view_content(page: ft.Page):
                 expand=True, bgcolor=color, border_radius=12, padding=16,
                 content=ft.Column([
                     ft.Text(method, color='white', size=12),
-                    ft.Text(f'₱{total:.2f}', color='white',
+                    ft.Text(f'₱{total:,.2f}', color='white',
                             size=22, weight='bold')
                 ], spacing=4)
             )
@@ -238,7 +240,7 @@ def reports_view_content(page: ft.Page):
                             width=160, size=12),
                     ft.Text(e.get('method', ''), width=80,
                             color='#2980b9', weight='bold'),
-                    ft.Text(f'₱{e.get("amount", 0):.2f}', expand=True),
+                    ft.Text(f'₱{e.get("amount", 0):,.2f}', expand=True),
                 ])
             )
             for e in reversed(entries)
@@ -282,7 +284,7 @@ def reports_view_content(page: ft.Page):
                 expand=True, bgcolor='#e74c3c', border_radius=12, padding=16,
                 content=ft.Column([
                     ft.Text('Total Outstanding', color='white', size=12),
-                    ft.Text(f'₱{total_owed:.2f}', color='white',
+                    ft.Text(f'₱{total_owed:,.2f}', color='white',
                             size=22, weight='bold')
                 ], spacing=4)
             ),
@@ -320,7 +322,7 @@ def reports_view_content(page: ft.Page):
                                 size=10, color='grey'),
                     ], expand=True),
                     ft.Column([
-                        ft.Text(f'₱{e.get("amount_owed", 0):.2f}',
+                        ft.Text(f'₱{e.get("amount_owed", 0):,.2f}',
                                 weight='bold', size=14,
                                 color='#27ae60' if is_paid else '#e74c3c'),
                         ft.Text('PAID' if is_paid else 'UNPAID',
@@ -435,7 +437,7 @@ def reports_view_content(page: ft.Page):
                 expand=True, bgcolor='#e67e22', border_radius=12, padding=16,
                 content=ft.Column([
                     ft.Text('Total Expenses', color='white', size=12),
-                    ft.Text(f'₱{total_expenses:.2f}', color='white',
+                    ft.Text(f'₱{total_expenses:,.2f}', color='white',
                             size=22, weight='bold')
                 ], spacing=4)
             ),
@@ -444,7 +446,7 @@ def reports_view_content(page: ft.Page):
                 expand=True, bgcolor='#34495e', border_radius=12, padding=16,
                 content=ft.Column([
                     ft.Text(cat, color='white', size=12),
-                    ft.Text(f'₱{amt:.2f}', color='white',
+                    ft.Text(f'₱{amt:,.2f}', color='white',
                             size=22, weight='bold')
                 ], spacing=4)
             )
@@ -472,7 +474,7 @@ def reports_view_content(page: ft.Page):
                     ft.Text(e.get('category', ''), width=100,
                             color='#e67e22', weight='bold'),
                     ft.Text(e.get('description', ''), expand=True),
-                    ft.Text(f'₱{e.get("amount", 0):.2f}', width=100,
+                    ft.Text(f'₱{e.get("amount", 0):,.2f}', width=100,
                             weight='bold'),
                 ])
             )
@@ -504,6 +506,244 @@ def reports_view_content(page: ft.Page):
             ], expand=True, spacing=12)
         ]
         page.update()
+
+    def show_revenue_report():
+        def go_back(e):
+            show_home()
+
+        current_period = {'value': 'monthly'}
+        chart_area = ft.Column(expand=True, spacing=12)
+
+        def show_period_detail(key, period, revenue, cost, profit):
+            label = key[-5:] if period == 'monthly' else key[-6:]
+
+            def close(e):
+                page.pop_dialog()
+
+            rows = [
+                ft.Container(
+                    bgcolor='#f5f5f5', border_radius=8,
+                    padding=ft.padding.symmetric(horizontal=16, vertical=10),
+                    content=ft.Row([
+                        ft.Text(title, expand=True, size=13, color='grey'),
+                        ft.Text(f'₱{val:,.2f}', size=14,
+                                weight='bold', color=color),
+                    ])
+                )
+                for title, val, color in [
+                    ('Revenue', revenue, '#27ae60'),
+                    ('Cost', cost, '#e74c3c'),
+                    ('Profit', profit, '#2980b9'),
+                ]
+            ]
+
+            page.show_dialog(ft.AlertDialog(
+                title=ft.Text(f'Report: {label}', weight='bold', size=16),
+                content=ft.Column(rows, spacing=8, tight=True, width=300),
+                actions=[
+                    ft.ElevatedButton(
+                        'Close', on_click=close,
+                        style=ft.ButtonStyle(
+                            bgcolor='#2980b9', color='white',
+                            shape=ft.RoundedRectangleBorder(radius=8))
+                    )
+                ],
+                modal=True
+            ))
+
+        def build_chart(period):
+            data = engine.get_revenue_summary(period)
+
+            if not data:
+                chart_area.controls = [
+                    ft.Text('No data available.', color='grey')
+                ]
+                chart_area.update()
+                return
+
+            labels = list(data.keys())
+            revenues = [data[k]['revenue']for k in labels]
+            costs = [data[k]['cost'] for k in labels]
+            profits = [r-c for r, c in zip(revenues, costs)]
+
+            max_val = max(revenues+[1])
+            bar_width = max(20, min(60, 600//len(labels)))
+
+            last_idx = next(
+                (i for i in range(len(revenues)-1, -1, -1)if revenues[i] > 0),
+                len(revenues)-1
+            )
+
+            total_rev = revenues[last_idx]
+            total_cost = costs[last_idx]
+            total_profit = profits[last_idx]
+            current_label = labels[last_idx]
+
+            summary = ft.Row([
+                ft.Container(
+                    expand=True, bgcolor='#27ae60', border_radius=12, padding=16, content=ft.Column([
+                        ft.Text(
+                            f'Total Revenue ({current_label})', color='white', size=12),
+                        ft.Text(f'₱{total_rev:,.2f}',
+                                color='white', size=22, weight='bold')
+                    ], spacing=4)
+                ),
+                ft.Container(
+                    expand=True, bgcolor='#e74c3c', border_radius=12, padding=16,
+                    content=ft.Column([
+                        ft.Text(
+                            f'Total Cost ({current_label})', color='white', size=12),
+                        ft.Text(f'₱{total_cost:,.2f}',
+                                color='white', size=22, weight='bold')
+                    ], spacing=4)
+                ),
+                ft.Container(
+                    expand=True, bgcolor='#2980b9', border_radius=12, padding=16, content=ft.Column([
+                        ft.Text(
+                            f'Total Profit ({current_label})', color='white', size=12),
+                        ft.Text(f'₱{total_profit:,.2f}',
+                                color='white', size=22, weight='bold')
+                    ], spacing=4)
+                ),
+            ], spacing=12)
+
+            legend = ft.Row([
+                ft.Row([
+                    ft.Container(width=14, height=14,
+                                 bgcolor='#27ae60', border_radius=3),
+                    ft.Text('Revenue', size=12)
+                ], spacing=6),
+                ft.Row([
+                    ft.Container(width=14, height=14,
+                                 bgcolor='#2980b9', border_radius=3),
+                    ft.Text('Profit', size=12)
+                ], spacing=6),
+            ], spacing=20)
+
+            chart_h = 210
+            bar_width = max(24, min(55, 560//len(labels)))
+            gap = 8
+
+            def make_bar_column(i, key):
+                rev = revenues[i]
+                prof = max(profits[i], 0)
+
+                if rev == 0:
+                    return None
+
+                rev_h = max(int((rev/max_val)*(chart_h-40)),
+                            2) if rev > 0 else 2
+                prof_h = max(int((prof/max_val)*(chart_h-40)),
+                             2) if prof > 0 else 2
+                short = key[-5:] if period == 'monthly' else key[-6:]
+
+                def on_bar_click(e, k=key, idx=i):
+                    show_period_detail(
+                        k, period, revenues[idx], costs[idx], profits[idx])
+
+                return ft.GestureDetector(
+                    on_tap=on_bar_click,
+                    content=ft.Column([
+                        ft.Row([
+                            ft.Container(
+                                width=bar_width,
+                                height=rev_h,
+                                bgcolor='#27ae60',
+                                border_radius=ft.border_radius.only(
+                                    top_left=4, top_right=4),
+                                tooltip=f'Revenue: ₱{rev:,.2f}',
+                            ),
+                            ft.Container(
+                                width=bar_width,
+                                height=prof_h,
+                                bgcolor='#2980b9',
+                                border_radius=ft.border_radius.only(
+                                    top_left=4, top_right=4),
+                                tooltip=f'Profit: ₱{prof:,.2f}',
+                            ),
+                        ], spacing=4, vertical_alignment=ft.CrossAxisAlignment.END),
+                        ft.Text(short, size=9, color='#666666', text_align=ft.TextAlign.CENTER,
+                                width=bar_width * 2 + 4),
+                    ], spacing=4, horizontal_alignment=ft.CrossAxisAlignment.CENTER, alignment=ft.MainAxisAlignment.END)
+                )
+
+            bar_controls = [c for c in (make_bar_column(
+                i, k) for i, k in enumerate(labels)) if c is not None]
+
+            scroll_row = ft.Row(
+                controls=bar_controls,
+                spacing=gap,
+                scroll=ft.ScrollMode.AUTO,
+                vertical_alignment=ft.CrossAxisAlignment.END,
+                height=chart_h,
+            )
+
+            chart_area.controls = [
+                summary,
+                ft.Container(height=8),
+                legend,
+                ft.Container(height=8),
+                scroll_row,
+            ]
+            chart_area.update()
+
+            async def do_scroll():
+                await scroll_row.scroll_to(offset=-1, duration=0)
+
+            page.run_task(do_scroll)
+
+        def switch_period(period):
+            current_period['value'] = period
+            monthly_btn.style = ft.ButtonStyle(
+                bgcolor='#27ae60' if period == 'monthly' else '#e0e0e0',
+                color='white' if period == 'monthly' else 'black',
+                shape=ft.RoundedRectangleBorder(radius=8)
+            )
+            quarterly_btn.style = ft.ButtonStyle(
+                bgcolor='#27ae60' if period == 'quarterly' else '#e0e0e0',
+                color='white' if period == 'quarterly' else 'black',
+                shape=ft.RoundedRectangleBorder(radius=8)
+            )
+            monthly_btn.update()
+            quarterly_btn.update()
+            build_chart(period)
+
+        monthly_btn = ft.ElevatedButton(
+            'Monthly',
+            on_click=lambda e: switch_period('monthly'),
+            style=ft.ButtonStyle(
+                bgcolor='#27ae60', color='white',
+                shape=ft.RoundedRectangleBorder(radius=8))
+        )
+        quarterly_btn = ft.ElevatedButton(
+            'Quarterly',
+            on_click=lambda e: switch_period('quarterly'),
+            style=ft.ButtonStyle(
+                bgcolor='#e0e0e0', color='black',
+                shape=ft.RoundedRectangleBorder(radius=8))
+        )
+
+        content_area.controls = [
+            ft.Column([
+                ft.Row([
+                    ft.TextButton(
+                        content=ft.Row([
+                            ft.Icon(ft.Icons.ARROW_BACK, size=16),
+                            ft.Text('Back')
+                        ]),
+                        on_click=go_back
+                    ),
+                    ft.Text('Revenue Report', size=20,
+                            weight='bold', expand=True),
+                    ft.Row([monthly_btn, quarterly_btn], spacing=8)
+                ]),
+                ft.Divider(),
+                chart_area,
+            ], expand=True, spacing=12)
+        ]
+        page.update()
+
+        build_chart('monthly')
 
     def show_home():
         def report_card(title, subtitle, icon, color, on_click):
@@ -542,6 +782,9 @@ def reports_view_content(page: ft.Page):
             report_card('Expenses', 'Overhead & restocking',
                         ft.Icons.RECEIPT_LONG, '#e67e22',
                         lambda e: show_expenses_ledger()),
+            report_card('Revenue Report', 'Monthly & Quarterly profit',
+                        ft.Icons.BAR_CHART, '#2980b9',
+                        lambda e: show_revenue_report()),
         ], wrap=True, spacing=20, run_spacing=20)
 
         content_area.controls = [

@@ -10,5 +10,17 @@
         "method": "Cash",
         "amount": 100.0,
         "note": ""
+    },
+    {
+        "timestamp": "2026-04-27 20:26:06",
+        "method": "GCash",
+        "amount": 150.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-04-27 20:26:20",
+        "method": "Cash",
+        "amount": 1000.0,
+        "note": ""
     }
 ]

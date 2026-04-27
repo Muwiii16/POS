@@ -134,7 +134,7 @@ def generate_receipt_text(cart, total, paid, change):
     return '\n'.join(receipt)
 
 
-def log_sale(cart, total, paid, change, payment_method='Cash'):
+def log_sale(cart, total, paid, payment_method='Cash'):
     file_path = os.path.join(os.path.dirname(DATA_FILE), 'sales_log.csv')
     now = datetime.now()
     timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
@@ -161,16 +161,17 @@ def log_sale(cart, total, paid, change, payment_method='Cash'):
         writer = csv.writer(f)
         if not file_exists:
             writer.writerow(['Timestamp', 'Items Sold',
-                            'Total', 'Amount Paid', 'Payment Method'])
+                            'Total', 'Amount Paid', 'Payment Method', 'Cost'])
 
         if is_new_day:
             writer.writerow([])
             writer.writerow(
-                [f'--- SESSION START: {today_date} ---', '-', '-', '-'])
+                [f'--- SESSION START: {today_date} ---', '-', '-', '-', '-', '-'])
             writer.writerow([])
 
+        total_cost = sum(getattr(item, 'cost', 0) for item in cart)
         writer.writerow(
-            [timestamp, item_summary, f'{total:.2f}', f'{paid:.2f}', payment_method])
+            [timestamp, item_summary, f'{total:.2f}', f'{paid:.2f}', payment_method, f'{total_cost:.2f}'])
 
     save_payment_entry(payment_method, paid)
 
@@ -189,6 +190,7 @@ def save_inventory(products):
         item_dict = {
             "name": p.name,
             "price": p.price,
+            "cost": p.cost,
             "stock": p.stock,
             "category": p.category,
             "barcode": p.barcode
@@ -296,7 +298,7 @@ def get_daily_summary():
     today_str = datetime.now().strftime('%Y-%m-%d')
 
     summary = {
-        "revenue": 0.0,
+        "sale": 0.0,
         "transactions": 0,
         "date": today_str,
         "category_sales": {}
@@ -319,7 +321,7 @@ def get_daily_summary():
                             continue
 
                         raw_total = float(raw_val)
-                        summary['revenue'] += raw_total
+                        summary['sale'] += raw_total
                         summary['transactions'] += 1
 
                         items_sold_str = row.get('Items Sold', '')
@@ -451,3 +453,72 @@ def save_expense_entry(category, amount, description):
         'description': description
     })
     _save_json(EXPENSES_LEDGER_FILE, entries)
+
+
+def get_revenue_summary(period='monthly'):
+    file_path = os.path.join(os.path.dirname(DATA_FILE), 'sales_log.csv')
+    now = datetime.now().replace(day=1)
+
+    if period == 'monthly':
+        periods = {}
+        for i in range(11, -1, -1):
+            if now.month-i <= 0:
+                month = now.month-i+12
+                year = now.year-1
+            else:
+                month = now.month-i
+                year = now.year
+            key = f'{year}-{month:02d}'
+            periods[key] = {'revenue': 0.0, 'cost': 0.0, 'transactions': 0}
+
+    elif period == 'quarterly':
+        periods = {}
+        current_q = (now.month-1)//3+1
+        current_year = now.year
+        for i in range(3, -1, -1):
+            q = current_q-i
+            year = current_year
+            while q <= 0:
+                q += 4
+                year -= 1
+            key = f'{year}-Q{q}'
+            periods[key] = {'revenue': 0.0, 'cost': 0.0, 'transactions': 0}
+
+    if not os.path.exists(file_path):
+        return periods
+
+    try:
+        with open(file_path, mode='r', newline='', encoding='utf-8')as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                timestamp = row.get('Timestamp', '')
+                if not timestamp or not timestamp.strip():
+                    continue
+                if '---' in timestamp or 'SESSION' in timestamp:
+                    continue
+                try:
+                    raw_total = row.get('Total', '0')
+                    raw_cost = row.get('Cost', '0')
+                    if raw_total == '-' or not raw_total:
+                        continue
+                    dt = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
+                    revenue = float(raw_total)
+                    cost = float(
+                        raw_cost) if raw_cost and raw_cost != '-' else 0.0
+
+                    if period == 'monthly':
+                        key = f'{dt.year}-{dt.month:02d}'
+                    else:
+                        q = (dt.month-1)//3+1
+                        key = f'{dt.year}-Q{q}'
+
+                    if key in periods:
+                        periods[key]['revenue'] += revenue
+                        periods[key]['cost'] += cost
+                        periods[key]['transactions'] += 1
+                except (ValueError, TypeError):
+                    continue
+    except Exception as ex:
+        print(f'Revenue summarry error: {ex}')
+
+    return periods

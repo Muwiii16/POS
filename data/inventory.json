@@ -2,7 +2,8 @@
     {
         "name": "Pants",
         "price": 500.0,
-        "stock": 3,
+        "cost": 300.0,
+        "stock": 9,
         "category": "Clothes",
         "barcode": "20000001",
         "size": "Large",
@@ -11,6 +12,7 @@
     {
         "name": "Pants",
         "price": 650.0,
+        "cost": 400.0,
         "stock": 10,
         "category": "Clothes",
         "barcode": "20000002",
@@ -20,6 +22,7 @@
     {
         "name": "Notebook",
         "price": 30.0,
+        "cost": 18.0,
         "stock": 47,
         "category": "School Supplies",
         "barcode": "30000001",
@@ -28,7 +31,8 @@
     {
         "name": "iPhone Case",
         "price": 150.0,
-        "stock": 9,
+        "cost": 60.0,
+        "stock": 8,
         "category": "Accessories",
         "barcode": "40000001",
         "model": "iPhone 15"
@@ -36,6 +40,7 @@
     {
         "name": "Ballpen",
         "price": 10.0,
+        "cost": 4.0,
         "stock": 62,
         "category": "School Supplies",
         "barcode": "30000002",
@@ -45,6 +50,7 @@
     {
         "name": "Ballpen",
         "price": 10.0,
+        "cost": 4.0,
         "stock": 95,
         "category": "School Supplies",
         "barcode": "30000003",
@@ -54,6 +60,7 @@
     {
         "name": "Pants",
         "price": 740.0,
+        "cost": 480.0,
         "stock": 42,
         "category": "Clothes",
         "barcode": "20000003",
@@ -63,6 +70,7 @@
     {
         "name": "Pants",
         "price": 560.0,
+        "cost": 350.0,
         "stock": 62,
         "category": "Clothes",
         "barcode": "20000004",
@@ -72,6 +80,7 @@
     {
         "name": "Pants",
         "price": 460.0,
+        "cost": 280.0,
         "stock": 14,
         "category": "Clothes",
         "barcode": "20000005",
@@ -81,6 +90,7 @@
     {
         "name": "Pants",
         "price": 740.0,
+        "cost": 480.0,
         "stock": 32,
         "category": "Clothes",
         "barcode": "20000006",
@@ -90,6 +100,7 @@
     {
         "name": "Eyeglass",
         "price": 50.0,
+        "cost": 25.0,
         "stock": 34,
         "category": "Accessories",
         "barcode": "50000001",
@@ -99,6 +110,7 @@
     {
         "name": "Shoes",
         "price": 500.0,
+        "cost": 320.0,
         "stock": 28,
         "category": "Footwear",
         "barcode": "60000001",
@@ -108,6 +120,7 @@
     {
         "name": "Cap",
         "price": 150.0,
+        "cost": 85.0,
         "stock": 31,
         "category": "Headwear",
         "barcode": "60000002",
@@ -116,6 +129,7 @@
     {
         "name": "Toothpaste",
         "price": 20.0,
+        "cost": 12.0,
         "stock": 27,
         "category": "Consumable",
         "barcode": "60000003",
@@ -124,6 +138,7 @@
     {
         "name": "Lip Stick",
         "price": 200.0,
+        "cost": 90.0,
         "stock": 94,
         "category": "Cosmetics",
         "barcode": "60000004",
@@ -132,6 +147,7 @@
     {
         "name": "Cobra",
         "price": 30.0,
+        "cost": 20.0,
         "stock": 33,
         "category": "Beverages",
         "barcode": "10000001",
@@ -140,6 +156,7 @@
     {
         "name": "Socks",
         "price": 120.0,
+        "cost": 65.0,
         "stock": 55,
         "category": "Footwear",
         "barcode": "60000005",

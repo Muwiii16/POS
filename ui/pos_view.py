@@ -137,184 +137,56 @@ def pos_view_content(page: ft.Page):
     def process_checkout(e):
         total = sum(item['product'].price * item['qty']
                     for item in cart_state.values())
-
         if total == 0:
             return
 
-        payment_method = {'value': 'Cash'}
-        cash_tendered = {'value': 0.0}
-        partial_cash = {'value': 0.0}
-
-        method_lbl = ft.Text('Cash', weight='bold', size=16, color='#27ae60')
-        change_preview = ft.Text('', size=13, color='grey')
-        credit_fields = ft.Column([], visible=False, spacing=8)
-
-        customer_field = ft.TextField(label='Customer Name', border_radius=8)
-        due_date_field = ft.TextField(
-            label='Due Date (e.g. 2026-05-01)', border_radius=8)
-        partial_field = ft.TextField(
-            label='Partial Cash Payment (₱)',
-            keyboard_type=ft.KeyboardType.NUMBER,
-            border_radius=8,
-            hint_text='0 if fully on credit'
-        )
-
-        def update_preview(e=None):
-            method = payment_method['value']
-
-            if method == 'Credit':
-                try:
-                    p = float(partial_field.value or 0)
-                except ValueError:
-                    p = 0.0
-                partial_cash['value'] = p
-                remaining = total-p
-                change_preview.value = f'Amount on credit: ₱{remaining:.2f}'
-                change_preview.color = '#e67e22'
-            else:
-                try:
-                    cash = float(cash_field.value or 0)
-                except ValueError:
-                    cash = 0.0
-                cash_tendered['value'] = cash
-                if cash == 0:
-                    change_preview.value = ''
-                elif cash < total:
-                    change_preview.value = f'Needed: ₱{total - cash:.2f}'
-                    change_preview.color = 'red'
-                else:
-                    change_preview.value = f'Change: ₱{cash-total:.2f}'
-                    change_preview.color = 'green'
-
-            change_preview.update()
-
-        def confirm_payment(e):
-            method = payment_method['value']
-
-            if method == 'Credit':
-                customer = customer_field.value.strip()
-                due = due_date_field.value.strip()
-                if not customer:
-                    customer_field.error_text = 'Required'
-                    customer_field.update()
-                    return
-                if not due:
-                    due_date_field.error_text = 'Required'
-                    due_date_field.update()
-                    return
-
-                try:
-                    p_cash = float(partial_field.value or 0)
-                except ValueError:
-                    p_cash = 0.0
-
-                amount_on_credit = total - p_cash
-                paid_amount = p_cash
-                change = 0.0
-
-                # Save credit entry
-                engine.save_credit_entry(
-                    customer_name=customer,
-                    amount_owed=amount_on_credit,
-                    due_date=due,
-                    partial_cash=p_cash
-                )
-
-            else:
-                try:
-                    cash = float(cash_field.value or 0)
-                except ValueError:
-                    cash = 0.0
-
-                if cash < total:
-                    cash_field.error_text = f'Need at least ₱{total:.2f}'
-                    cash_field.update()
-                    return
-
-                paid_amount = cash
-                change = cash - total
-                p_cash = cash
-
+        def select_and_proceed(method):
+            page.on_keyboard_event = on_keyboard
             page.pop_dialog()
-            complete_checkout(method, paid_amount, change,
-                              partial_cash=p_cash if method == 'Credit' else paid_amount)
+            show_payment_dialog(method)
 
-        cash_field = ft.TextField(
-            label='Cash Amount Tendered (₱)',
-            keyboard_type=ft.KeyboardType.NUMBER,
-            border_radius=8,
-            autofocus=False,
-            on_change=update_preview,
-            on_submit=confirm_payment,
-        )
-
-        def select_method(method):
-            payment_method['value'] = method
-            method_lbl.value = method
-            method_lbl.color = {
-                'Cash': '#27ae60',
-                'GCash': '#1565c0',
-                'Maya': '#00897b',
-                'Credit': '#e67e22'
-            }.get(method, 'grey')
-            credit_fields.visible = (method == 'Credit')
-            cash_field.visible = (method != 'Credit')
-            update_preview()
-            method_lbl.update()
-            credit_fields.update()
-            cash_field.update()
-
-            if method == 'Credit':
-                customer_field.focus()
-            else:
-                cash_field.focus()
-
-        credit_fields.controls = [
-            customer_field, due_date_field, partial_field]
-
-        def on_payment_keyboard(e: ft.KeyboardEvent):
+        def on_method_keyboard(e: ft.KeyboardEvent):
             key = e.key.replace('Numpad ', '')
-            if e.key == '1':
-                select_method('Cash')
-            elif e.key == '2':
-                select_method('GCash')
-            elif e.key == '3':
-                select_method('Maya')
-            elif e.key == '4':
-                select_method('Credit')
-            elif e.key == 'Enter':
-                confirm_payment(e)
-        page.on_keyboard_event = on_payment_keyboard
+            if key == '1':
+                select_and_proceed('Cash')
+            elif key == '2':
+                select_and_proceed('GCash')
+            elif key == '3':
+                select_and_proceed('Credit')
+            elif key == 'Escape':
+                page.on_keyboard_event = on_keyboard
+                page.pop_dialog()
 
-        method_buttons = ft.Row([
-            ft.ElevatedButton('[1]💵 Cash', on_click=lambda e: select_method('Cash'),
-                              style=ft.ButtonStyle(bgcolor='#27ae60', color='white',
-                                                   shape=ft.RoundedRectangleBorder(radius=8))),
-            ft.ElevatedButton('[2]📱 GCash', on_click=lambda e: select_method('GCash'),
-                              style=ft.ButtonStyle(bgcolor='#1565c0', color='white',
-                                                   shape=ft.RoundedRectangleBorder(radius=8))),
-            ft.ElevatedButton('[3]🟢 Maya', on_click=lambda e: select_method('Maya'),
-                              style=ft.ButtonStyle(bgcolor='#00897b', color='white',
-                                                   shape=ft.RoundedRectangleBorder(radius=8))),
-            ft.ElevatedButton('[4]📋 Credit', on_click=lambda e: select_method('Credit'),
-                              style=ft.ButtonStyle(bgcolor='#e67e22', color='white',
-                                                   shape=ft.RoundedRectangleBorder(radius=8))),
-        ], spacing=8, wrap=True)
+        page.on_keyboard_event = on_method_keyboard
 
         page.show_dialog(ft.AlertDialog(
-            title=ft.Text(f'Payment — Total: ₱{total:.2f}', weight='bold'),
-            content=ft.Container(
-                width=400,
-                content=ft.Column([
-                    ft.Text('Select Payment Method', size=13, color='grey'),
-                    method_buttons,
-                    ft.Divider(),
-                    ft.Row([ft.Text('Method:', size=13), method_lbl], spacing=8),
-                    cash_field,
-                    credit_fields,
-                    change_preview,
-                ], spacing=10, tight=True)
-            ),
+            title=ft.Text(f'Select Payment — Total: ₱{total:.2f}',
+                          weight='bold'),
+            content=ft.Column([
+                ft.Text('How is the customer paying?',
+                        color='grey', size=13),
+                ft.Container(height=8),
+                ft.Row([
+                    ft.ElevatedButton(
+                        '[1] 💵 Cash', expand=True, height=60,
+                        on_click=lambda e: select_and_proceed('Cash'),
+                        style=ft.ButtonStyle(bgcolor='#27ae60', color='white',
+                                             shape=ft.RoundedRectangleBorder(radius=8))
+                    ),
+                    ft.ElevatedButton(
+                        '[2] 📱 GCash', expand=True, height=60,
+                        on_click=lambda e: select_and_proceed('GCash'),
+                        style=ft.ButtonStyle(bgcolor='#1565c0', color='white',
+                                             shape=ft.RoundedRectangleBorder(radius=8))
+                    ),
+                    ft.ElevatedButton(
+                        '[3] 📋 Credit', expand=True, height=60,
+                        on_click=lambda e: select_and_proceed('Credit'),
+                        style=ft.ButtonStyle(bgcolor='#e67e22', color='white',
+                                             shape=ft.RoundedRectangleBorder(radius=8))
+                    ),
+                ], spacing=10),
+            ], tight=True, spacing=8, width=380),
             actions=[
                 ft.TextButton(
                     content=ft.Text('Cancel'),
@@ -322,16 +194,212 @@ def pos_view_content(page: ft.Page):
                         setattr(page, 'on_keyboard_event', on_keyboard),
                         page.pop_dialog()
                     )
-                ),
-                ft.ElevatedButton(
-                    content=ft.Text('Confirm Payment'),
-                    on_click=confirm_payment,
-                    style=ft.ButtonStyle(bgcolor='#4A4440', color='white',
-                                         shape=ft.RoundedRectangleBorder(radius=8))
                 )
             ],
             modal=True
         ))
+
+    def show_payment_dialog(method):
+        import os
+        import base64
+        total = sum(item['product'].price * item['qty']
+                    for item in cart_state.values())
+
+        if method == 'Cash':
+            change_lbl = ft.Text('', size=13, color='grey')
+            cash_field = ft.TextField(
+                label='Cash Amount Tendered (₱)',
+                keyboard_type=ft.KeyboardType.NUMBER,
+                border_radius=8,
+                autofocus=True,
+            )
+
+            def on_cash_change(e):
+                try:
+                    cash = float(cash_field.value or 0)
+                except ValueError:
+                    cash = 0.0
+                if cash == 0:
+                    change_lbl.value = ''
+                elif cash < total:
+                    change_lbl.value = f'Needed: ₱{total - cash:.2f}'
+                    change_lbl.color = 'red'
+                else:
+                    change_lbl.value = f'Change: ₱{cash - total:.2f}'
+                    change_lbl.color = 'green'
+                change_lbl.update()
+
+            cash_field.on_change = on_cash_change
+
+            def confirm_cash(e):
+                try:
+                    cash = float(cash_field.value or 0)
+                except ValueError:
+                    cash = 0.0
+                if cash < total:
+                    cash_field.error_text = f'Need at least ₱{total:.2f}'
+                    cash_field.update()
+                    return
+                page.on_keyboard_event = on_keyboard
+                page.pop_dialog()
+                complete_checkout('Cash', cash, cash - total)
+
+            cash_field.on_submit = confirm_cash
+
+            page.show_dialog(ft.AlertDialog(
+                title=ft.Text(f'💵 Cash Payment — ₱{total:.2f}', weight='bold'),
+                content=ft.Column([cash_field, change_lbl],
+                                  tight=True, spacing=10, width=350),
+                actions=[
+                    ft.TextButton(
+                        content=ft.Text('Back'),
+                        on_click=lambda e: (
+                            page.pop_dialog(), process_checkout(None))
+                    ),
+                    ft.ElevatedButton(
+                        content=ft.Text('Confirm'),
+                        on_click=confirm_cash,
+                        style=ft.ButtonStyle(bgcolor='#27ae60', color='white',
+                                             shape=ft.RoundedRectangleBorder(radius=8))
+                    )
+                ], modal=True
+            ))
+
+        elif method == 'GCash':
+            qr_path = None
+            for ext in ['png', 'jpg', 'jpeg']:
+                candidate = os.path.join('qr_codes', f'gcash.{ext}')
+                if os.path.exists(candidate):
+                    qr_path = candidate
+                    break
+
+            if qr_path:
+                with open(qr_path, 'rb') as f:
+                    qr_b64 = base64.b64encode(f.read()).decode()
+                ext = qr_path.split('.')[-1]
+                qr_widget = ft.Image(
+                    src=f'data:image/{ext};base64,{qr_b64}',
+                    width=350, height=350, fit='contain'
+                )
+            else:
+                qr_widget = ft.Container(
+                    width=350, height=350,
+                    bgcolor='#f0f0f0',
+                    border_radius=10,
+                    content=ft.Column([
+                        ft.Icon(ft.Icons.QR_CODE, size=60, color='grey'),
+                        ft.Text('No QR code found.', color='grey'),
+                        ft.Text('Place gcash.png inside the qr_codes folder.',
+                                color='grey', size=11,
+                                text_align=ft.TextAlign.CENTER),
+                    ], alignment=ft.MainAxisAlignment.CENTER,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        spacing=8),
+                    alignment=ft.Alignment(0, 0)
+                )
+
+            def confirm_gcash(e):
+                page.on_keyboard_event = on_keyboard
+                page.pop_dialog()
+                complete_checkout('GCash', total, 0.0)
+
+            page.show_dialog(ft.AlertDialog(
+                title=ft.Text(f'📱 GCash Payment — ₱{total:.2f}',
+                              weight='bold', color='#1565c0'),
+                content=ft.Column([
+                    ft.Text('Ask customer to scan the GCash QR code',
+                            color='grey', size=13),
+                    ft.Text(f'Amount: ₱{total:.2f}',
+                            size=20, weight='bold', color='#1565c0'),
+                    ft.Container(height=8),
+                    qr_widget,
+                    ft.Container(height=8),
+                    ft.Text('Confirm only after payment is received.',
+                            color='grey', size=11, italic=True),
+                ], tight=True, spacing=6, width=350,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                actions=[
+                    ft.TextButton(
+                        content=ft.Text('Back'),
+                        on_click=lambda e: (
+                            page.pop_dialog(), process_checkout(None))
+                    ),
+                    ft.ElevatedButton(
+                        content=ft.Text('✅ Payment Received'),
+                        on_click=confirm_gcash,
+                        style=ft.ButtonStyle(bgcolor='#1565c0', color='white',
+                                             shape=ft.RoundedRectangleBorder(radius=8))
+                    )
+                ], modal=True
+            ))
+
+        elif method == 'Credit':
+            customer_field = ft.TextField(label='Customer Name',
+                                          border_radius=8, autofocus=True)
+            due_field = ft.TextField(label='Due Date (e.g. 2026-05-31)',
+                                     border_radius=8)
+            partial_field = ft.TextField(
+                label='Partial Cash (₱) — 0 if fully on credit',
+                keyboard_type=ft.KeyboardType.NUMBER,
+                border_radius=8
+            )
+            credit_preview = ft.Text('', size=13, color='#e67e22')
+
+            def on_partial_change(e):
+                try:
+                    p = float(partial_field.value or 0)
+                except ValueError:
+                    p = 0.0
+                credit_preview.value = f'Amount on credit: ₱{total - p:.2f}'
+                credit_preview.update()
+
+            partial_field.on_change = on_partial_change
+
+            def confirm_credit(e):
+                customer = customer_field.value.strip()
+                due = due_field.value.strip()
+                if not customer:
+                    customer_field.error_text = 'Required'
+                    customer_field.update()
+                    return
+                if not due:
+                    due_field.error_text = 'Required'
+                    due_field.update()
+                    return
+                try:
+                    p_cash = float(partial_field.value or 0)
+                except ValueError:
+                    p_cash = 0.0
+                engine.save_credit_entry(
+                    customer_name=customer,
+                    amount_owed=total - p_cash,
+                    due_date=due,
+                    partial_cash=p_cash
+                )
+                page.on_keyboard_event = on_keyboard
+                page.pop_dialog()
+                complete_checkout('Credit', p_cash, 0.0, partial_cash=p_cash)
+
+            page.show_dialog(ft.AlertDialog(
+                title=ft.Text(f'📋 Credit — ₱{total:.2f}',
+                              weight='bold', color='#e67e22'),
+                content=ft.Column([
+                    customer_field, due_field, partial_field, credit_preview
+                ], tight=True, spacing=10, width=350),
+                actions=[
+                    ft.TextButton(
+                        content=ft.Text('Back'),
+                        on_click=lambda e: (
+                            page.pop_dialog(), process_checkout(None))
+                    ),
+                    ft.ElevatedButton(
+                        content=ft.Text('Confirm Credit'),
+                        on_click=confirm_credit,
+                        style=ft.ButtonStyle(bgcolor='#e67e22', color='white',
+                                             shape=ft.RoundedRectangleBorder(radius=8))
+                    )
+                ], modal=True
+            ))
 
     def complete_checkout(method, paid_amount, change, partial_cash=0.0):
         total = sum(item['product'].price * item['qty']

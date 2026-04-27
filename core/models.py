@@ -1,8 +1,9 @@
 # Blueprint for each classes
 class Product:
-    def __init__(self, name, price, stock, category, barcode, **kwargs):
+    def __init__(self, name, price, stock, category, barcode, cost=0.0, **kwargs):
         self.name = name
         self.price = float(price)
+        self.cost = float(cost)
         self.stock = int(stock)
         self.category = category
         self.barcode = barcode

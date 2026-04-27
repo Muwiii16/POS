@@ -1,54 +1,430 @@
-Timestamp,Items Sold,Total,Amount Paid
-2026-04-02 00:34:49,Notebook(80L) | Notebook(80L),60.00,100.00
-2026-04-02 00:46:15,Notebook(80L) | Notebook(80L),60.00,100.00
-2026-04-02 00:48:35,Notebook(80L) | Notebook(80L),60.00,100.00
-2026-04-02 01:08:26,Notebook(80L) | Notebook(80L),60.00,100.00
-2026-04-02 01:12:05,Notebook(80L) | Notebook(80L),60.00,100.00
-2026-04-02 01:19:57,Notebook(80L) | Pants(Small) | Pants(Medium),1180.00,1200.00
-2026-04-02 01:26:58,Notebook(80L) | Notebook(80L),60.00,120.00
-2026-04-02 01:55:34,Notebook(80L),30.00,60.00
-2026-04-02 01:57:19,Notebook(80L) | Notebook(80L),60.00,100.00
-2026-04-02 16:48:12,Pants(Medium) | Notebook(80L) | Notebook(80L),710.00,1000.00
-2026-04-02 17:02:01,Pants(Small) | Pants(Medium),1150.00,1500.00
-2026-04-04 15:35:23,Notebook(80L) | Notebook(80L) | Notebook(80L),90.00,100.00
-2026-04-04 15:38:49,Notebook(80L) | Notebook(80L),60.00,80.00
-2026-04-04 15:41:39,Notebook(80L) | Notebook(80L),60.00,80.00
-2026-04-04 18:14:33,Notebook(80L) | Notebook(80L) | Notebook(80L),90.00,100.00
-2026-04-04 20:45:14,Notebook(Standard) | Notebook(Standard) | Notebook(Standard),90.00,100.00
-2026-04-04 22:41:25,Notebook(Standard) | Notebook(Standard),60.00,80.00
-2026-04-04 23:16:38,Notebook(Standard) | Notebook(Standard) | Notebook(Standard) | Pants(L - Black) | iPhone Case(iPhone 15),740.00,1000.00
-2026-04-05 03:17:26,Pants(Small - Blue) | Pants(Small - Blue) | Pants(Small - Blue) | Pants(Small - Blue),2600.00,3000.00
-2026-04-05 17:43:52,Ballpen(Black - Brand: Panda) | Ballpen(Black - Brand: Panda),20.00,500.00
-2026-04-05 17:44:07,iPhone Case(Model: Iphone 15),150.00,500.00
-2026-04-05 17:52:10,Ballpen(Black - Brand: Panda) | Ballpen(Black - Brand: Panda) | Ballpen(Black - Brand: Panda) | Ballpen(Black - Brand: Panda),40.00,400.00
-2026-04-05 19:28:25,Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves),90.00,100.00
-2026-04-05 19:55:07,Notebook(80-leaves),30.00,60.00
-2026-04-05 19:56:20,Notebook(80-leaves),30.00,60.00
-2026-04-05 19:56:41,Ballpen(Blue - Brand: Panda) | Ballpen(Blue - Brand: Panda) | Ballpen(Blue - Brand: Panda) | Ballpen(Blue - Brand: Panda) | Pants(Large - Black),540.00,800.00
-2026-04-05 21:16:38,Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda),30.00,90.00
-
---- SESSION START: 2026-04-06 ---,-,-,-
-
-2026-04-06 22:06:54,iPhone Case(Iphone 15) | Lip Stick(Ligaya) | Lip Stick(Ligaya) | Lip Stick(Ligaya) | Lip Stick(Ligaya) | Lip Stick(Ligaya) | Cap(Black) | Cap(Black) | Cap(Black) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | Eyeglass(Black - Transparent) | Pants(X-large - Blue) | Pants(X-large - Blue),3340.00,4000.00
-2026-04-06 22:32:50,Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Shoes(42 - Black) | Shoes(42 - Black) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda),1500.00,2000.00
-
---- SESSION START: 2026-04-07 ---,-,-,-
-
-2026-04-07 00:32:30,Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Ballpen(Black - Panda) | Cap(Black) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | iPhone Case(Iphone 15) | Pants(Large - Yellow) | Pants(Large - Yellow) | Lip Stick(Ligaya) | Toothpaste(Colgate),1600.00,2000.00
-2026-04-07 19:38:28,Cap(Black) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Toothpaste(Colgate) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves),320.00,500.00
-
---- SESSION START: 2026-04-13 ---,-,-,-
-
-2026-04-13 15:11:44,Eyeglass(Black - Transparent) | Eyeglass(Black - Transparent),100.00,800.00
-2026-04-13 15:59:41,Ballpen(Black - Panda) | Cap(Black),160.00,500.00
-2026-04-13 16:03:40,Cap(Black) | Pants(Large - Black) | Notebook(80-leaves) | Toothpaste(Colgate),700.00,1000.00
-2026-04-13 16:04:27,Eyeglass(Black - Transparent) | Cap(Black) | Ballpen(Black - Panda),210.00,250.00
-2026-04-13 16:05:59,Cap(Black) | Ballpen(Black - Panda) | Eyeglass(Black - Transparent),210.00,250.00
-2026-04-13 16:33:02,Toothpaste(Colgate),20.00,50.00
-
---- SESSION START: 2026-04-26 ---,-,-,-
-
-2026-04-26 14:02:44,iPhone Case(Iphone 15),150.00,500.00
-2026-04-26 15:10:15,Notebook(80-leaves) | Pants(Large - Black) | Ballpen(Black - Panda) | Shoes(42 - Black) | Eyeglass(Black - Transparent) | Eyeglass(Black - Transparent) | Eyeglass(Black - Transparent) | Socks(High-cut - Black) | Socks(High-cut - Black) | Socks(High-cut - Black) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto),1640.00,2000.00
-2026-04-26 17:03:37,iPhone Case(Iphone 15),150.00,150.00,Cash
-2026-04-26 17:05:51,Notebook(80-leaves),30.00,100.00,Cash
+Timestamp,Items Sold,Total,Amount Paid,Payment Method,Cost
+--- SESSION START: 2026-02-01 ---,-,-,-,-,-
+2026-02-01 10:52:28,iPhone Case(Model: Iphone 15) | Pants(Large - Black),650.00,650.00,Cash,360.00
+2026-02-01 11:42:01,Notebook(80L) | iPhone Case(Model: Iphone 15),180.00,200.00,Cash,78.00
+2026-02-01 15:23:46,iPhone Case(Model: Iphone 15),150.00,150.00,Cash,60.00
+2026-02-01 16:06:46,iPhone Case(Model: Iphone 15),150.00,150.00,Cash,60.00
+2026-02-01 17:48:50,Notebook(80-leaves),30.00,50.00,Cash,18.00
+2026-02-01 17:58:02,iPhone Case(Model: Iphone 15) | Notebook(80L) | iPhone Case(Iphone 15),330.00,350.00,Cash,138.00
+2026-02-01 19:57:11,Pants(Large - Black),500.00,500.00,Cash,300.00
+2026-02-01 20:09:10,iPhone Case(Iphone 15) | Notebook(80L) | Notebook(80L),210.00,210.00,Cash,96.00
+--- SESSION START: 2026-02-02 ---,-,-,-,-,-
+2026-02-02 09:21:36,Notebook(80L) | Notebook(80-leaves),60.00,60.00,Cash,36.00
+2026-02-02 12:29:47,Notebook(80L) | Toothpaste(Colgate) | Notebook(80-leaves),80.00,100.00,Cash,48.00
+2026-02-02 13:07:14,iPhone Case(Iphone 15) | Notebook(80-leaves) | iPhone Case(Iphone 15),330.00,350.00,Cash,138.00
+2026-02-02 14:22:50,iPhone Case(Iphone 15) | Notebook(80L),180.00,200.00,Cash,78.00
+2026-02-02 15:30:29,Pants(Large - Black) | Pants(Large - Black),1000.00,1000.00,Cash,600.00
+2026-02-02 19:46:53,Pants(Large - Black) | Pants(Large - Black) | Notebook(80-leaves) | Notebook(80-leaves),1060.00,1100.00,Cash,636.00
+--- SESSION START: 2026-02-03 ---,-,-,-,-,-
+2026-02-03 09:15:18,Toothpaste(Colgate) | iPhone Case(Iphone 15),170.00,200.00,Cash,72.00
+2026-02-03 12:26:10,Toothpaste(Colgate) | iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15),320.00,350.00,Cash,132.00
+2026-02-03 12:46:26,Toothpaste(Colgate) | Notebook(80L) | Notebook(80L),80.00,100.00,Cash,48.00
+2026-02-03 15:04:40,Pants(Large - Black) | iPhone Case(Model: Iphone 15) | Toothpaste(Colgate),670.00,700.00,Cash,372.00
+2026-02-03 18:39:25,Notebook(80L),30.00,30.00,Cash,18.00
+2026-02-03 20:41:45,iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15) | iPhone Case(Iphone 15) | iPhone Case(Iphone 15),600.00,600.00,Cash,240.00
+--- SESSION START: 2026-02-04 ---,-,-,-,-,-
+2026-02-04 12:18:29,Toothpaste(Colgate) | iPhone Case(Iphone 15),170.00,170.00,Cash,72.00
+2026-02-04 14:10:14,Notebook(80L) | Notebook(80L),60.00,60.00,Cash,36.00
+2026-02-04 15:01:31,Notebook(80-leaves) | Toothpaste(Colgate) | Notebook(80L) | Pants(Large - Black),580.00,600.00,Cash,348.00
+2026-02-04 16:28:09,iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15) | iPhone Case(Iphone 15),450.00,450.00,Cash,180.00
+2026-02-04 17:45:57,Pants(Large - Black) | iPhone Case(Iphone 15) | Toothpaste(Colgate),670.00,670.00,Cash,372.00
+2026-02-04 20:13:28,Toothpaste(Colgate),20.00,20.00,Cash,12.00
+2026-02-04 20:23:59,Notebook(80L) | Notebook(80L),60.00,100.00,Cash,36.00
+--- SESSION START: 2026-02-05 ---,-,-,-,-,-
+2026-02-05 08:48:16,Pants(Large - Black) | Toothpaste(Colgate) | Notebook(80-leaves),550.00,550.00,Cash,330.00
+2026-02-05 09:29:15,iPhone Case(Model: Iphone 15) | Pants(Large - Black) | iPhone Case(Iphone 15),800.00,800.00,Cash,420.00
+2026-02-05 09:39:09,Notebook(80-leaves),30.00,50.00,Cash,18.00
+2026-02-05 10:57:27,Toothpaste(Colgate),20.00,20.00,Cash,12.00
+2026-02-05 15:29:37,iPhone Case(Iphone 15) | Notebook(80L) | Toothpaste(Colgate) | iPhone Case(Iphone 15),350.00,350.00,Cash,150.00
+2026-02-05 19:48:20,Notebook(80-leaves) | Pants(Large - Black) | iPhone Case(Iphone 15),680.00,700.00,Cash,378.00
+--- SESSION START: 2026-02-06 ---,-,-,-,-,-
+2026-02-06 10:00:32,Notebook(80L),30.00,30.00,Cash,18.00
+2026-02-06 13:35:17,Toothpaste(Colgate) | Notebook(80L),50.00,50.00,Cash,30.00
+2026-02-06 17:12:53,Pants(Large - Black) | Toothpaste(Colgate) | Notebook(80-leaves) | iPhone Case(Model: Iphone 15),700.00,700.00,Cash,390.00
+2026-02-06 17:44:31,iPhone Case(Model: Iphone 15) | Notebook(80L) | iPhone Case(Iphone 15),330.00,350.00,Cash,138.00
+--- SESSION START: 2026-02-07 ---,-,-,-,-,-
+2026-02-07 08:55:39,Notebook(80L) | iPhone Case(Model: Iphone 15),180.00,200.00,Cash,78.00
+2026-02-07 11:55:08,iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15),300.00,300.00,Cash,120.00
+2026-02-07 14:53:48,Notebook(80-leaves) | Notebook(80L),60.00,100.00,Cash,36.00
+2026-02-07 15:46:50,iPhone Case(Iphone 15) | Toothpaste(Colgate),170.00,200.00,Cash,72.00
+--- SESSION START: 2026-02-08 ---,-,-,-,-,-
+2026-02-08 08:40:42,Pants(Large - Black) | Toothpaste(Colgate) | iPhone Case(Model: Iphone 15) | Notebook(80-leaves),700.00,700.00,Cash,390.00
+2026-02-08 10:43:08,Notebook(80L) | iPhone Case(Model: Iphone 15) | Pants(Large - Black),680.00,680.00,Cash,378.00
+2026-02-08 13:00:50,Toothpaste(Colgate),20.00,20.00,Cash,12.00
+2026-02-08 16:07:32,Pants(Large - Black) | Pants(Large - Black) | iPhone Case(Model: Iphone 15),1150.00,1150.00,Cash,660.00
+2026-02-08 16:20:18,iPhone Case(Iphone 15) | Notebook(80-leaves) | Notebook(80-leaves),210.00,210.00,Cash,96.00
+2026-02-08 16:41:02,iPhone Case(Iphone 15),150.00,150.00,Cash,60.00
+--- SESSION START: 2026-02-09 ---,-,-,-,-,-
+2026-02-09 09:16:10,Toothpaste(Colgate) | iPhone Case(Iphone 15),170.00,200.00,Cash,72.00
+2026-02-09 10:25:59,iPhone Case(Model: Iphone 15) | Notebook(80-leaves),180.00,180.00,Cash,78.00
+2026-02-09 14:04:28,Notebook(80-leaves) | Notebook(80-leaves) | Pants(Large - Black),560.00,560.00,Cash,336.00
+2026-02-09 15:41:07,iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15) | Toothpaste(Colgate) | Pants(Large - Black),820.00,820.00,Cash,432.00
+2026-02-09 19:43:49,iPhone Case(Iphone 15),150.00,150.00,Cash,60.00
+2026-02-09 20:47:46,Toothpaste(Colgate),20.00,20.00,Cash,12.00
+--- SESSION START: 2026-02-10 ---,-,-,-,-,-
+2026-02-10 10:14:20,Notebook(80L),30.00,30.00,Cash,18.00
+2026-02-10 17:32:34,iPhone Case(Model: Iphone 15) | iPhone Case(Iphone 15) | Pants(Large - Black) | Notebook(80-leaves),830.00,830.00,Cash,438.00
+2026-02-10 17:49:45,Pants(Large - Black),500.00,500.00,Cash,300.00
+2026-02-10 18:07:56,Toothpaste(Colgate),20.00,20.00,Cash,12.00
+2026-02-10 20:25:55,Notebook(80L) | Toothpaste(Colgate),50.00,50.00,Cash,30.00
+2026-02-10 20:32:33,iPhone Case(Model: Iphone 15) | iPhone Case(Iphone 15) | Pants(Large - Black),800.00,800.00,Cash,420.00
+--- SESSION START: 2026-02-11 ---,-,-,-,-,-
+2026-02-11 12:32:16,Notebook(80L) | iPhone Case(Iphone 15) | Toothpaste(Colgate),200.00,200.00,Cash,90.00
+2026-02-11 17:12:15,Toothpaste(Colgate) | iPhone Case(Iphone 15),170.00,170.00,Cash,72.00
+2026-02-11 18:56:35,Toothpaste(Colgate) | Notebook(80-leaves),50.00,50.00,Cash,30.00
+2026-02-11 20:07:11,iPhone Case(Model: Iphone 15) | Pants(Large - Black) | Pants(Large - Black) | iPhone Case(Model: Iphone 15),1300.00,1300.00,Cash,720.00
+--- SESSION START: 2026-02-12 ---,-,-,-,-,-
+2026-02-12 08:47:04,Notebook(80-leaves) | Pants(Large - Black) | iPhone Case(Iphone 15) | Notebook(80-leaves),710.00,710.00,Cash,396.00
+2026-02-12 09:19:14,Notebook(80-leaves) | iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15) | Notebook(80-leaves),360.00,360.00,Cash,156.00
+2026-02-12 09:21:54,Notebook(80L) | Notebook(80-leaves),60.00,60.00,Cash,36.00
+2026-02-12 14:13:37,Notebook(80-leaves) | Notebook(80L) | Notebook(80-leaves),90.00,90.00,Cash,54.00
+2026-02-12 14:37:49,iPhone Case(Model: Iphone 15) | Toothpaste(Colgate),170.00,170.00,Cash,72.00
+2026-02-12 15:01:46,Notebook(80-leaves) | Pants(Large - Black),530.00,550.00,Cash,318.00
+2026-02-12 15:19:42,Toothpaste(Colgate) | Pants(Large - Black) | iPhone Case(Iphone 15),670.00,700.00,Cash,372.00
+--- SESSION START: 2026-02-13 ---,-,-,-,-,-
+2026-02-13 09:51:35,Toothpaste(Colgate) | Notebook(80-leaves) | Pants(Large - Black),550.00,550.00,Cash,330.00
+2026-02-13 13:08:18,Notebook(80-leaves) | Notebook(80L) | Pants(Large - Black) | iPhone Case(Model: Iphone 15),710.00,750.00,Cash,396.00
+2026-02-13 15:49:30,iPhone Case(Iphone 15) | iPhone Case(Iphone 15) | Pants(Large - Black),800.00,800.00,Cash,420.00
+2026-02-13 15:51:13,iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15),300.00,300.00,Cash,120.00
+2026-02-13 20:56:09,iPhone Case(Model: Iphone 15) | Notebook(80L),180.00,200.00,Cash,78.00
+--- SESSION START: 2026-02-14 ---,-,-,-,-,-
+2026-02-14 09:55:01,Pants(Large - Black) | Toothpaste(Colgate),520.00,520.00,Cash,312.00
+2026-02-14 12:27:04,Toothpaste(Colgate) | Notebook(80L) | iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15),350.00,350.00,Cash,150.00
+2026-02-14 14:47:18,Pants(Large - Black),500.00,500.00,Cash,300.00
+2026-02-14 15:34:22,Notebook(80L) | Pants(Large - Black) | Toothpaste(Colgate),550.00,550.00,Cash,330.00
+2026-02-14 15:48:22,iPhone Case(Iphone 15) | Toothpaste(Colgate),170.00,170.00,Cash,72.00
+2026-02-14 17:01:11,iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15),300.00,300.00,Cash,120.00
+2026-02-14 17:48:51,iPhone Case(Iphone 15) | Notebook(80-leaves) | iPhone Case(Model: Iphone 15) | Notebook(80-leaves),360.00,400.00,Cash,156.00
+--- SESSION START: 2026-02-15 ---,-,-,-,-,-
+2026-02-15 10:12:19,Notebook(80-leaves) | Toothpaste(Colgate) | iPhone Case(Model: Iphone 15) | Notebook(80L),230.00,230.00,Cash,108.00
+2026-02-15 10:35:22,iPhone Case(Model: Iphone 15) | Pants(Large - Black) | iPhone Case(Model: Iphone 15) | Notebook(80-leaves),830.00,830.00,Cash,438.00
+2026-02-15 14:42:06,Pants(Large - Black),500.00,500.00,Cash,300.00
+2026-02-15 19:07:38,Toothpaste(Colgate) | Pants(Large - Black),520.00,550.00,Cash,312.00
+2026-02-15 20:10:20,iPhone Case(Model: Iphone 15) | Toothpaste(Colgate),170.00,170.00,Cash,72.00
+--- SESSION START: 2026-02-16 ---,-,-,-,-,-
+2026-02-16 12:15:11,Notebook(80L) | iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15),330.00,350.00,Cash,138.00
+2026-02-16 17:26:22,Notebook(80-leaves),30.00,30.00,Cash,18.00
+2026-02-16 17:57:34,Toothpaste(Colgate) | Notebook(80L) | Pants(Large - Black) | Toothpaste(Colgate),570.00,600.00,Cash,342.00
+--- SESSION START: 2026-02-17 ---,-,-,-,-,-
+2026-02-17 08:11:26,Notebook(80L),30.00,30.00,Cash,18.00
+2026-02-17 09:22:00,Notebook(80L) | iPhone Case(Model: Iphone 15),180.00,180.00,Cash,78.00
+2026-02-17 10:35:58,Notebook(80-leaves) | Pants(Large - Black),530.00,550.00,Cash,318.00
+2026-02-17 11:38:01,Toothpaste(Colgate) | Notebook(80-leaves) | Notebook(80L),80.00,100.00,Cash,48.00
+2026-02-17 17:00:37,Pants(Large - Black) | Notebook(80-leaves),530.00,550.00,Cash,318.00
+2026-02-17 19:20:44,iPhone Case(Iphone 15),150.00,150.00,Cash,60.00
+--- SESSION START: 2026-02-18 ---,-,-,-,-,-
+2026-02-18 08:59:12,iPhone Case(Model: Iphone 15) | Pants(Large - Black) | Notebook(80-leaves) | Toothpaste(Colgate),700.00,700.00,Cash,390.00
+2026-02-18 09:14:36,iPhone Case(Iphone 15),150.00,150.00,Cash,60.00
+2026-02-18 09:25:21,iPhone Case(Model: Iphone 15) | Toothpaste(Colgate) | Notebook(80-leaves) | iPhone Case(Model: Iphone 15),350.00,350.00,Cash,150.00
+2026-02-18 13:44:37,iPhone Case(Model: Iphone 15) | iPhone Case(Iphone 15),300.00,300.00,Cash,120.00
+2026-02-18 14:22:30,iPhone Case(Model: Iphone 15) | Notebook(80-leaves) | iPhone Case(Model: Iphone 15) | Notebook(80-leaves),360.00,360.00,Cash,156.00
+2026-02-18 20:25:12,Toothpaste(Colgate) | Pants(Large - Black) | Notebook(80L) | Pants(Large - Black),1050.00,1050.00,Cash,630.00
+2026-02-18 20:57:43,Pants(Large - Black),500.00,500.00,Cash,300.00
+--- SESSION START: 2026-02-19 ---,-,-,-,-,-
+2026-02-19 08:32:22,Notebook(80-leaves) | Pants(Large - Black) | Notebook(80L) | Pants(Large - Black),1060.00,1100.00,Cash,636.00
+2026-02-19 11:22:15,iPhone Case(Iphone 15) | Notebook(80-leaves) | Pants(Large - Black) | iPhone Case(Iphone 15),830.00,830.00,Cash,438.00
+2026-02-19 12:12:24,Notebook(80-leaves) | Pants(Large - Black),530.00,550.00,Cash,318.00
+--- SESSION START: 2026-02-20 ---,-,-,-,-,-
+2026-02-20 08:45:51,iPhone Case(Model: Iphone 15),150.00,150.00,Cash,60.00
+2026-02-20 11:09:21,Pants(Large - Black) | iPhone Case(Iphone 15) | Notebook(80L) | Pants(Large - Black),1180.00,1180.00,Cash,678.00
+2026-02-20 13:12:13,Notebook(80L) | Notebook(80L),60.00,60.00,Cash,36.00
+2026-02-20 15:49:57,Toothpaste(Colgate) | Toothpaste(Colgate) | Toothpaste(Colgate) | iPhone Case(Iphone 15),210.00,250.00,Cash,96.00
+2026-02-20 16:21:30,Notebook(80-leaves) | Notebook(80L) | Pants(Large - Black) | Pants(Large - Black),1060.00,1100.00,Cash,636.00
+2026-02-20 20:54:44,Notebook(80L) | iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15) | Toothpaste(Colgate),350.00,350.00,Cash,150.00
+--- SESSION START: 2026-02-21 ---,-,-,-,-,-
+2026-02-21 11:13:36,iPhone Case(Iphone 15),150.00,150.00,Cash,60.00
+2026-02-21 11:28:52,Notebook(80L) | Notebook(80L) | iPhone Case(Iphone 15) | Pants(Large - Black),710.00,710.00,Cash,396.00
+2026-02-21 13:42:48,Pants(Large - Black),500.00,500.00,Cash,300.00
+2026-02-21 13:55:27,iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15) | Notebook(80L) | Toothpaste(Colgate),350.00,350.00,Cash,150.00
+2026-02-21 14:52:33,iPhone Case(Iphone 15) | Toothpaste(Colgate) | iPhone Case(Model: Iphone 15) | Toothpaste(Colgate),340.00,350.00,Cash,144.00
+2026-02-21 20:06:21,iPhone Case(Model: Iphone 15),150.00,150.00,Cash,60.00
+2026-02-21 20:13:24,Pants(Large - Black) | Pants(Large - Black) | Notebook(80L) | iPhone Case(Iphone 15),1180.00,1180.00,Cash,678.00
+--- SESSION START: 2026-02-22 ---,-,-,-,-,-
+2026-02-22 10:20:58,Notebook(80L) | iPhone Case(Iphone 15) | Notebook(80L),210.00,210.00,Cash,96.00
+2026-02-22 14:22:29,Notebook(80L) | Notebook(80L) | Notebook(80-leaves) | Notebook(80L),120.00,150.00,Cash,72.00
+2026-02-22 14:30:48,Notebook(80-leaves) | Notebook(80-leaves),60.00,100.00,Cash,36.00
+2026-02-22 19:04:46,iPhone Case(Model: Iphone 15) | Pants(Large - Black) | Pants(Large - Black),1150.00,1150.00,Cash,660.00
+--- SESSION START: 2026-02-23 ---,-,-,-,-,-
+2026-02-23 14:53:15,Notebook(80L) | Notebook(80-leaves) | Notebook(80L) | iPhone Case(Iphone 15),240.00,250.00,Cash,114.00
+2026-02-23 16:12:01,Pants(Large - Black) | Notebook(80L) | iPhone Case(Iphone 15),680.00,680.00,Cash,378.00
+2026-02-23 20:14:06,Notebook(80-leaves) | iPhone Case(Model: Iphone 15) | Notebook(80-leaves) | iPhone Case(Iphone 15),360.00,400.00,Cash,156.00
+--- SESSION START: 2026-02-24 ---,-,-,-,-,-
+2026-02-24 12:05:57,Toothpaste(Colgate),20.00,20.00,Cash,12.00
+2026-02-24 14:49:10,iPhone Case(Model: Iphone 15) | Notebook(80-leaves),180.00,200.00,Cash,78.00
+2026-02-24 20:59:08,iPhone Case(Model: Iphone 15) | Notebook(80L) | Toothpaste(Colgate) | iPhone Case(Iphone 15),350.00,350.00,Cash,150.00
+--- SESSION START: 2026-02-25 ---,-,-,-,-,-
+2026-02-25 08:44:55,Notebook(80L),30.00,30.00,Cash,18.00
+2026-02-25 09:21:55,iPhone Case(Iphone 15) | Toothpaste(Colgate) | Pants(Large - Black),670.00,700.00,Cash,372.00
+2026-02-25 14:49:04,Toothpaste(Colgate) | Notebook(80-leaves) | iPhone Case(Model: Iphone 15),200.00,200.00,Cash,90.00
+2026-02-25 18:21:57,Toothpaste(Colgate) | iPhone Case(Model: Iphone 15),170.00,200.00,Cash,72.00
+2026-02-25 18:37:04,Notebook(80-leaves) | iPhone Case(Model: Iphone 15),180.00,180.00,Cash,78.00
+2026-02-25 19:56:36,Toothpaste(Colgate) | Toothpaste(Colgate) | iPhone Case(Iphone 15),190.00,200.00,Cash,84.00
+--- SESSION START: 2026-02-26 ---,-,-,-,-,-
+2026-02-26 11:58:42,Toothpaste(Colgate) | Toothpaste(Colgate),40.00,40.00,Cash,24.00
+2026-02-26 12:18:47,Notebook(80-leaves) | Toothpaste(Colgate) | iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15),350.00,350.00,Cash,150.00
+2026-02-26 20:18:02,iPhone Case(Model: Iphone 15) | Toothpaste(Colgate) | iPhone Case(Model: Iphone 15) | Toothpaste(Colgate),340.00,340.00,Cash,144.00
+--- SESSION START: 2026-02-27 ---,-,-,-,-,-
+2026-02-27 08:24:32,iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15),300.00,300.00,Cash,120.00
+2026-02-27 09:16:53,Notebook(80-leaves) | Pants(Large - Black),530.00,530.00,Cash,318.00
+2026-02-27 10:56:04,iPhone Case(Model: Iphone 15) | Pants(Large - Black),650.00,650.00,Cash,360.00
+2026-02-27 12:22:57,Notebook(80L),30.00,50.00,Cash,18.00
+2026-02-27 14:06:08,Pants(Large - Black) | Pants(Large - Black) | Pants(Large - Black) | iPhone Case(Model: Iphone 15),1650.00,1650.00,Cash,960.00
+2026-02-27 18:45:31,iPhone Case(Iphone 15) | Pants(Large - Black) | Pants(Large - Black) | Pants(Large - Black),1650.00,1650.00,Cash,960.00
+--- SESSION START: 2026-02-28 ---,-,-,-,-,-
+2026-02-28 11:08:48,Toothpaste(Colgate) | Pants(Large - Black),520.00,520.00,Cash,312.00
+2026-02-28 15:44:38,Pants(Large - Black),500.00,500.00,Cash,300.00
+2026-02-28 18:37:51,Toothpaste(Colgate) | iPhone Case(Iphone 15),170.00,200.00,Cash,72.00
+2026-02-28 19:32:47,Toothpaste(Colgate) | Toothpaste(Colgate),40.00,50.00,Cash,24.00
+--- SESSION START: 2026-03-01 ---,-,-,-,-,-
+2026-03-01 09:22:30,Notebook(80-leaves) | iPhone Case(Model: Iphone 15) | Toothpaste(Colgate),200.00,200.00,Cash,90.00
+2026-03-01 09:22:54,Notebook(80-leaves),30.00,50.00,Cash,18.00
+2026-03-01 09:41:43,iPhone Case(Iphone 15) | Notebook(80-leaves),180.00,200.00,Cash,78.00
+2026-03-01 10:55:38,Pants(Large - Black) | iPhone Case(Model: Iphone 15) | Toothpaste(Colgate),670.00,700.00,Cash,372.00
+2026-03-01 11:51:29,iPhone Case(Iphone 15) | Notebook(80-leaves) | Notebook(80L) | iPhone Case(Iphone 15),360.00,400.00,Cash,156.00
+2026-03-01 13:27:19,Notebook(80-leaves) | Notebook(80-leaves) | iPhone Case(Iphone 15) | Pants(Large - Black),710.00,750.00,Cash,396.00
+2026-03-01 13:35:46,iPhone Case(Model: Iphone 15) | Notebook(80-leaves) | Toothpaste(Colgate) | iPhone Case(Model: Iphone 15),350.00,350.00,Cash,150.00
+2026-03-01 14:26:30,Notebook(80-leaves) | iPhone Case(Model: Iphone 15),180.00,200.00,Cash,78.00
+--- SESSION START: 2026-03-02 ---,-,-,-,-,-
+2026-03-02 08:17:55,Pants(Large - Black) | Notebook(80-leaves),530.00,530.00,Cash,318.00
+2026-03-02 09:13:08,Notebook(80L) | Pants(Large - Black),530.00,530.00,Cash,318.00
+2026-03-02 09:39:59,iPhone Case(Iphone 15) | Notebook(80L) | iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15),480.00,500.00,Cash,198.00
+2026-03-02 11:31:29,Notebook(80-leaves) | Pants(Large - Black),530.00,550.00,Cash,318.00
+2026-03-02 12:14:09,Pants(Large - Black) | Notebook(80-leaves),530.00,550.00,Cash,318.00
+2026-03-02 12:19:43,Pants(Large - Black) | Notebook(80-leaves) | Toothpaste(Colgate),550.00,550.00,Cash,330.00
+2026-03-02 14:14:01,Notebook(80-leaves) | Pants(Large - Black) | iPhone Case(Iphone 15),680.00,700.00,Cash,378.00
+2026-03-02 14:20:41,iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15) | Pants(Large - Black),800.00,800.00,Cash,420.00
+--- SESSION START: 2026-03-03 ---,-,-,-,-,-
+2026-03-03 09:48:13,Notebook(80L) | iPhone Case(Iphone 15),180.00,180.00,Cash,78.00
+2026-03-03 11:25:09,Notebook(80-leaves) | Notebook(80-leaves) | iPhone Case(Iphone 15) | Notebook(80-leaves),240.00,240.00,Cash,114.00
+2026-03-03 12:20:20,Pants(Large - Black) | iPhone Case(Model: Iphone 15),650.00,650.00,Cash,360.00
+2026-03-03 18:07:44,iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15),450.00,450.00,Cash,180.00
+2026-03-03 20:42:18,Toothpaste(Colgate),20.00,50.00,Cash,12.00
+--- SESSION START: 2026-03-04 ---,-,-,-,-,-
+2026-03-04 09:38:28,Pants(Large - Black) | iPhone Case(Model: Iphone 15) | Notebook(80-leaves),680.00,680.00,Cash,378.00
+2026-03-04 11:45:15,Pants(Large - Black),500.00,500.00,Cash,300.00
+2026-03-04 13:46:40,iPhone Case(Iphone 15) | Notebook(80-leaves),180.00,200.00,Cash,78.00
+2026-03-04 14:25:26,Notebook(80L) | Notebook(80-leaves) | iPhone Case(Iphone 15),210.00,250.00,Cash,96.00
+2026-03-04 20:32:13,Toothpaste(Colgate),20.00,20.00,Cash,12.00
+--- SESSION START: 2026-03-05 ---,-,-,-,-,-
+2026-03-05 08:15:55,Notebook(80-leaves) | Notebook(80L),60.00,100.00,Cash,36.00
+2026-03-05 15:11:57,iPhone Case(Model: Iphone 15) | Toothpaste(Colgate) | Pants(Large - Black),670.00,700.00,Cash,372.00
+2026-03-05 20:46:25,iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15) | iPhone Case(Iphone 15),600.00,600.00,Cash,240.00
+--- SESSION START: 2026-03-06 ---,-,-,-,-,-
+2026-03-06 09:07:56,Toothpaste(Colgate) | Notebook(80L) | Pants(Large - Black),550.00,550.00,Cash,330.00
+2026-03-06 13:04:55,iPhone Case(Model: Iphone 15) | iPhone Case(Iphone 15),300.00,300.00,Cash,120.00
+2026-03-06 15:01:53,Notebook(80-leaves) | Notebook(80-leaves),60.00,60.00,Cash,36.00
+2026-03-06 15:41:08,Pants(Large - Black) | iPhone Case(Iphone 15),650.00,650.00,Cash,360.00
+2026-03-06 17:11:09,Notebook(80L),30.00,50.00,Cash,18.00
+2026-03-06 20:36:36,Notebook(80-leaves) | iPhone Case(Model: Iphone 15),180.00,180.00,Cash,78.00
+--- SESSION START: 2026-03-07 ---,-,-,-,-,-
+2026-03-07 10:17:58,iPhone Case(Iphone 15) | Notebook(80L) | Notebook(80-leaves),210.00,210.00,Cash,96.00
+2026-03-07 15:34:05,Notebook(80-leaves) | iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15),330.00,330.00,Cash,138.00
+2026-03-07 17:13:47,iPhone Case(Iphone 15),150.00,150.00,Cash,60.00
+2026-03-07 18:00:56,iPhone Case(Model: Iphone 15) | Notebook(80-leaves) | Toothpaste(Colgate),200.00,200.00,Cash,90.00
+2026-03-07 18:06:41,iPhone Case(Iphone 15),150.00,150.00,Cash,60.00
+2026-03-07 19:03:05,iPhone Case(Model: Iphone 15) | Toothpaste(Colgate) | iPhone Case(Model: Iphone 15) | Toothpaste(Colgate),340.00,340.00,Cash,144.00
+2026-03-07 20:10:19,Notebook(80L) | iPhone Case(Model: Iphone 15),180.00,180.00,Cash,78.00
+--- SESSION START: 2026-03-08 ---,-,-,-,-,-
+2026-03-08 09:36:00,Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | iPhone Case(Model: Iphone 15),240.00,250.00,Cash,114.00
+2026-03-08 12:33:20,Toothpaste(Colgate) | Pants(Large - Black) | iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15),820.00,820.00,Cash,432.00
+2026-03-08 17:37:36,Notebook(80-leaves) | Toothpaste(Colgate),50.00,50.00,Cash,30.00
+2026-03-08 18:41:04,iPhone Case(Model: Iphone 15),150.00,150.00,Cash,60.00
+--- SESSION START: 2026-03-09 ---,-,-,-,-,-
+2026-03-09 10:30:27,Notebook(80-leaves),30.00,50.00,Cash,18.00
+2026-03-09 16:48:42,Notebook(80-leaves),30.00,50.00,Cash,18.00
+2026-03-09 17:29:08,Notebook(80L) | Toothpaste(Colgate),50.00,50.00,Cash,30.00
+2026-03-09 20:13:49,Toothpaste(Colgate) | Pants(Large - Black),520.00,520.00,Cash,312.00
+--- SESSION START: 2026-03-10 ---,-,-,-,-,-
+2026-03-10 09:45:11,Notebook(80L),30.00,30.00,Cash,18.00
+2026-03-10 11:57:20,iPhone Case(Iphone 15) | Pants(Large - Black) | Notebook(80L),680.00,700.00,Cash,378.00
+2026-03-10 15:31:42,Notebook(80L),30.00,50.00,Cash,18.00
+2026-03-10 16:23:45,iPhone Case(Iphone 15),150.00,150.00,Cash,60.00
+2026-03-10 17:28:31,Toothpaste(Colgate) | Notebook(80-leaves) | Notebook(80L) | iPhone Case(Model: Iphone 15),230.00,230.00,Cash,108.00
+2026-03-10 19:42:17,iPhone Case(Iphone 15) | Notebook(80L) | Toothpaste(Colgate),200.00,200.00,Cash,90.00
+2026-03-10 19:44:38,Pants(Large - Black) | Pants(Large - Black) | iPhone Case(Iphone 15),1150.00,1150.00,Cash,660.00
+--- SESSION START: 2026-03-11 ---,-,-,-,-,-
+2026-03-11 08:40:07,iPhone Case(Iphone 15),150.00,150.00,Cash,60.00
+2026-03-11 09:06:39,iPhone Case(Model: Iphone 15) | Pants(Large - Black),650.00,650.00,Cash,360.00
+2026-03-11 09:11:31,iPhone Case(Iphone 15) | Pants(Large - Black),650.00,650.00,Cash,360.00
+2026-03-11 14:21:00,iPhone Case(Iphone 15) | Notebook(80-leaves) | iPhone Case(Iphone 15),330.00,330.00,Cash,138.00
+2026-03-11 15:32:24,iPhone Case(Iphone 15) | Notebook(80L),180.00,200.00,Cash,78.00
+2026-03-11 20:36:25,iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15) | Notebook(80-leaves),330.00,350.00,Cash,138.00
+--- SESSION START: 2026-03-12 ---,-,-,-,-,-
+2026-03-12 18:35:30,iPhone Case(Iphone 15) | iPhone Case(Iphone 15) | Notebook(80L),330.00,350.00,Cash,138.00
+2026-03-12 20:25:39,Pants(Large - Black),500.00,500.00,Cash,300.00
+2026-03-12 20:30:59,iPhone Case(Model: Iphone 15) | Toothpaste(Colgate) | Toothpaste(Colgate) | iPhone Case(Iphone 15),340.00,340.00,Cash,144.00
+--- SESSION START: 2026-03-13 ---,-,-,-,-,-
+2026-03-13 16:30:50,iPhone Case(Model: Iphone 15) | iPhone Case(Iphone 15) | iPhone Case(Iphone 15),450.00,450.00,Cash,180.00
+2026-03-13 19:25:46,Notebook(80L),30.00,30.00,Cash,18.00
+2026-03-13 19:41:58,iPhone Case(Model: Iphone 15),150.00,150.00,Cash,60.00
+2026-03-13 19:57:35,Notebook(80L) | iPhone Case(Iphone 15) | iPhone Case(Iphone 15) | Notebook(80-leaves),360.00,360.00,Cash,156.00
+--- SESSION START: 2026-03-14 ---,-,-,-,-,-
+2026-03-14 10:15:45,iPhone Case(Iphone 15) | iPhone Case(Iphone 15),300.00,300.00,Cash,120.00
+2026-03-14 13:18:56,iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15),300.00,300.00,Cash,120.00
+2026-03-14 15:41:55,iPhone Case(Iphone 15) | Notebook(80L) | Notebook(80L),210.00,250.00,Cash,96.00
+2026-03-14 15:56:49,Toothpaste(Colgate),20.00,20.00,Cash,12.00
+--- SESSION START: 2026-03-15 ---,-,-,-,-,-
+2026-03-15 12:09:29,iPhone Case(Model: Iphone 15) | Notebook(80-leaves) | Toothpaste(Colgate),200.00,200.00,Cash,90.00
+2026-03-15 12:38:45,Toothpaste(Colgate) | Toothpaste(Colgate) | Pants(Large - Black) | iPhone Case(Model: Iphone 15),690.00,700.00,Cash,384.00
+2026-03-15 16:20:54,iPhone Case(Model: Iphone 15) | iPhone Case(Iphone 15),300.00,300.00,Cash,120.00
+2026-03-15 17:09:07,iPhone Case(Iphone 15) | Toothpaste(Colgate) | iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15),470.00,500.00,Cash,192.00
+2026-03-15 17:55:54,Notebook(80L) | iPhone Case(Model: Iphone 15) | Toothpaste(Colgate),200.00,200.00,Cash,90.00
+2026-03-15 19:03:12,Notebook(80-leaves) | iPhone Case(Iphone 15),180.00,180.00,Cash,78.00
+--- SESSION START: 2026-03-16 ---,-,-,-,-,-
+2026-03-16 10:06:07,Notebook(80-leaves) | Toothpaste(Colgate),50.00,50.00,Cash,30.00
+2026-03-16 10:11:10,Notebook(80L) | iPhone Case(Iphone 15) | Pants(Large - Black) | Notebook(80L),710.00,750.00,Cash,396.00
+2026-03-16 10:54:40,iPhone Case(Model: Iphone 15),150.00,150.00,Cash,60.00
+2026-03-16 15:25:32,Toothpaste(Colgate) | Notebook(80L) | Notebook(80-leaves),80.00,80.00,Cash,48.00
+2026-03-16 15:50:15,iPhone Case(Model: Iphone 15) | iPhone Case(Iphone 15),300.00,300.00,Cash,120.00
+2026-03-16 16:48:44,iPhone Case(Iphone 15) | Notebook(80L) | iPhone Case(Model: Iphone 15) | Notebook(80-leaves),360.00,360.00,Cash,156.00
+2026-03-16 17:50:28,Notebook(80L) | iPhone Case(Model: Iphone 15),180.00,180.00,Cash,78.00
+2026-03-16 20:53:30,Notebook(80-leaves) | Notebook(80L),60.00,100.00,Cash,36.00
+--- SESSION START: 2026-03-17 ---,-,-,-,-,-
+2026-03-17 09:05:55,Toothpaste(Colgate) | iPhone Case(Iphone 15) | Pants(Large - Black) | iPhone Case(Model: Iphone 15),820.00,820.00,Cash,432.00
+2026-03-17 12:32:42,Notebook(80-leaves) | iPhone Case(Iphone 15) | Pants(Large - Black),680.00,700.00,Cash,378.00
+2026-03-17 13:53:12,iPhone Case(Iphone 15) | Toothpaste(Colgate) | Notebook(80-leaves) | Notebook(80-leaves),230.00,230.00,Cash,108.00
+2026-03-17 15:42:13,iPhone Case(Model: Iphone 15) | Pants(Large - Black),650.00,650.00,Cash,360.00
+2026-03-17 17:56:29,iPhone Case(Iphone 15),150.00,150.00,Cash,60.00
+2026-03-17 18:02:02,iPhone Case(Model: Iphone 15) | iPhone Case(Iphone 15) | Toothpaste(Colgate) | Pants(Large - Black),820.00,850.00,Cash,432.00
+2026-03-17 19:41:07,Notebook(80-leaves) | Notebook(80-leaves) | iPhone Case(Model: Iphone 15) | Notebook(80-leaves),240.00,250.00,Cash,114.00
+2026-03-17 20:50:05,iPhone Case(Model: Iphone 15),150.00,150.00,Cash,60.00
+--- SESSION START: 2026-03-18 ---,-,-,-,-,-
+2026-03-18 09:37:52,Notebook(80L) | Notebook(80-leaves) | Notebook(80L),90.00,90.00,Cash,54.00
+2026-03-18 10:59:37,iPhone Case(Iphone 15) | iPhone Case(Iphone 15) | Notebook(80-leaves) | Toothpaste(Colgate),350.00,350.00,Cash,150.00
+2026-03-18 12:30:39,Pants(Large - Black) | Toothpaste(Colgate) | iPhone Case(Iphone 15),670.00,670.00,Cash,372.00
+2026-03-18 17:16:58,iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15),300.00,300.00,Cash,120.00
+2026-03-18 18:20:55,iPhone Case(Model: Iphone 15) | Toothpaste(Colgate),170.00,200.00,Cash,72.00
+2026-03-18 20:34:35,iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15),300.00,300.00,Cash,120.00
+--- SESSION START: 2026-03-19 ---,-,-,-,-,-
+2026-03-19 14:28:29,Notebook(80-leaves) | Notebook(80-leaves),60.00,60.00,Cash,36.00
+2026-03-19 15:21:28,Notebook(80L) | iPhone Case(Model: Iphone 15),180.00,200.00,Cash,78.00
+2026-03-19 16:07:38,Pants(Large - Black) | iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15),800.00,800.00,Cash,420.00
+2026-03-19 16:27:42,Toothpaste(Colgate),20.00,50.00,Cash,12.00
+2026-03-19 16:56:19,Pants(Large - Black) | Pants(Large - Black),1000.00,1000.00,Cash,600.00
+2026-03-19 18:34:07,Notebook(80-leaves) | iPhone Case(Model: Iphone 15) | iPhone Case(Iphone 15),330.00,330.00,Cash,138.00
+2026-03-19 18:46:19,Notebook(80L) | Notebook(80-leaves),60.00,100.00,Cash,36.00
+--- SESSION START: 2026-03-20 ---,-,-,-,-,-
+2026-03-20 11:11:37,iPhone Case(Iphone 15) | Pants(Large - Black),650.00,650.00,Cash,360.00
+2026-03-20 13:21:01,Notebook(80L) | Toothpaste(Colgate),50.00,50.00,Cash,30.00
+2026-03-20 19:34:08,Notebook(80L),30.00,30.00,Cash,18.00
+2026-03-20 20:05:35,Notebook(80-leaves) | Pants(Large - Black),530.00,550.00,Cash,318.00
+--- SESSION START: 2026-03-21 ---,-,-,-,-,-
+2026-03-21 08:24:28,iPhone Case(Model: Iphone 15) | Pants(Large - Black),650.00,650.00,Cash,360.00
+2026-03-21 18:17:37,iPhone Case(Iphone 15),150.00,150.00,Cash,60.00
+2026-03-21 20:06:27,Toothpaste(Colgate) | iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15),470.00,470.00,Cash,192.00
+--- SESSION START: 2026-03-22 ---,-,-,-,-,-
+2026-03-22 10:50:57,Notebook(80-leaves) | Toothpaste(Colgate) | Notebook(80L),80.00,100.00,Cash,48.00
+2026-03-22 11:27:10,Notebook(80-leaves),30.00,30.00,Cash,18.00
+2026-03-22 13:29:34,iPhone Case(Model: Iphone 15),150.00,150.00,Cash,60.00
+2026-03-22 14:22:15,iPhone Case(Iphone 15) | Toothpaste(Colgate) | Pants(Large - Black) | iPhone Case(Model: Iphone 15),820.00,820.00,Cash,432.00
+2026-03-22 14:43:44,iPhone Case(Model: Iphone 15) | Pants(Large - Black) | iPhone Case(Iphone 15) | Pants(Large - Black),1300.00,1300.00,Cash,720.00
+2026-03-22 19:59:24,iPhone Case(Iphone 15) | Toothpaste(Colgate) | iPhone Case(Model: Iphone 15) | Toothpaste(Colgate),340.00,350.00,Cash,144.00
+2026-03-22 20:59:25,Notebook(80L) | Toothpaste(Colgate) | Toothpaste(Colgate),70.00,70.00,Cash,42.00
+--- SESSION START: 2026-03-23 ---,-,-,-,-,-
+2026-03-23 08:14:45,Pants(Large - Black) | Notebook(80L) | iPhone Case(Iphone 15) | Pants(Large - Black),1180.00,1200.00,Cash,678.00
+2026-03-23 09:26:17,Notebook(80L),30.00,50.00,Cash,18.00
+2026-03-23 09:27:34,Pants(Large - Black) | iPhone Case(Iphone 15) | Notebook(80-leaves) | iPhone Case(Model: Iphone 15),830.00,830.00,Cash,438.00
+2026-03-23 14:33:10,iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15),300.00,300.00,Cash,120.00
+2026-03-23 17:53:01,Notebook(80-leaves) | Pants(Large - Black) | Notebook(80-leaves),560.00,560.00,Cash,336.00
+2026-03-23 20:37:43,Notebook(80-leaves) | iPhone Case(Iphone 15),180.00,200.00,Cash,78.00
+--- SESSION START: 2026-03-24 ---,-,-,-,-,-
+2026-03-24 08:55:42,Toothpaste(Colgate) | iPhone Case(Iphone 15) | Notebook(80L),200.00,200.00,Cash,90.00
+2026-03-24 09:04:58,Pants(Large - Black) | iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15) | Toothpaste(Colgate),820.00,820.00,Cash,432.00
+2026-03-24 14:03:23,Toothpaste(Colgate),20.00,20.00,Cash,12.00
+2026-03-24 14:47:55,iPhone Case(Model: Iphone 15),150.00,150.00,Cash,60.00
+2026-03-24 17:59:23,iPhone Case(Iphone 15),150.00,150.00,Cash,60.00
+2026-03-24 18:18:30,iPhone Case(Model: Iphone 15) | Toothpaste(Colgate),170.00,170.00,Cash,72.00
+2026-03-24 18:56:28,Pants(Large - Black) | iPhone Case(Model: Iphone 15) | Notebook(80-leaves),680.00,680.00,Cash,378.00
+2026-03-24 19:02:04,Pants(Large - Black) | Notebook(80-leaves) | Toothpaste(Colgate),550.00,550.00,Cash,330.00
+--- SESSION START: 2026-03-25 ---,-,-,-,-,-
+2026-03-25 14:16:30,iPhone Case(Iphone 15),150.00,150.00,Cash,60.00
+2026-03-25 17:35:38,iPhone Case(Iphone 15) | Pants(Large - Black) | Notebook(80L),680.00,680.00,Cash,378.00
+2026-03-25 20:29:25,iPhone Case(Iphone 15) | Notebook(80L) | Toothpaste(Colgate) | Pants(Large - Black),700.00,700.00,Cash,390.00
+--- SESSION START: 2026-03-26 ---,-,-,-,-,-
+2026-03-26 12:31:51,iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15) | Toothpaste(Colgate),320.00,320.00,Cash,132.00
+2026-03-26 12:33:43,Pants(Large - Black) | iPhone Case(Model: Iphone 15) | Notebook(80L),680.00,680.00,Cash,378.00
+2026-03-26 17:06:20,Notebook(80-leaves) | iPhone Case(Model: Iphone 15) | Pants(Large - Black),680.00,680.00,Cash,378.00
+2026-03-26 17:11:08,iPhone Case(Model: Iphone 15) | iPhone Case(Iphone 15) | Toothpaste(Colgate),320.00,320.00,Cash,132.00
+--- SESSION START: 2026-03-27 ---,-,-,-,-,-
+2026-03-27 08:07:14,Notebook(80L),30.00,30.00,Cash,18.00
+2026-03-27 08:12:29,iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15),300.00,300.00,Cash,120.00
+2026-03-27 13:25:58,Pants(Large - Black),500.00,500.00,Cash,300.00
+2026-03-27 13:52:35,Notebook(80L) | iPhone Case(Model: Iphone 15) | Notebook(80-leaves),210.00,250.00,Cash,96.00
+2026-03-27 16:08:00,iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15),300.00,300.00,Cash,120.00
+2026-03-27 17:38:33,Pants(Large - Black) | iPhone Case(Iphone 15),650.00,650.00,Cash,360.00
+2026-03-27 19:01:15,Notebook(80L) | Toothpaste(Colgate) | Notebook(80-leaves) | Toothpaste(Colgate),100.00,100.00,Cash,60.00
+2026-03-27 20:02:35,iPhone Case(Iphone 15) | iPhone Case(Model: Iphone 15) | Notebook(80L) | Toothpaste(Colgate),350.00,350.00,Cash,150.00
+--- SESSION START: 2026-03-28 ---,-,-,-,-,-
+2026-03-28 11:37:45,Toothpaste(Colgate) | Toothpaste(Colgate) | Notebook(80L),70.00,70.00,Cash,42.00
+2026-03-28 12:09:54,Toothpaste(Colgate) | iPhone Case(Iphone 15) | Notebook(80L) | iPhone Case(Iphone 15),350.00,350.00,Cash,150.00
+2026-03-28 12:56:00,Toothpaste(Colgate) | iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15),320.00,350.00,Cash,132.00
+2026-03-28 14:07:32,Pants(Large - Black) | iPhone Case(Iphone 15),650.00,650.00,Cash,360.00
+2026-03-28 14:11:37,Toothpaste(Colgate) | iPhone Case(Iphone 15),170.00,200.00,Cash,72.00
+2026-03-28 20:29:54,iPhone Case(Model: Iphone 15) | iPhone Case(Iphone 15) | Notebook(80L) | Notebook(80L),360.00,400.00,Cash,156.00
+--- SESSION START: 2026-03-29 ---,-,-,-,-,-
+2026-03-29 08:03:18,Notebook(80L) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves),120.00,150.00,Cash,72.00
+2026-03-29 08:30:25,Pants(Large - Black) | Pants(Large - Black) | Pants(Large - Black),1500.00,1500.00,Cash,900.00
+2026-03-29 13:08:18,Notebook(80-leaves),30.00,30.00,Cash,18.00
+2026-03-29 14:46:32,Notebook(80L) | Notebook(80-leaves) | iPhone Case(Model: Iphone 15) | Pants(Large - Black),710.00,710.00,Cash,396.00
+2026-03-29 18:31:14,Notebook(80L) | Notebook(80L) | Toothpaste(Colgate) | Notebook(80-leaves),110.00,150.00,Cash,66.00
+--- SESSION START: 2026-03-30 ---,-,-,-,-,-
+2026-03-30 09:18:57,Notebook(80-leaves) | iPhone Case(Model: Iphone 15),180.00,200.00,Cash,78.00
+2026-03-30 12:39:27,Pants(Large - Black) | Notebook(80L) | Pants(Large - Black),1030.00,1030.00,Cash,618.00
+2026-03-30 12:44:14,iPhone Case(Model: Iphone 15),150.00,150.00,Cash,60.00
+2026-03-30 15:32:33,iPhone Case(Model: Iphone 15) | Pants(Large - Black) | iPhone Case(Model: Iphone 15) | iPhone Case(Model: Iphone 15),950.00,950.00,Cash,480.00
+2026-03-30 16:21:38,iPhone Case(Iphone 15),150.00,150.00,Cash,60.00
+2026-03-30 18:12:32,Toothpaste(Colgate) | iPhone Case(Model: Iphone 15) | iPhone Case(Iphone 15),320.00,320.00,Cash,132.00
+--- SESSION START: 2026-03-31 ---,-,-,-,-,-
+2026-03-31 13:10:58,iPhone Case(Model: Iphone 15) | Toothpaste(Colgate),170.00,170.00,Cash,72.00
+2026-03-31 14:40:10,iPhone Case(Iphone 15),150.00,150.00,Cash,60.00
+2026-03-31 15:19:23,Pants(Large - Black) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80L),590.00,600.00,Cash,354.00
+2026-03-31 16:51:21,iPhone Case(Iphone 15) | Toothpaste(Colgate) | Notebook(80-leaves),200.00,200.00,Cash,90.00
+2026-03-31 17:21:53,Toothpaste(Colgate),20.00,20.00,Cash,12.00
+2026-04-02 00:34:49,Notebook(80L) | Notebook(80L),60.00,100.00,Cash,36.00
+2026-04-02 00:46:15,Notebook(80L) | Notebook(80L),60.00,100.00,Cash,36.00
+2026-04-02 00:48:35,Notebook(80L) | Notebook(80L),60.00,100.00,Cash,36.00
+2026-04-02 01:08:26,Notebook(80L) | Notebook(80L),60.00,100.00,Cash,36.00
+2026-04-02 01:12:05,Notebook(80L) | Notebook(80L),60.00,100.00,Cash,36.00
+2026-04-02 01:19:57,Notebook(80L) | Pants(Small) | Pants(Medium),1180.00,1200.00,Cash,618.00
+2026-04-02 01:26:58,Notebook(80L) | Notebook(80L),60.00,120.00,Cash,36.00
+2026-04-02 01:55:34,Notebook(80L),30.00,60.00,Cash,18.00
+2026-04-02 01:57:19,Notebook(80L) | Notebook(80L),60.00,100.00,Cash,36.00
+2026-04-02 16:48:12,Pants(Medium) | Notebook(80L) | Notebook(80L),710.00,1000.00,Cash,336.00
+2026-04-02 17:02:01,Pants(Small) | Pants(Medium),1150.00,1500.00,Cash,600.00
+2026-04-04 15:35:23,Notebook(80L) | Notebook(80L) | Notebook(80L),90.00,100.00,Cash,54.00
+2026-04-04 15:38:49,Notebook(80L) | Notebook(80L),60.00,80.00,Cash,36.00
+2026-04-04 15:41:39,Notebook(80L) | Notebook(80L),60.00,80.00,Cash,36.00
+2026-04-04 18:14:33,Notebook(80L) | Notebook(80L) | Notebook(80L),90.00,100.00,Cash,54.00
+2026-04-04 20:45:14,Notebook(Standard) | Notebook(Standard) | Notebook(Standard),90.00,100.00,Cash,54.00
+2026-04-04 22:41:25,Notebook(Standard) | Notebook(Standard),60.00,80.00,Cash,36.00
+2026-04-04 23:16:38,Notebook(Standard) | Notebook(Standard) | Notebook(Standard) | Pants(L - Black) | iPhone Case(iPhone 15),740.00,1000.00,Cash,414.00
+2026-04-05 03:17:26,Pants(Small - Blue) | Pants(Small - Blue) | Pants(Small - Blue) | Pants(Small - Blue),2600.00,3000.00,Cash,1600.00
+2026-04-05 17:43:52,Ballpen(Black - Brand: Panda) | Ballpen(Black - Brand: Panda),20.00,500.00,Cash,8.00
+2026-04-05 17:44:07,iPhone Case(Model: Iphone 15),150.00,500.00,Cash,60.00
+2026-04-05 17:52:10,Ballpen(Black - Brand: Panda) | Ballpen(Black - Brand: Panda) | Ballpen(Black - Brand: Panda) | Ballpen(Black - Brand: Panda),40.00,400.00,Cash,16.00
+2026-04-05 19:28:25,Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves),90.00,100.00,Cash,54.00
+2026-04-05 19:55:07,Notebook(80-leaves),30.00,60.00,Cash,18.00
+2026-04-05 19:56:20,Notebook(80-leaves),30.00,60.00,Cash,18.00
+2026-04-05 19:56:41,Ballpen(Blue - Brand: Panda) | Ballpen(Blue - Brand: Panda) | Ballpen(Blue - Brand: Panda) | Ballpen(Blue - Brand: Panda) | Pants(Large - Black),540.00,800.00,Cash,316.00
+2026-04-05 21:16:38,Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda),30.00,90.00,Cash,12.00
+--- SESSION START: 2026-04-06 ---,-,-,-,-,-
+2026-04-06 22:06:54,iPhone Case(Iphone 15) | Lip Stick(Ligaya) | Lip Stick(Ligaya) | Lip Stick(Ligaya) | Lip Stick(Ligaya) | Lip Stick(Ligaya) | Cap(Black) | Cap(Black) | Cap(Black) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | Eyeglass(Black - Transparent) | Pants(X-large - Blue) | Pants(X-large - Blue),3340.00,4000.00,Cash,1950.00
+2026-04-06 22:32:50,Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Shoes(42 - Black) | Shoes(42 - Black) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda),1500.00,2000.00,Cash,900.00
+--- SESSION START: 2026-04-07 ---,-,-,-,-,-
+2026-04-07 00:32:30,Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Ballpen(Black - Panda) | Cap(Black) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto) | iPhone Case(Iphone 15) | Pants(Large - Yellow) | Pants(Large - Yellow) | Lip Stick(Ligaya) | Toothpaste(Colgate),1600.00,2000.00,Cash,925.00
+2026-04-07 19:38:28,Cap(Black) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Ballpen(Black - Panda) | Toothpaste(Colgate) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves) | Notebook(80-leaves),320.00,500.00,Cash,181.00
+--- SESSION START: 2026-04-13 ---,-,-,-,-,-
+2026-04-13 15:11:44,Eyeglass(Black - Transparent) | Eyeglass(Black - Transparent),100.00,800.00,Cash,50.00
+2026-04-13 15:59:41,Ballpen(Black - Panda) | Cap(Black),160.00,500.00,Cash,89.00
+2026-04-13 16:03:40,Cap(Black) | Pants(Large - Black) | Notebook(80-leaves) | Toothpaste(Colgate),700.00,1000.00,Cash,415.00
+2026-04-13 16:04:27,Eyeglass(Black - Transparent) | Cap(Black) | Ballpen(Black - Panda),210.00,250.00,Cash,114.00
+2026-04-13 16:05:59,Cap(Black) | Ballpen(Black - Panda) | Eyeglass(Black - Transparent),210.00,250.00,Cash,114.00
+2026-04-13 16:33:02,Toothpaste(Colgate),20.00,50.00,Cash,12.00
+--- SESSION START: 2026-04-26 ---,-,-,-,-,-
+2026-04-26 14:02:44,iPhone Case(Iphone 15),150.00,500.00,Cash,60.00
+2026-04-26 15:10:15,Notebook(80-leaves) | Pants(Large - Black) | Ballpen(Black - Panda) | Shoes(42 - Black) | Eyeglass(Black - Transparent) | Eyeglass(Black - Transparent) | Eyeglass(Black - Transparent) | Socks(High-cut - Black) | Socks(High-cut - Black) | Socks(High-cut - Black) | Cobra(Sakto) | Cobra(Sakto) | Cobra(Sakto),1640.00,2000.00,Cash,972.00
+2026-04-26 17:03:37,iPhone Case(Iphone 15),150.00,150.00,Cash,60.00
+2026-04-26 17:05:51,Notebook(80-leaves),30.00,100.00,Cash,18.00
+--- SESSION START: 2026-04-27 ---,-,-,-,-,-
+2026-04-27 20:26:06,iPhone Case(Iphone 15),150.00,150.00,GCash,60.00
+2026-04-27 20:26:20,Pants(Large - Black),500.00,1000.00,Cash,300.00

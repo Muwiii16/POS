@@ -256,6 +256,8 @@ def inventory_view_content(page: ft.Page):
     def open_edit_dialog(product):
         name_field = ft.TextField(
             label='Name', value=product.name, border_radius=10)
+        cost_field = ft.TextField(label='Cost per Unit (₱)', value=str(
+            product.cost), keyboard_type=ft.KeyboardType.NUMBER, border_radius=10)
         price_field = ft.TextField(label='Price (₱)', value=str(
             product.price), keyboard_type=ft.KeyboardType.NUMBER, border_radius=10)
         stock_add_field = ft.TextField(label='Add to stock (leave blank for no change)',
@@ -265,6 +267,7 @@ def inventory_view_content(page: ft.Page):
             try:
                 engine.history.save_state(all_products)
                 product.name = name_field.value.strip().title()
+                product.cost = float(cost_field.value or 0)
                 product.price = float(price_field.value)
                 raw = stock_add_field.value.strip()
                 if raw:
@@ -336,6 +339,8 @@ def inventory_view_content(page: ft.Page):
     def open_add_product_dialog(e):
         name_f = ft.TextField(label='Product Name',
                               border_radius=10, autofocus=True)
+        cost_f = ft.TextField(label='Cost per Unit (₱)',
+                              keyboard_type=ft.KeyboardType.NUMBER, border_radius=10)
         price_f = ft.TextField(
             label='Price (₱)', keyboard_type=ft.KeyboardType.NUMBER, border_radius=10)
         stock_f = ft.TextField(
@@ -373,6 +378,7 @@ def inventory_view_content(page: ft.Page):
             try:
                 data = {
                     'name': name_f.value.strip(),
+                    'cost': float(cost_f.value or 0),
                     'price': float(price_f.value),
                     'stock': int(stock_f.value),
                     'category': category_f.value.strip()
@@ -403,7 +409,7 @@ def inventory_view_content(page: ft.Page):
             content=ft.Container(
                 width=420,
                 content=ft.Column([
-                    name_f, price_f, stock_f, category_f,
+                    name_f, cost_f, price_f, stock_f, category_f,
                     ft.Divider(),
                     ft.Text('Extra Details (Variants)',
                             weight='bold', size=13),
