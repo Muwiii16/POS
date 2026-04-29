@@ -5,6 +5,7 @@ import threading
 from core import engine
 from core.models import Product
 from core.scanner import BarcodeScanner
+from core import shared_state
 
 
 def pos_view_content(page: ft.Page):
@@ -69,6 +70,15 @@ def pos_view_content(page: ft.Page):
 
     def refresh_cart_ui():
         cart_list.controls.clear()
+
+        shared_state.write_cart([
+            {
+                'key': key,
+                'barcode': str(item['product'].barcode),
+                'qty': item['qty']
+            }
+            for key, item in cart_state.items()
+        ])
 
         for key, item in cart_state.items():
             p = item['product']
@@ -444,7 +454,7 @@ def pos_view_content(page: ft.Page):
             )
 
         engine.log_sale(flat_cart, total, paid_amount,
-                        change, payment_method=method)
+                        method)
         engine.save_inventory(all_products)
 
         def close_receipt(e):

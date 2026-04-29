@@ -283,7 +283,7 @@ def inventory_view_content(page: ft.Page):
         page.show_dialog(ft.AlertDialog(
             title=ft.Text('Edit Product', weight='bold'),
             content=ft.Column(
-                [name_field, price_field, stock_add_field], spacing=12, tight=True, width=350),
+                [name_field, cost_field, price_field, stock_add_field], spacing=12, tight=True, width=350),
             actions=[
                 ft.TextButton(content=ft.Text('Cancel'),
                               on_click=lambda e: page.pop_dialog()),

@@ -7,3 +7,4 @@ opencv-python
 Pillow
 pyzbar
 cv2-enumerate-cameras
+pynput

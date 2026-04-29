@@ -2,12 +2,18 @@ import os
 import base64
 import json
 import flet as ft
+import threading
+import subprocess
+import sys
 from ui.pos_view import pos_view_content
 from ui.inventory_view import inventory_view_content
 from ui.report_view import reports_view_content
+from ui.customer_display import customer_display_main
+from core import shared_state
 
 
 def main(page: ft.Page):
+    shared_state.clear_cart_file()
     page.title = 'POS System'
     page.theme_mode = ft.ThemeMode.LIGHT
     page.window_width = 1200
@@ -98,4 +104,9 @@ def main(page: ft.Page):
 
 
 if __name__ == '__main__':
+    subprocess.Popen(
+        [sys.executable, 'launch_display.py'],
+        creationflags=subprocess.CREATE_NO_WINDOW
+    )
+
     ft.run(main)
