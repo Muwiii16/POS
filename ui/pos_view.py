@@ -55,12 +55,6 @@ def pos_view_content(page: ft.Page):
 
     page.on_close = lambda e: scanner.stop()
 
-    def on_keyboard(e: ft.KeyboardEvent):
-        if e.key == 'Enter' and not e.shift and not e.ctrl:
-            if cart_state:
-                process_checkout(None)
-    page.on_keyboard_event = on_keyboard
-
     def update_cart_math(e=None):
         total = sum(item['product'].price * item['qty']
                     for item in cart_state.values())
@@ -117,6 +111,52 @@ def pos_view_content(page: ft.Page):
         update_cart_math()
         page.update()
 
+    def poll_checkout_requests():
+        while True:
+            try:
+                msg = shared_state.read_cart()
+                if msg and msg.get('type') == 'checkout_request':
+                    shared_state.clear_cart_file()
+                    method = msg['method']
+                    paid = msg['paid']
+                    total = msg['total']
+                    partial_cash = msg.get('partial_cash', 0.0)
+                    change = paid-total if method == 'Cash' and paid > total else 0.0
+
+                    if method == 'Credit':
+                        engine.save_credit_entry(
+                            customer_name='(from display)',
+                            amount_owed=total-partial_cash,
+                            due_date='',
+                            partial_cash=partial_cash
+                        )
+                    flat_cart = []
+                    for item in cart_state.values():
+                        for _ in range(item['qty']):
+                            flat_cart.append(item['product'])
+
+                    engine.log_sale(flat_cart, total, paid, method)
+                    engine.save_inventory(all_products)
+
+                    def do_receipt():
+                        complete_checkout(method, paid, change, partial_cash)
+                    page.run_thread(do_receipt)
+
+                elif msg and msg.get('type') == 'checkout_done':
+                    shared_state.clear_cart_file()
+
+                    def do_clear():
+                        cart_state.clear()
+                        refresh_cart_ui()
+                    page.run_thread(do_clear)
+
+            except Exception:
+                pass
+            time.sleep(0.3)
+
+    import threading as _th
+    _th.Thread(target=poll_checkout_requests, daemon=True).start()
+
     for p in all_products:
         if p.name not in grouped_products:
             grouped_products[p.name] = []
@@ -145,29 +185,15 @@ def pos_view_content(page: ft.Page):
         refresh_cart_ui()
 
     def process_checkout(e):
+        shared_state.write_main_checkout(True)
         total = sum(item['product'].price * item['qty']
                     for item in cart_state.values())
         if total == 0:
             return
 
         def select_and_proceed(method):
-            page.on_keyboard_event = on_keyboard
             page.pop_dialog()
             show_payment_dialog(method)
-
-        def on_method_keyboard(e: ft.KeyboardEvent):
-            key = e.key.replace('Numpad ', '')
-            if key == '1':
-                select_and_proceed('Cash')
-            elif key == '2':
-                select_and_proceed('GCash')
-            elif key == '3':
-                select_and_proceed('Credit')
-            elif key == 'Escape':
-                page.on_keyboard_event = on_keyboard
-                page.pop_dialog()
-
-        page.on_keyboard_event = on_method_keyboard
 
         page.show_dialog(ft.AlertDialog(
             title=ft.Text(f'Select Payment — Total: ₱{total:.2f}',
@@ -201,7 +227,7 @@ def pos_view_content(page: ft.Page):
                 ft.TextButton(
                     content=ft.Text('Cancel'),
                     on_click=lambda e: (
-                        setattr(page, 'on_keyboard_event', on_keyboard),
+                        shared_state.write_main_checkout(False),
                         page.pop_dialog()
                     )
                 )
@@ -250,7 +276,6 @@ def pos_view_content(page: ft.Page):
                     cash_field.error_text = f'Need at least ₱{total:.2f}'
                     cash_field.update()
                     return
-                page.on_keyboard_event = on_keyboard
                 page.pop_dialog()
                 complete_checkout('Cash', cash, cash - total)
 
@@ -264,6 +289,7 @@ def pos_view_content(page: ft.Page):
                     ft.TextButton(
                         content=ft.Text('Back'),
                         on_click=lambda e: (
+                            shared_state.write_main_checkout(False),
                             page.pop_dialog(), process_checkout(None))
                     ),
                     ft.ElevatedButton(
@@ -309,7 +335,6 @@ def pos_view_content(page: ft.Page):
                 )
 
             def confirm_gcash(e):
-                page.on_keyboard_event = on_keyboard
                 page.pop_dialog()
                 complete_checkout('GCash', total, 0.0)
 
@@ -332,6 +357,7 @@ def pos_view_content(page: ft.Page):
                     ft.TextButton(
                         content=ft.Text('Back'),
                         on_click=lambda e: (
+                            shared_state.write_main_checkout(False),
                             page.pop_dialog(), process_checkout(None))
                     ),
                     ft.ElevatedButton(
@@ -386,7 +412,6 @@ def pos_view_content(page: ft.Page):
                     due_date=due,
                     partial_cash=p_cash
                 )
-                page.on_keyboard_event = on_keyboard
                 page.pop_dialog()
                 complete_checkout('Credit', p_cash, 0.0, partial_cash=p_cash)
 
@@ -400,6 +425,7 @@ def pos_view_content(page: ft.Page):
                     ft.TextButton(
                         content=ft.Text('Back'),
                         on_click=lambda e: (
+                            shared_state.write_main_checkout(False),
                             page.pop_dialog(), process_checkout(None))
                     ),
                     ft.ElevatedButton(
@@ -460,6 +486,8 @@ def pos_view_content(page: ft.Page):
         def close_receipt(e):
             page.pop_dialog()
             cart_state.clear()
+            shared_state.clear_cart_file()
+            shared_state.write_main_checkout(False)
             refresh_cart_ui()
 
         page.show_dialog(ft.AlertDialog(

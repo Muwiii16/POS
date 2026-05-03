@@ -104,9 +104,8 @@ def main(page: ft.Page):
 
 
 if __name__ == '__main__':
-    subprocess.Popen(
+    display_process = subprocess.Popen(
         [sys.executable, 'launch_display.py'],
-        creationflags=subprocess.CREATE_NO_WINDOW
     )
 
     ft.run(main)

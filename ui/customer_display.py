@@ -17,7 +17,8 @@ def customer_display_main(page: ft.Page):
     page.window_height = 700
     page.window_always_on_top = True
 
-    dialog_state = {'open': None, 'close_fn': None}
+    dialog_state = {'open': None, 'close_fn': None, 'update_fn': None}
+    cash_input_buffer = {'value': ''}
     cart_state = {}
     current_total = 0.0
 
@@ -87,7 +88,44 @@ def customer_display_main(page: ft.Page):
         except Exception:
             pass
 
-    def finalize(method, paid):
+    def finalize(method, paid, partial_cash=0.0):
+        import datetime
+        total_snapshot = current_total
+        change = paid - total_snapshot if method == 'Cash' and paid > total_snapshot else 0.0
+
+        receipt_text = (
+            "======= DAD'S STORE =======\n"
+            f"Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
+            f"Payment: {method}\n"
+            "---------------------------\n"
+        )
+        for item in cart_state.values():
+            p = item['product']
+            qty = item['qty']
+            sub = p.price * qty
+            name_str = f'{p.name} ({p.get_variant_label()})'
+            receipt_text += f'{name_str[:20]:<20} {qty} x ₱{sub:.2f}\n'
+
+        if method == 'Credit':
+            remaining = total_snapshot - partial_cash
+            receipt_text += (
+                "---------------------------\n"
+                f"Total:      ₱{total_snapshot:.2f}\n"
+                f"Cash Paid:  ₱{partial_cash:.2f}\n"
+                f"On Credit:  ₱{remaining:.2f}\n"
+                "===========================\n"
+                "Thank you for shopping!"
+            )
+        else:
+            receipt_text += (
+                "---------------------------\n"
+                f"Total:      ₱{total_snapshot:.2f}\n"
+                f"Cash:       ₱{paid:.2f}\n"
+                f"Change:     ₱{change:.2f}\n"
+                "===========================\n"
+                "Thank you for shopping!"
+            )
+
         flat_cart = []
         for item in cart_state.values():
             flat_cart.extend([item['product']] * item['qty'])
@@ -101,49 +139,42 @@ def customer_display_main(page: ft.Page):
                     0, inv_by_barcode[bc].stock - item['qty']
                 )
         engine.save_inventory(all_products)
-
-        engine.log_sale(flat_cart, current_total, paid, method)
+        engine.log_sale(flat_cart, total_snapshot, paid, method)
         shared_state.write_checkout_done()
 
-        total_snapshot = current_total
         cart_state.clear()
         status_lbl.value = '✅ Sale complete!'
         status_lbl.color = 'green'
-        rebuild_cart()
-
         dialog_state['open'] = 'receipt'
+        rebuild_cart()
 
         def close_receipt(e=None):
             dialog_state['open'] = None
             dialog_state['close_fn'] = None
+            page.on_keyboard_event = None
+            shared_state.clear_cart_file()
             page.pop_dialog()
 
         dialog_state['close_fn'] = close_receipt
+        close_btn = ft.TextButton('Close & New Order', on_click=close_receipt)
 
-        change = paid - total_snapshot if method == 'Cash' and paid > total_snapshot else 0
+        def on_receipt_keyboard(e: ft.KeyboardEvent):
+            if e.key == 'Enter' or e.key == 'Numpad Enter':
+                page.on_keyboard_event = None
+                close_receipt()
+        page.on_keyboard_event = on_receipt_keyboard
 
         page.show_dialog(ft.AlertDialog(
-            title=ft.Text('✅ Sale Complete!', weight='bold', color='#27ae60'),
-            content=ft.Column([
-                ft.Text(f'Method: {method}', size=14),
-                ft.Text(f'Total: ₱{total_snapshot:.2f}', size=14),
-                ft.Text(f'Cash: ₱{paid:.2f}' if method ==
-                        'Cash' else '', size=14),
-                ft.Text(f'Change: ₱{change:.2f}' if method ==
-                        'Cash' else '', size=14, color='green'),
-            ], tight=True, spacing=6, width=300),
-            actions=[
-                ft.ElevatedButton(
-                    'Done [Enter]',
-                    on_click=close_receipt,
-                    style=ft.ButtonStyle(bgcolor='#4A4440', color='white')
-                )
-            ],
+            title=ft.Text('Checkout Successful!',
+                          weight='bold', color='green'),
+            content=ft.Text(receipt_text, font_family='monospace'),
+            actions=[close_btn],
             modal=True
         ))
 
     def show_cash_dialog():
         dialog_state['open'] = 'cash'
+        cash_input_buffer['value'] = ''
         change_lbl = ft.Text('', size=14, color='grey')
         cash_field = ft.TextField(
             label='Cash Tendered (₱)',
@@ -152,9 +183,10 @@ def customer_display_main(page: ft.Page):
             autofocus=True,
         )
 
-        def on_cash_change(e):
+        def update_field():
+            cash_field.value = cash_input_buffer['value']
             try:
-                cash = float(cash_field.value or 0)
+                cash = float(cash_input_buffer['value'] or 0)
             except ValueError:
                 cash = 0.0
             if cash == 0:
@@ -165,13 +197,15 @@ def customer_display_main(page: ft.Page):
             else:
                 change_lbl.value = f'Change: ₱{cash - current_total:.2f}'
                 change_lbl.color = 'green'
-            change_lbl.update()
-
-        cash_field.on_change = on_cash_change
+            try:
+                cash_field.update()
+                change_lbl.update()
+            except Exception:
+                pass
 
         def confirm(e=None):
             try:
-                cash = float(cash_field.value or 0)
+                cash = float(cash_input_buffer['value'] or 0)
             except ValueError:
                 return
             if cash < current_total:
@@ -179,8 +213,13 @@ def customer_display_main(page: ft.Page):
                 cash_field.update()
                 return
             dialog_state['open'] = None
+            dialog_state['close_fn'] = None
+            dialog_state['update_fn'] = None
             page.pop_dialog()
             finalize('Cash', cash)
+
+        dialog_state['close_fn'] = confirm
+        dialog_state['update_fn'] = update_field
 
         page.show_dialog(ft.AlertDialog(
             title=ft.Text(
@@ -236,9 +275,12 @@ def customer_display_main(page: ft.Page):
             )
 
         def confirm(e=None):
+            page.on_keyboard_event = None
             dialog_state['open'] = None
             page.pop_dialog()
             finalize('GCash', current_total)
+
+        dialog_state['close_fn'] = confirm
 
         page.show_dialog(ft.AlertDialog(
             title=ft.Text(f'📱 GCash Payment — ₱{current_total:.2f}',
@@ -347,6 +389,8 @@ def customer_display_main(page: ft.Page):
 
     def close_cash_dialog():
         dialog_state['open'] = None
+        dialog_state['close_fn'] = None
+        dialog_state['update_fn'] = None
         page.pop_dialog()
 
     def close_method_dialog():
@@ -365,16 +409,26 @@ def customer_display_main(page: ft.Page):
 
     def start_numpad_listener():
         def on_press(key):
+            if shared_state.is_main_checkout_active():
+                return
             try:
+                print(
+                    f'KEY: {key} | vk: {getattr(key, "vk", None)} | state: {dialog_state["open"]}')
                 vk = getattr(key, 'vk', None)
-                is_enter = key in (pynput_kb.Key.enter,) or vk == 13
+                is_enter = key == pynput_kb.Key.enter or vk == 13 or str(
+                    key) == 'Key.enter'
                 is_esc = key == pynput_kb.Key.esc
 
-                if dialog_state['open'] is None:
+                state = dialog_state['open']
+
+                if state == 'receipt':
+                    return
+
+                elif state is None:
                     if is_enter and cart_state:
                         page.run_thread(show_payment_method_dialog)
 
-                elif dialog_state['open'] == 'method':
+                elif state == 'method':
                     if vk == 97 or (hasattr(key, 'char') and key.char == '1'):
                         page.run_thread(lambda: select_method('Cash'))
                     elif vk == 98 or (hasattr(key, 'char') and key.char == '2'):
@@ -384,18 +438,43 @@ def customer_display_main(page: ft.Page):
                     elif is_esc:
                         page.run_thread(close_method_dialog)
 
-                elif dialog_state['open'] in ('cash', 'gcash', 'credit'):
-                    if is_esc:
-                        page.run_thread(lambda: (
-                            close_gcash_dialog() if dialog_state['open'] == 'gcash'
-                            else close_credit_dialog()
-                        ))
+                elif state == 'cash':
+                    if is_enter:
+                        fn = dialog_state.get('close_fn')
+                        if fn:
+                            threading.Thread(target=fn, daemon=True).start()
+                    elif is_esc:
+                        page.run_thread(close_cash_dialog)
+                    elif key == pynput_kb.Key.backspace:
+                        cash_input_buffer['value'] = cash_input_buffer['value'][:-1]
+                        fn = dialog_state.get('update_fn')
+                        if fn:
+                            page.run_thread(fn)
+                    else:
+                        char = None
+                        if vk and 96 <= vk <= 105:
+                            char = str(vk-96)
+                        elif vk == 110 or (hasattr(key, 'char') and key.char == '.'):
+                            if '.' not in cash_input_buffer['value']:
+                                char = '.'
+                        elif hasattr(key, 'char') and key.char and key.char.isdigit():
+                            char = key.char
+                        if char:
+                            cash_input_buffer['value'] += char
+                            fn = dialog_state.get('update_fn')
+                            if fn:
+                                page.run_thread(fn)
 
-                elif dialog_state['open'] == 'receipt':
+                elif state in ('gcash', 'credit'):
                     if is_enter:
                         fn = dialog_state.get('close_fn')
                         if fn:
                             page.run_thread(fn)
+                    elif is_esc:
+                        page.run_thread(
+                            close_gcash_dialog if state == 'gcash'
+                            else close_credit_dialog
+                        )
 
             except Exception:
                 pass
@@ -450,6 +529,8 @@ def customer_display_main(page: ft.Page):
                     last_seen = msg
 
                     if msg['type'] == 'cart_update':
+                        if dialog_state['open'] == 'receipt':
+                            dialog_state['open'] = None
                         cart_state.clear()
                         all_inv = engine.load_inventory()
                         inv_by_barcode = {str(p.barcode): p for p in all_inv}
@@ -468,7 +549,13 @@ def customer_display_main(page: ft.Page):
                         cart_state.clear()
                         status_lbl.value = '✅ Sale complete!'
                         status_lbl.color = 'green'
+                        dialog_state['open'] = 'receipt'
+                        dialog_state['close_fn'] = None
                         page.run_thread(rebuild_cart)
+
+                    elif msg['type'] == 'idle':
+                        if dialog_state['open'] == 'receipt':
+                            dialog_state['open'] = None
 
             except Exception:
                 pass
@@ -478,9 +565,25 @@ def customer_display_main(page: ft.Page):
     threading.Thread(target=poll_loop, daemon=True).start()
 
     def move_to_monitor2():
-        page.window_left = 1920
-        page.window_top = 0
-        page.update()
+        try:
+            from screeninfo import get_monitors
+            monitors = get_monitors()
+            if len(monitors) < 2:
+                page.show_dialog(ft.AlertDialog(
+                    title=ft.Text('No second monitor found'),
+                    content=ft.Text('Could not detect a second monitor.'),
+                    actions=[ft.TextButton(
+                        'OK', on_click=lambda e: page.pop_dialog())]
+                ))
+                return
+            second = monitors[1]
+            page.window.left = second.x
+            page.window.top = second.y
+            page.window.width = second.width
+            page.window.height = second.height
+            page.update()
+        except Exception as ex:
+            print(f'Monitor detection error: {ex}')
 
     page.add(
         ft.Column([
