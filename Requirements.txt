@@ -9,3 +9,4 @@ pyzbar
 cv2-enumerate-cameras
 pynput
 screeninfo
+pyinstaller

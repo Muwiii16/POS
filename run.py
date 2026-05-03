@@ -90,12 +90,25 @@ def main(page: ft.Page):
 
     main_content.content = pos_view_content(page)
 
+    def launch_display(e):
+        subprocess.Popen([sys.executable, 'launch_display.py'])
+
     page.appbar = ft.AppBar(
         title=ft.Text('POS System', weight='bold'),
         bgcolor='#E8E2DE',
         actions=[
-            ft.TextButton('Scanner', icon=ft.Icons.CAMERA_ALT_OUTLINED, on_click=open_scanner_settings, style=ft.ButtonStyle(color='#4A4440')
-                          ),
+            ft.TextButton(
+                'Scanner',
+                icon=ft.Icons.CAMERA_ALT_OUTLINED,
+                on_click=open_scanner_settings,
+                style=ft.ButtonStyle(color='#4A4440')
+            ),
+            ft.TextButton(
+                'Customer Display',
+                icon=ft.Icons.MONITOR_OUTLINED,
+                on_click=launch_display,
+                style=ft.ButtonStyle(color='#4A4440')
+            ),
         ]
     )
 
@@ -104,8 +117,4 @@ def main(page: ft.Page):
 
 
 if __name__ == '__main__':
-    display_process = subprocess.Popen(
-        [sys.executable, 'launch_display.py'],
-    )
-
     ft.run(main)
