@@ -1,66 +1,122 @@
-# 🏪 Store POS System
+# 🏪 POS System
 
-A modern, lightweight Point of Sale (POS) application built with Python and CustomTkinter. Designed for quick retail transactions with a focus on a clean, high-contrast interface.
+A modern, lightweight Point of Sale (POS) application built with Python and Flet. Designed for small retail stores with a clean, intuitive interface for fast transactions, inventory management, and revenue reporting.
+
+---
 
 ## ✨ Features
-* **Dynamic Product Catalog**: Browse products using a responsive card-based layout.
-* **Variant Selection**: Support for multiple product versions (e.g., different sizes or weights) within a single category.
-* **Live Cart Management**:
-    * **Grouped Items**: Clean view that totals quantities for identical products.
-    * **Real-time Subtotals**: Each row displays the calculated price for that specific quantity.
-    * **Quick Adjust**: Add or remove items directly from the sidebar with one click.
-* **Financial Accuracy**: Automatic calculation of grand totals and customer change.
 
+### 🛒 Cashier (POS)
+- **Product Search**: Quickly find products by name with fuzzy search support.
+- **Barcode Scanner**: Scan barcodes via webcam using pyzbar for fast item lookup.
+- **Live Cart Management**: Add, remove, and adjust item quantities in real time.
+- **Multiple Payment Methods**: Supports Cash, GCash, and Maya payments.
+- **Customer Display**: Launch a secondary display window for customers showing the current order and total.
+- **Automatic Change Calculation**: Instantly computes change after payment.
 
 ### 📦 Inventory Management
-* **Responsive Table Layout**: A fully fluid inventory dashboard that adapts to window resizing and full-screen modes.
-* **Intelligent Grouping**: Automatically groups individual stock items by their base product name to reduce clutter.
-* **Price Spectrum**: Displays the price range (Min-Max) for products with multiple variants (e.g., `₱460.00 - ₱740.00`).
-* **Smart Truncation**: Dynamically calculates available space and truncates long variant lists with an ellipsis (`...`) to prevent UI overflow.
-* **Low Stock Alerts**: Visual warnings (red text) when total stock levels for a product or variant drop below 6 units.
+- **Product & Variant Support**: Manage products with multiple variants (size, color, etc.).
+- **Stock Tracking**: Monitor stock levels with low stock alerts.
+- **Barcode Generation**: Auto-generate barcodes for products.
+- **Add / Edit / Delete**: Full CRUD support for products and variants.
+
+### 📊 Revenue Reports
+- **Monthly & Quarterly Views**: Toggle between monthly and quarterly breakdowns.
+- **Summary Cards**: At-a-glance Total Revenue, Total Cost, and Total Profit.
+- **Bar Chart**: Visual Revenue vs. Profit chart that auto-scrolls to the latest period.
+- **Persistent Sales Log**: All transactions are logged to `data/sales_log.csv`.
+
+---
 
 ## 🛠️ Technical Setup
 
 ### Prerequisites
-* Python 3.10 or higher (Current dev environment: 3.14).
-* `customtkinter` library for the modern UI.
-
-### Responsive Implementation
-The application uses a "Bulletproof" width calculation method to ensure the inventory table remains perfectly aligned across all monitor sizes:
-
-```python
-# Proportional stretching logic used in core/gui.py
-total_w = self.inventory_scroll.winfo_width() - 40
-w_name = int(total_w * 0.20)    # 20% width
-w_vars = int(total_w * 0.40)    # 40% width
-w_price = int(total_w * 0.15)   # 15% width
-w_stock = int(total_w * 0.10)   # 10% width
-```
+- Python 3.10 or higher (current dev environment: 3.14)
+- pip
 
 ### Installation
-1.  **Clone the repository**:
+
+1. **Clone the repository**:
     ```bash
-    git clone [https://github.com/YourUsername/POS.git](https://github.com/YourUsername/POS.git)
+    git clone https://github.com/YourUsername/POS.git
+    cd POS
     ```
-2.  **Install dependencies**:
+
+2. **Install dependencies**:
     ```bash
-    pip install customtkinter
+    pip install -r Requirements.txt
     ```
-3.  **Run the app**:
+
+3. **Run the app**:
     ```bash
     python run.py
     ```
 
-## 📂 Project Structure
-* `run.py`: Entry point that initializes the `POSapp`.
-* `core/gui.py`: The main UI logic, grid configurations, and event handling.
-* `core/engine.py`: The "brain" of the app; handles math, checkout logic, and file I/O.
-* `inventory.json`: JSON data store for products and stock levels.
-* `sales_log.csv`: Persistent log for all completed transactions.
-
-## 📝 Recent UI Improvements
-* **Inventory Stretching**: Implemented percentage-based pixel widths to allow the inventory table to fill the screen in maximized mode.
-* **Unified Alignment**: Replaced standard grid weights with a strict pack(`side='left'`) architecture for the inventory rows to ensure perfect vertical alignment.
-* **Cart Optimization**: Implemented `grid_propagate(False)` and `minsize=450` to prevent the cart sidebar from shrinking during window adjustments.
-* **Undo/Redo System**Added dedicated controls to manage and revert inventory changes safely.
 ---
+
+## 📂 Project Structure
+
+```
+POS/
+├── run.py                  # Entry point
+├── core/
+│   ├── engine.py           # Business logic, sales logging, inventory I/O
+│   ├── scanner.py          # Webcam barcode scanning
+│   ├── shared_state.py     # Shared cart state between windows
+│   └── models.py           # Data models
+├── ui/
+│   ├── pos_view.py         # Cashier POS screen
+│   ├── inventory_view.py   # Inventory management screen
+│   ├── report_view.py      # Revenue report screen
+│   └── customer_display.py # Secondary customer-facing display
+├── data/
+│   ├── inventory.json      # Product and stock data
+│   ├── sales_log.csv       # Transaction history
+│   ├── cart_state.json     # Shared cart state for customer display
+│   ├── payment_ledger.json # Payment records
+│   └── main_checkout.json  # Checkout session data
+├── barcodes/               # Generated barcode images
+├── qr_codes/               # QR code assets (e.g. GCash QR)
+└── Requirements.txt
+```
+
+---
+
+## 📦 Distribution
+
+A Windows installer is available as a single `POS System Setup.exe`. End users do not need Python or any dependencies installed — everything is bundled.
+
+### Building the Installer (for developers)
+
+1. Build the executable:
+    ```bash
+    python -m PyInstaller --onedir --windowed --collect-all flet run.py
+    ```
+
+2. Copy the required zbar DLLs into `dist/POS/_internal/`:
+    - `libiconv.dll`
+    - `libzbar-64.dll`
+
+    These can be found in your pyzbar package folder:
+    ```
+    %LOCALAPPDATA%\Python\pythoncore-3.14-64\Lib\site-packages\pyzbar\
+    ```
+
+3. Compile the installer using **Inno Setup 6** with the provided `POS.iss` script.
+
+---
+
+## 📝 Dependencies
+
+| Package | Purpose |
+|---|---|
+| flet | UI framework |
+| python-barcode | Barcode generation |
+| pyzbar | Barcode scanning via webcam |
+| opencv-python | Camera access |
+| Pillow | Image processing |
+| thefuzz | Fuzzy product search |
+| python-Levenshtein | Fuzzy match performance |
+| screeninfo | Multi-monitor support |
+| pynput | Input handling |
+| pyinstaller | Executable packaging |

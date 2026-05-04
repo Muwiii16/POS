@@ -11,6 +11,9 @@ from ui.report_view import reports_view_content
 from ui.customer_display import customer_display_main
 from core import shared_state
 
+if getattr(sys, 'frozen', False):
+    os.chdir(os.path.dirname(sys.executable))
+
 
 def main(page: ft.Page):
     shared_state.clear_cart_file()
@@ -91,8 +94,14 @@ def main(page: ft.Page):
     main_content.content = pos_view_content(page)
 
     def launch_display(e):
-        subprocess.Popen([sys.executable, 'launch_display.py'])
-
+        import os
+        if getattr(sys, 'frozen', False):
+            # Running as exe
+            exe_path = sys.executable
+            subprocess.Popen([exe_path, 'display'])
+        else:
+            # Running as script
+            subprocess.Popen([sys.executable, 'launch_display.py'])
     page.appbar = ft.AppBar(
         title=ft.Text('POS System', weight='bold'),
         bgcolor='#E8E2DE',
@@ -117,4 +126,8 @@ def main(page: ft.Page):
 
 
 if __name__ == '__main__':
-    ft.run(main)
+    if len(sys.argv) > 1 and sys.argv[1] == 'display':
+        from ui.customer_display import customer_display_main
+        ft.run(customer_display_main)
+    else:
+        ft.run(main)

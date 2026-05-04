@@ -1,0 +1,236 @@
+[
+    {
+        "timestamp": "2026-04-26 17:03:37",
+        "method": "Cash",
+        "amount": 150.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-04-26 17:05:51",
+        "method": "Cash",
+        "amount": 100.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-04-27 20:26:06",
+        "method": "GCash",
+        "amount": 150.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-04-27 20:26:20",
+        "method": "Cash",
+        "amount": 1000.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-04-28 15:05:33",
+        "method": "Cash",
+        "amount": 200.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-04-28 15:05:54",
+        "method": "Cash",
+        "amount": 200.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-04-29 14:17:37",
+        "method": "Cash",
+        "amount": 500.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-04-29 14:21:56",
+        "method": "Cash",
+        "amount": 500.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-04-29 14:25:44",
+        "method": "Cash",
+        "amount": 1000.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-04-29 14:26:26",
+        "method": "Cash",
+        "amount": 1000.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-04-29 14:51:59",
+        "method": "Cash",
+        "amount": 500.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-01 06:10:05",
+        "method": "Cash",
+        "amount": 100.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-01 06:11:06",
+        "method": "Cash",
+        "amount": 20.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-01 06:53:31",
+        "method": "Cash",
+        "amount": 50.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-01 06:58:34",
+        "method": "Cash",
+        "amount": 50.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-01 06:59:52",
+        "method": "Cash",
+        "amount": 50.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-01 07:01:58",
+        "method": "Cash",
+        "amount": 50.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-01 07:03:48",
+        "method": "Cash",
+        "amount": 50.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-01 07:08:44",
+        "method": "Cash",
+        "amount": 50.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-01 07:26:17",
+        "method": "Cash",
+        "amount": 50.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-01 07:30:36",
+        "method": "Cash",
+        "amount": 50.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-01 07:39:59",
+        "method": "Cash",
+        "amount": 50.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-01 19:28:23",
+        "method": "Cash",
+        "amount": 50.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-01 19:31:45",
+        "method": "Cash",
+        "amount": 50.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-03 21:14:40",
+        "method": "Cash",
+        "amount": 1000.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-04 02:18:20",
+        "method": "Cash",
+        "amount": 500.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-04 02:18:36",
+        "method": "Cash",
+        "amount": 500.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-04 02:25:55",
+        "method": "Cash",
+        "amount": 500.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-04 02:39:57",
+        "method": "Cash",
+        "amount": 500.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-04 02:49:44",
+        "method": "Cash",
+        "amount": 500.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-04 02:50:53",
+        "method": "Cash",
+        "amount": 500.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-04 03:51:28",
+        "method": "Cash",
+        "amount": 500.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-04 04:21:17",
+        "method": "Cash",
+        "amount": 500.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-04 04:21:30",
+        "method": "GCash",
+        "amount": 50.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-04 04:28:37",
+        "method": "Cash",
+        "amount": 100.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-04 04:28:56",
+        "method": "Cash",
+        "amount": 100.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-04 04:29:30",
+        "method": "Cash",
+        "amount": 100.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-04 04:35:32",
+        "method": "GCash",
+        "amount": 50.0,
+        "note": ""
+    },
+    {
+        "timestamp": "2026-05-04 04:40:48",
+        "method": "GCash",
+        "amount": 50.0,
+        "note": ""
+    }
+]
